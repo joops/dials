@@ -157,6 +157,18 @@ try {
     });
     checked++;
     if (alpha !== 1) { failed++; fails.push(`  FAIL [${name}] translucent --brand: --brand-on-solid alpha is ${alpha}, expected 1`); }
+    // the cap on --white-text-until is the last luminance where white still gives 4.5:1: a fill
+    // just under it (#d04a04, luminance 0.18316) keeps white text when the dial asks for it
+    if (MODE === 'normal') {
+      const cap = await p.evaluate(() => {
+        document.getElementById('dials').textContent = ':root { --brand: #d04a04; --white-text-until: 0.18333; }';
+        const c = (v) => { const el = document.createElement('i'); el.style.color = `var(${v})`; document.body.appendChild(el); const r = __rgba(getComputedStyle(el).color); el.remove(); return r; };
+        const fg = c('--brand-on-solid'), bg = c('--brand-solid');
+        return { fg: __hex(fg), bg: __hex(bg), ratio: __ratio(fg, bg) };
+      });
+      checked++;
+      if (cap.fg !== '#ffffff' || cap.ratio < 4.5) { failed++; fails.push(`  FAIL [${name}] --brand: #d04a04 with --white-text-until: 0.18333: --brand-on-solid is ${cap.fg} on ${cap.bg} at ${cap.ratio.toFixed(3)}:1, expected white at 4.5:1 or more`); }
+    }
     for (const e of errors) { failed++; fails.push(`  FAIL [${name}] page error: ${e}`); }
     fails.slice(0, 200).forEach(f => console.log(f));
     if (fails.length > 200) console.log(`  … and ${fails.length - 200} more`);
