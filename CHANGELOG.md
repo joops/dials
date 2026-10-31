@@ -1,12 +1,17 @@
 # Changelog
 
+## 0.1.2
+
+### Fixed
+
+- **`--white-text-until` was capped at 0.183, short of where white text stops passing.** White keeps 4.5:1 up to a luminance of 1.05 / 4.5 − 0.05 = 0.18333, so a fill between the two, such as `#d04a04` (luminance 0.18316: white 4.503:1, black 4.663:1), couldn't keep white text. The cap is now 0.18333, and the contrast check tests that fill. The default stays at 0.179.
+
 ## 0.1.1
 
 ### Fixed
 
 - **The fallback for older browsers forced the house theme on every site.** In a browser without relative colour (iOS 16 and 17, Safari before 18, Chrome and Edge before 119, Firefox before 128), every page showed Dials' orange Hi-Fi colours whatever its dials said: the fallback block set the colour dials themselves, at a higher specificity than a site's own, and flat values for every token. It now never sets a dial. For browsers with `color-mix()`, it works every colour token out again from the site's dials with `color-mix()` alone, so a site's colours, theme, exact paper and ink and `[data-dials]` scopes apply, and `.is-dark` bands are dark. It sits at the end of `dials.css` with the same selectors as the derived chain, so it wins over the chain there while a site's own file still wins over it. Button text is a fixed white or black per group there, with the fill pulled a fixed amount to keep 4.5:1 in every theme.
 - The fallback now also covers Chrome and Edge 119–122, which have relative colour but not `light-dark()`: its `@supports` asks for both.
-- **`--white-text-until` was capped at 0.183, short of where white text stops passing.** White keeps 4.5:1 up to a luminance of 1.05 / 4.5 − 0.05 = 0.18333, so a fill between the two, such as `#d04a04` (luminance 0.18316: white 4.503:1, black 4.663:1), couldn't keep white text. The cap is now 0.18333, and the contrast check tests that fill. The default stays at 0.179.
 
 ### Changed
 
