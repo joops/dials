@@ -486,7 +486,7 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
     <li><b>Size everything from the scale</b>: <code>--size-*</code> for every text size, <code>--space-*</code> for every gap, a pair such as <code>--space-s-l</code> where a gap should grow more than the text does, <code>--radius-*</code> for corners and <code>--border-width-*</code> for borders. It's Utopia's method, so Utopia's guides apply; there's just no calculator step.</li>
     <li><b>Give your agents the rules below</b> and run the contrast check in CI.</li>
   </ol>
-  <p class="lede">Needs <code>color-mix()</code>, <code>light-dark()</code> and relative colour: Chrome and Edge 123+, Safari 18+, Firefox 128+. Older browsers get a built-in fallback: the Hi-Fi theme as flat colours, light only. Don't register these properties with <code>@property</code>: they must work out their colour where they're used, which is what makes dark bands work.</p>
+  <p class="lede">Needs <code>color-mix()</code>, <code>light-dark()</code> and relative colour: Chrome and Edge 123+, Safari 18+, Firefox 128+. Older browsers get a built-in fallback: with <code>color-mix()</code> (Safari 16.2+, so iOS 16 and 17, Chrome 111+, Firefox 113+) it follows your dials in a light page, with dark bands; before that, the Hi-Fi theme as flat colours. Don't register these properties with <code>@property</code>: they must work out their colour where they're used, which is what makes dark bands work.</p>
 </section>
 
 <section>
@@ -783,7 +783,7 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
   }
   function cssText() { return exportMode === 'theme' ? themeText() : fullText(); }
   var NOTES = { theme: 'Your dials as a theme: save it as your own stylesheet and load it after dials.css. This is the way to use Dials.',
-    full: 'The whole of Dials with your dials built in as its defaults, for a project that wants one file. It leaves out the fallback for older browsers, which only knows the Hi-Fi theme.' };
+    full: 'The whole of Dials with your dials built in as its defaults, for a project that wants one file. It leaves out the fallback for older browsers: load dials.css before it if you need that.' };
   document.querySelectorAll('[data-export]').forEach(function (b) { b.addEventListener('click', function () {
     exportMode = b.dataset.export;
     document.querySelectorAll('[data-export]').forEach(function (x) { x.setAttribute('aria-pressed', x === b); });

@@ -19,10 +19,12 @@ jobs:
         run: |
           npm install --no-audit --no-fund
           npx playwright install --with-deps chromium firefox
-      - name: Fallback is up to date
+      - name: Last-resort fallback is up to date
         run: node tools/fallback.mjs --check
       - name: Contrast (Chromium and Firefox)
         run: node checks/contrast.mjs
+      - name: Contrast in the fallback for older browsers
+        run: node checks/contrast.mjs --fallback
       - name: Scoping, specificity and fallback
         run: node checks/scoping.mjs
       - name: Playground

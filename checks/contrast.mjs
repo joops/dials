@@ -3,15 +3,26 @@
 // random dials) on a test page served over HTTP, in Chromium and Firefox, and measures every
 // pairing Dials promises, in a light page, a dark page and an .is-dark band inside a light page.
 // Exits 1 on any failure not listed in checks/exceptions.json.
+// --fallback measures the fallback for older browsers instead (emulated: see emulateFallback in
+// lib.mjs), in a light page and an .is-dark band, as the fallback has no dark page.
 //
-//   node checks/contrast.mjs [--browser=chromium|firefox] [--random=40] [--seed=1] [--verbose]
+//   node checks/contrast.mjs [--fallback] [--browser=chromium|firefox] [--random=40] [--seed=1] [--verbose]
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { serve, launch, pageHelpers, ROOT } from './lib.mjs';
+import { serve, launch, pageHelpers, emulateFallback, ROOT } from './lib.mjs';
 
 const args = Object.fromEntries(process.argv.slice(2).map(a => { const [k, v] = a.replace(/^--/, '').split('='); return [k, v ?? true]; }));
 const BROWSERS = args.browser ? [args.browser] : ['chromium', 'firefox'];
 const RANDOM = +(args.random ?? 40), SEED = +(args.seed ?? 1);
+const MODE = args.fallback ? 'fallback' : 'normal';
+const SCHEMES = [['light', 'light', 'page'], ['dark', 'dark', 'page'], ['band', 'light', 'band']].filter(s => MODE === 'normal' || s[0] !== 'dark');
+let emulated = null;
+if (MODE === 'fallback') {
+  const r = emulateFallback(readFileSync(join(ROOT, 'dials.css'), 'utf8'));
+  if (!r.patched['@supports color-mix']) { console.error('contrast.mjs: dials.css has no fallback block to test'); process.exit(1); }
+  console.log('fallback mode, emulated, patched: ' + Object.entries(r.patched).filter(([, n]) => n).map(([k, n]) => `${k} ×${n}`).join(', '));
+  emulated = r.css;
+}
 const GROUPS = ['brand', 'accent', 'neutral', 'success', 'warning', 'danger', 'info'];
 const TEXT = ['--text-strong', '--text', '--text-muted', '--text-quiet', '--link', '--link-hover'];
 const SURFACES = ['--surface', '--surface-raised', '--surface-lowered'];
@@ -65,13 +76,13 @@ const PROBES = [...new Set(pairs(true).flat().filter(x => typeof x === 'string' 
 const page = (url) => {
   const theme = url.searchParams.get('theme');
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>contrast</title>
-<link rel="stylesheet" href="/dials.css"><link rel="stylesheet" href="/dials-base.css">
+${emulated ? `<style>${emulated}</style>` : '<link rel="stylesheet" href="/dials.css">'}<link rel="stylesheet" href="/dials-base.css">
 ${theme ? `<link rel="stylesheet" href="/themes/${theme}.css">` : ''}<style id="dials"></style></head>
 <body><div id="page" style="color: rgb(1, 2, 3)"></div><div class="is-dark"><div id="band" style="color: rgb(1, 2, 3)"></div></div></body></html>`;
 };
 
 async function measure(p, dialsCss, withGradient) {
-  return p.evaluate(({ probes, list, dialsCss, opaque }) => {
+  return p.evaluate(({ probes, list, dialsCss, opaque, schemes }) => {
     document.getElementById('dials').textContent = dialsCss || '';
     const out = [];
     const read = (box) => {
@@ -84,7 +95,7 @@ async function measure(p, dialsCss, withGradient) {
       }
       return c;
     };
-    for (const [scheme, root, box] of [['light', 'light', 'page'], ['dark', 'dark', 'page'], ['band', 'light', 'band']]) {
+    for (const [scheme, root, box] of schemes) {
       document.documentElement.style.colorScheme = root;
       const c = read(document.getElementById(box));
       for (const [fg, bg, min, kind] of list) {
@@ -96,11 +107,11 @@ async function measure(p, dialsCss, withGradient) {
       }
     }
     return out;
-  }, { probes: PROBES, list: pairs(withGradient), dialsCss, opaque: [...OPAQUE] });
+  }, { probes: PROBES, list: pairs(withGradient), dialsCss, opaque: [...OPAQUE], schemes: SCHEMES });
 }
 
 const exceptions = JSON.parse(readFileSync(join(ROOT, 'checks/exceptions.json'), 'utf8')).exceptions || [];
-const excepted = (browser, input, r) => exceptions.find(e =>
+const excepted = (browser, input, r) => exceptions.find(e => (e.mode ?? 'normal') === MODE &&
   [browser, '*'].includes(e.browser ?? '*') && (e.input === '*' || e.input === input || (e.input.endsWith('*') && input.startsWith(e.input.slice(0, -1))))
   && [r.scheme, '*'].includes(e.scheme ?? '*') && e.pair === `${r.fg} on ${r.bg}`);
 
@@ -119,6 +130,7 @@ try {
     await p.addInitScript(pageHelpers);
     const errors = []; p.on('pageerror', e => errors.push(String(e)));
     let checked = 0, failed = 0, skipped = 0, worst = { ratio: Infinity };
+    const rnd = { checked: 0, failed: 0, sets: new Set() };
     const fails = [];
     let loaded = undefined;
     for (const inp of inputs) {
@@ -126,6 +138,9 @@ try {
       const res = await measure(p, inp.dials ? css(inp.dials) : '', inp.gradient);
       for (const r of res) {
         checked++;
+        const random = inp.name.startsWith('random:');
+        if (random) rnd.checked++;
+        if (random && r.why !== undefined) { rnd.failed++; rnd.sets.add(inp.name); }
         if (r.why === undefined) { if (r.ratio - r.min < worst.ratio - (worst.min || 0)) worst = { ...r, input: inp.name }; continue; }
         const why = r.why || `${r.ratio.toFixed(2)} < ${r.min}`;
         const ex = excepted(name, inp.name, r);
@@ -145,8 +160,9 @@ try {
     for (const e of errors) { failed++; fails.push(`  FAIL [${name}] page error: ${e}`); }
     fails.slice(0, 200).forEach(f => console.log(f));
     if (fails.length > 200) console.log(`  … and ${fails.length - 200} more`);
-    const line = `${name} ${browser.version()}: ${inputs.length} inputs (dials.css, ${themes.length} themes, ${RANDOM} random dial sets, seed ${SEED}) × 3 schemes, ` +
-      `${checked} pairings checked, ${failed} failed, ${skipped} excepted. Tightest pass: ${worst.input} ${worst.scheme} ${worst.fg} on ${worst.bg} ${worst.ratio?.toFixed(2)} (min ${worst.min}).`;
+    const line = `${name} ${browser.version()}${MODE === 'fallback' ? ', fallback' : ''}: ${inputs.length} inputs (dials.css, ${themes.length} themes, ${RANDOM} random dial sets, seed ${SEED}) × ${SCHEMES.length} schemes, ` +
+      `${checked} pairings checked, ${failed} failed, ${skipped} excepted. Tightest pass: ${worst.input} ${worst.scheme} ${worst.fg} on ${worst.bg} ${worst.ratio?.toFixed(2)} (min ${worst.min}).` +
+      (RANDOM ? ` Random dial sets: ${rnd.checked - rnd.failed} of ${rnd.checked} pairings pass (${(100 * (rnd.checked - rnd.failed) / rnd.checked).toFixed(1)}%), ${RANDOM - rnd.sets.size} of ${RANDOM} sets pass in full.` : '');
     summary.push(line);
     if (failed) exitCode = 1;
     await browser.close();

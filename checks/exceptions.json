@@ -1,4 +1,53 @@
 {
-  "$comment": "Known contrast failures the check tolerates. Each entry: browser (chromium, firefox or *), input (dials.css, theme:<name>, random:<n>:<kind>, a prefix ending in *, or *), scheme (light, dark, band or *), pair ('--fg on --bg') and a reason. Keep this short: fix the derivation rather than adding to it.",
-  "exceptions": []
+  "$comment": "Known contrast failures the check tolerates. Each entry: browser (chromium, firefox or *), input (dials.css, theme:<name>, random:<n>:<kind>, a prefix ending in *, or *), scheme (light, dark, band or *), pair ('--fg on --bg'), mode (normal, the default, or fallback: only in the --fallback run) and a reason. Keep this short: fix the derivation rather than adding to it. A theme never gets an exception.",
+  "exceptions": [
+    {
+      "mode": "fallback",
+      "browser": "*",
+      "input": "random:*",
+      "scheme": "*",
+      "pair": "--brand-on-solid on --brand-solid",
+      "reason": "Fallback only: without relative colour, on-solid text can't follow the fill's luminance, so it's always white, with the fill pulled a fixed amount towards the other end. That holds 4.5:1 for every theme but not for extreme random fills (a near-white or yellow brand, say). Normal mode has no exception."
+    },
+    {
+      "mode": "fallback",
+      "browser": "*",
+      "input": "random:*",
+      "scheme": "*",
+      "pair": "--accent-on-solid on --accent-solid",
+      "reason": "Fallback only: without relative colour, on-solid text can't follow the fill's luminance, so it's always white, with the fill pulled a fixed amount towards the other end. That holds 4.5:1 for every theme but not for extreme random fills (a near-white or yellow accent, say). Normal mode has no exception."
+    },
+    {
+      "mode": "fallback",
+      "browser": "*",
+      "input": "random:*",
+      "scheme": "*",
+      "pair": "--danger-on-solid on --danger-solid",
+      "reason": "Fallback only: without relative colour, on-solid text can't follow the fill's luminance, so it's always white, with the fill pulled a fixed amount towards the other end. That holds 4.5:1 for every theme but not for extreme random fills (a near-white or yellow danger, say). Normal mode has no exception."
+    },
+    {
+      "mode": "fallback",
+      "browser": "*",
+      "input": "random:*",
+      "scheme": "*",
+      "pair": "--info-on-solid on --info-solid",
+      "reason": "Fallback only: without relative colour, on-solid text can't follow the fill's luminance, so it's always white, with the fill pulled a fixed amount towards the other end. That holds 4.5:1 for every theme but not for extreme random fills (a near-white or yellow info, say). Normal mode has no exception."
+    },
+    {
+      "mode": "fallback",
+      "browser": "*",
+      "input": "random:*",
+      "scheme": "*",
+      "pair": "--success-on-solid on --success-solid",
+      "reason": "Fallback only: without relative colour, on-solid text can't follow the fill's luminance, so it's always black, with the fill pulled a fixed amount towards the other end. That holds 4.5:1 for every theme but not for extreme random fills (a near-black success, say). Normal mode has no exception."
+    },
+    {
+      "mode": "fallback",
+      "browser": "*",
+      "input": "random:*",
+      "scheme": "*",
+      "pair": "--warning-on-solid on --warning-solid",
+      "reason": "Fallback only: without relative colour, on-solid text can't follow the fill's luminance, so it's always black, with the fill pulled a fixed amount towards the other end. That holds 4.5:1 for every theme but not for extreme random fills (a near-black warning, say). Normal mode has no exception."
+    }
+  ]
 }
