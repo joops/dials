@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Build Dials from its sources. Python 3 standard library only.
 
-Sources (hand-edited):  src/colour.css, src/scale.css, src/base.css,
+Sources (hand-edited):  src/colour.css, src/scale.css, src/base.css, src/fallback.css,
                         presets/{colour,type,space}/*.css, themes.json,
                         the rules section of AGENTS.md
-Generated source:       src/fallback.css (by tools/fallback.mjs)
+Generated source:       src/fallback-flat.css (by tools/fallback.mjs, which needs a browser;
+                        --check fails when its recorded hash of src/colour.css is out of date)
 Outputs:                dials.css, dials-colour.css, dials-scale.css, dials-base.css,
                         themes/*.css, docs/tokens.md, docs/tokens.json,
                         site/presets.js, site/dials*.css, site/dials-base-demo.css, site/favicon.svg
@@ -12,6 +13,7 @@ Outputs:                dials.css, dials-colour.css, dials-scale.css, dials-base
     python3 build.py           write every output
     python3 build.py --check   exit 1 if any output is stale (writes nothing)
 """
+import hashlib
 import json
 import re
 import sys
@@ -171,20 +173,47 @@ def header_comment(src, title):
     return re.sub(r"^(/\* =+\n   )Dials: [^\n]*\n", r"\g<1>" + title + "\n", src, count=1)
 
 
-def dist_files(colour_src, scale_src, base_src, fallback_src, house_link):
+def dist_files(colour_src, scale_src, base_src, fallback_src, flat_src, house_link):
     colour = header_comment(colour_src, "Dials: colour (dials-colour.css)")
     scale = header_comment(scale_src, "Dials: type and space (dials-scale.css)")
     base = header_comment(base_src, "Dials: base (dials-base.css, optional)")
-    fallback = fallback_src.strip() + "\n" if fallback_src.strip() else ""
-    intro = ("/* Dials: an AI-first CSS framework. This file is the fallback for older browsers,\n"
-             "   then dials-colour.css, then dials-scale.css; dials-base.css is optional.\n"
+    intro = ("/* Dials: an AI-first CSS framework. This file is dials-colour.css, then\n"
+             "   dials-scale.css, then the fallback for older browsers; dials-base.css is optional.\n"
              "   Default theme: Hi-Fi. Load its faces with:\n   " + house_link + "\n*/\n")
     return {
         "dials-colour.css": BANNER + colour,
         "dials-scale.css": BANNER + scale,
         "dials-base.css": BANNER + base,
-        "dials.css": BANNER + intro + fallback + colour + scale,
+        "dials.css": BANNER + intro + colour + scale + fallback_src.strip() + "\n" + flat_src.strip() + "\n",
     }
+
+
+NO_FALLBACK = [("relative colour", r"\bfrom\s"), ("light-dark()", r"light-dark\("), ("calc()", r"calc\("),
+               ("gradient interpolation", r"gradient\(\s*in\s")]
+
+
+def validate_fallback(fallback_src, flat_src, colour_src, scale_src):
+    """The fallback blocks use only what older browsers have, never set a dial, and cover every colour token."""
+    rows = documented(colour_src, "dials-colour.css") + documented(scale_src, "dials-scale.css")
+    dials = {r["name"] for r in rows if r["kind"] == "dial"} | {"--paper-light", "--paper-dark", "--ink-light", "--ink-dark"}
+    colour_tokens = [r["name"] for r in documented(colour_src, "dials-colour.css") if r["kind"] == "token"]
+    for name, src in (("src/fallback.css", fallback_src), ("src/fallback-flat.css", flat_src)):
+        body = re.sub(r"@supports[^{]*\{", "", strip_comments(src))
+        for what, pat in NO_FALLBACK:
+            if re.search(pat, body):
+                fail(f"{name} uses {what}, which the browsers it's for don't have")
+        declared = {n for _, b in blocks(body) for n, _ in decls(b)}
+        if declared & dials:
+            fail(f"{name} sets dials {sorted(declared & dials)}: the fallback must leave them to the site")
+        want = colour_tokens if name == "src/fallback.css" else [t for t in colour_tokens if t not in ("--solid", "--on-solid", "--soft", "--on-soft", "--line")]
+        missing = [t for t in want if t not in declared]
+        if missing and not (name == "src/fallback-flat.css" and flat_stale(flat_src, colour_src)):
+            fail(f"{name} doesn't declare {missing}")
+
+
+def flat_stale(flat_src, colour_src):
+    m = re.search(r"\(src/colour\.css ([0-9a-f]{16})\)", flat_src)
+    return not m or m.group(1) != hashlib.sha256(colour_src.encode("utf-8")).hexdigest()[:16]
 
 
 def theme_file(key, t, presets, table):
@@ -332,7 +361,7 @@ THEMES = json.loads(read("themes.json"))["themes"]
 
 def build():
     colour_src, scale_src, base_src = read("src/colour.css"), read("src/scale.css"), read("src/base.css")
-    fallback_src = read("src/fallback.css") if (ROOT / "src/fallback.css").exists() else ""
+    fallback_src, flat_src = read("src/fallback.css"), read("src/fallback-flat.css")
     presets = load_presets()
     validate_presets(presets)
     for key, t in THEMES.items():
@@ -340,10 +369,11 @@ def build():
             if t[k] not in presets[k]:
                 fail(f"themes.json: {key} names a missing {k} preset '{t[k]}'")
     validate_defaults(presets, colour_src, scale_src)
+    validate_fallback(fallback_src, flat_src, colour_src, scale_src)
     table = gf_table()
     house_link = fonts_link(presets["type"][THEMES["hi-fi"]["type"]]["dials"], table)
 
-    out = dist_files(colour_src, scale_src, base_src, fallback_src, house_link)
+    out = dist_files(colour_src, scale_src, base_src, fallback_src, flat_src, house_link)
     for name in list(out):
         out["site/" + name] = out[name]
     for key, t in THEMES.items():
@@ -353,21 +383,23 @@ def build():
     rows = documented(colour_src, "dials-colour.css") + documented(scale_src, "dials-scale.css")
     out["site/presets.js"] = presets_js(presets, table, [r["name"] for r in rows if r["kind"] in ("dial", "override")])
     out["docs/tokens.md"], out["docs/tokens.json"] = token_reference(colour_src, scale_src)
-    return out
+    return out, flat_stale(flat_src, colour_src)
 
 
 def main():
     check = "--check" in sys.argv[1:]
-    out = build()
+    out, flat_is_stale = build()
     stale = [p for p, text in out.items()
              if not (ROOT / p).exists() or (ROOT / p).read_text(encoding="utf-8") != text]
     orphans = [str(f.relative_to(ROOT)) for f in (ROOT / "themes").glob("*.css") if f"themes/{f.name}" not in out]
     if check:
-        if stale or orphans:
+        if stale or orphans or flat_is_stale:
             for p in stale:
                 print(f"stale: {p}")
             for p in orphans:
                 print(f"not generated (remove it, or add it to themes.json): {p}")
+            if flat_is_stale:
+                print("stale: src/fallback-flat.css (src/colour.css changed). Run: python3 build.py && node tools/fallback.mjs && python3 build.py")
             print("Run: python3 build.py")
             sys.exit(1)
         print(f"build.py --check: {len(out)} generated files are up to date (v{VERSION})")
@@ -380,6 +412,8 @@ def main():
     for p in orphans:
         print(f"warning: {p} isn't in themes.json")
     print(f"{len(stale)} of {len(out)} files changed (v{VERSION})")
+    if flat_is_stale:
+        print("warning: src/fallback-flat.css is stale (src/colour.css changed). Now run: node tools/fallback.mjs && python3 build.py")
 
 
 if __name__ == "__main__":

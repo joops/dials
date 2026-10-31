@@ -58,3 +58,26 @@ export function pageHelpers() {
   window.__ratio = (a, b) => { const x = __lum(a), y = __lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
   window.__hex = (rgb) => '#' + rgb.slice(0, 3).map(v => v.toString(16).padStart(2, '0')).join('');
 }
+
+// Emulates an older browser on dials.css's text, for the checks' fallback modes. Turns the fallback
+// blocks' @supports on, then breaks what such a browser lacks everywhere else, so a declaration that
+// relies on it is invalid exactly as it would be there. 'color-mix' also breaks color-mix(), for the
+// last resort. Returns the patched text and how many of each it patched, so a caller can see it applied.
+export const FALLBACK_SUPPORTS = {
+  'color-mix': '@supports not ((color: oklch(from red l c h)) and (color: light-dark(red, red)))',
+  flat: '@supports not (color: color-mix(in srgb, red, blue))',
+  'v0.1.0': '@supports not (color: oklch(from red l c h))',
+};
+export function emulateFallback(css, level = 'color-mix') {
+  const patched = {};
+  const sub = (label, re, to) => { let n = 0; css = css.replace(re, (...m) => { n++; return typeof to === 'function' ? to(...m) : to; }); patched[label] = n; };
+  for (const [k, cond] of Object.entries(FALLBACK_SUPPORTS)) {
+    if (k === 'flat' && level !== 'flat') continue;
+    sub(`@supports ${k}`, new RegExp(cond.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '@supports (color: red)');
+  }
+  sub('relative colour', /\b(rgb|hsl|hwb|lab|lch|oklab|oklch|color)\(\s*from\s/g, (_, f) => `${f}(unsupported `);
+  sub('light-dark()', /\blight-dark\(/g, 'unsupported-light-dark(');
+  sub('gradient interpolation', /gradient\(\s*in\s+\w+/g, 'gradient(unsupported');
+  if (level === 'flat') sub('color-mix()', /\bcolor-mix\(/g, 'unsupported-color-mix(');
+  return { css, patched };
+}

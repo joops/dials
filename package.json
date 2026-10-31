@@ -1,6 +1,6 @@
 {
   "name": "@joops/dials",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "Dials: an AI-first CSS framework. A token-based system that derives colour, type and space live in the browser from a few dials.",
   "license": "MIT",
@@ -28,9 +28,10 @@
     "fallback": "node tools/fallback.mjs",
     "check:fallback": "node tools/fallback.mjs --check",
     "check:contrast": "node checks/contrast.mjs",
+    "check:contrast-fallback": "node checks/contrast.mjs --fallback",
     "check:scoping": "node checks/scoping.mjs",
     "check:playground": "node checks/playground.mjs",
-    "check": "python3 build.py --check && node tools/fallback.mjs --check && node checks/contrast.mjs && node checks/scoping.mjs && node checks/playground.mjs",
+    "check": "python3 build.py --check && node tools/fallback.mjs --check && node checks/contrast.mjs && node checks/contrast.mjs --fallback && node checks/scoping.mjs && node checks/playground.mjs",
     "serve": "python3 -m http.server 8000"
   },
   "devDependencies": {
