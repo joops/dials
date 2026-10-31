@@ -4,11 +4,11 @@
 
 **Try it:** [joops.github.io/dials](https://joops.github.io/dials/), the playground. Turn the dials, pick a theme, and copy the CSS.
 
-Dials is a token-based system designed to produce a huge diversity of looks from only a few dials: seven colours, a handful of type and space settings, three font faces and a corner radius. Everything else is derived from these values using plain CSS, live in the browser: every surface, text level, border, gradient and colour group, in light and dark, with contrast checked in CI; and every text and space size, fluid from phone to desktop with no breakpoints.
+Dials is a token-based system designed to produce a huge diversity of looks from only a few dials: seven colours, a handful of type and space settings, three font faces and a corner radius. Everything else is derived from these values using plain CSS, live in the browser: every surface, text level, border and colour group, in light and dark, with contrast checked in CI; and every text and space size, fluid from phone to desktop with no breakpoints.
 
 Other calculators and systems generate colours, type and space once, as fixed values, which limits what a theme can change on a live site. Dials derives all three dynamically from the values you define, so a theme can change the whole look of a page or app: its colours, type scale, spacing, faces and corners.
 
-AI-first means an agent gets a short set of rules and a small set of tokens, so it can build a theme quickly and stay within the guidelines, and you can riff on it in real time to dial in the perfect look for your new project. The rules are in [AGENTS.md](AGENTS.md); every token is listed in [docs/tokens.md](docs/tokens.md).
+AI-first means an agent gets a short set of rules and a small set of tokens, so it can build a theme quickly and stay within the guidelines, and you can riff on it in real time to dial in the perfect look for your new project. The rules are in [AGENTS.md](AGENTS.md): copy the rules block into your project's own `AGENTS.md` or `CLAUDE.md`. It names no tokens, so it doesn't change between minor versions unless the CHANGELOG says so; every name is in [docs/tokens.md](docs/tokens.md), for the version you use.
 
 ## Quick start
 
@@ -26,7 +26,7 @@ AI-first means an agent gets a short set of rules and a small set of tokens, so 
 /* site.css */
 :root {
   --brand: hsl(262 70% 52%);
-  --accent: hsl(172 60% 40%);
+  --secondary: hsl(172 60% 40%);
   --radius-base: 8;
 }
 .btn { background: var(--solid); color: var(--on-solid); padding: var(--space-2xs) var(--space-s);
@@ -49,12 +49,13 @@ Each theme loads its own faces: the link at the top of `themes/<name>.css` cover
 
 ## How it works
 
-- **Dials** are the only values you type: `--brand`, `--accent`, `--success`, `--warning`, `--danger`, `--info` and `--grey` (any CSS colour, preferably HSL), a few numbers (`--balance`, `--tint-strength`, `--text-contrast` …), the type and space dials (`--size-min`/`--size-max`, `--ratio-min`/`--ratio-max`, `--space-density`, `--radius-base` …) and the faces (`--font-body`, `--font-heading`, `--font-mono`).
+- **Dials** are the only values you type: `--brand`, `--secondary`, `--success`, `--warning`, `--danger`, `--info` and `--grey` (any CSS colour, preferably HSL), a few numbers (`--balance`, `--tint-strength`, `--text-contrast` …), the type and space dials (`--size-min`/`--size-max`, `--ratio-min`/`--ratio-max`, `--space-density`, `--radius-base` …) and the faces (`--font-body`, `--font-heading`, `--font-mono`).
 - **Paper and ink** (the page background and the strongest text) are derived from `--grey` at four lightness dials. To use exact colours, set `--paper-light`, `--paper-dark`, `--ink-light` or `--ink-dark`.
-- **Tokens** are worked out from the dials: `--surface*`, `--text*`, `--border*`, `--focus`, `--shadow-*`, seven colour groups with five roles each (`--brand-solid`, `--brand-on-solid`, `--brand-soft`, `--brand-on-soft`, `--brand-line` …), gradients, and every `--size-*`, `--space-*` and `--radius-*`. Internal plumbing is prefixed `--dl-`; don't use it.
+- **Tokens** are worked out from the dials: `--surface*`, `--text*`, `--border*`, `--focus`, `--shadow-*`, seven colour groups with five roles each (`--brand-solid`, `--brand-on-solid`, `--brand-soft`, `--brand-on-soft`, `--brand-line` …), and every `--size-*`, `--space-*` and `--radius-*`. Internal plumbing is prefixed `--dl-`; don't use it.
 - **Groups**: components use the ungrouped `--solid`, `--on-solid`, `--soft`, `--on-soft` and `--line`; a class such as `.is-danger` points them at a group.
 - **Light and dark**: `dials.css` sets `:root { color-scheme: light dark; }`, so the page follows the visitor. To force one, set `:root { color-scheme: light; }` (or `dark`) in your own file. `class="is-dark"` makes any band dark; `class="is-light"` makes one light. Themes never set the scheme.
-- **Contrast**: text tokens keep 4.5:1 on every surface, button text is white or black (whichever contrasts more), and focus rings and control borders keep 3:1, in light and dark. The contrast check verifies it for every theme and 40 sets of extreme random dials, in Chromium and Firefox.
+- **Contrast**: text tokens keep 4.5:1 on every surface, button text is white or black (whichever contrasts more), each group's `-line` (borders, icons and large text) keeps 3:1, and focus rings and control borders keep 3:1, in light and dark. Coloured text and lines keep your colour and move only as far as their target needs: a teal that already gives 5:1 on white stays exactly as set, and one that doesn't is darkened (or, in dark, lightened) just past the line, keeping its hue and saturation. The contrast check verifies it for every theme and 40 sets of extreme random dials, in Chromium and Firefox, and fails a colour that moves further than it needs.
+- **Patterns, not tokens**: Dials has a token only where it works something out or guarantees something. Anything you can build from tokens, such as a gradient, is a pattern: [docs/tokens.md](docs/tokens.md#patterns) shows how (a wash between two soft tints carries body text; a band from a solid is decoration only).
 
 ## Scoping: re-theme part of a page
 
@@ -66,7 +67,7 @@ Dials live on `:root`, but the derived tokens are also declared on any element w
 </aside>
 ```
 
-It works for any dial, from a class too (`.promo { --brand: … }` on an element that has `data-dials`). One caveat: a dial whose value points at a token, such as `--gradient-from: var(--brand-solid)` or `--space-min: var(--size-min)`, is resolved where it's set. If a scope changes the brand and should change its gradient too, set the gradient stops on the scope as well. For Shadow DOM, the dials and the derived tokens are also declared on `:host`, so `dials.css` adopted inside a shadow root applies to it (not yet covered by the checks).
+It works for any dial, from a class too (`.promo { --brand: … }` on an element that has `data-dials`). One caveat: a dial whose value points at a token, such as `--space-min: var(--size-min)`, is resolved where it's set. If a scope changes what it points at, set that dial on the scope as well. For Shadow DOM, the dials and the derived tokens are also declared on `:host`, so `dials.css` adopted inside a shadow root applies to it (not yet covered by the checks).
 
 ## Files
 
@@ -107,7 +108,7 @@ Dials needs `color-mix()`, `light-dark()` and relative colour: Chrome and Edge 1
 
 Older browsers get a fallback built into the end of `dials.css`, in two steps:
 
-- **With `color-mix()` but without relative colour or `light-dark()`** (Chrome and Edge 111–122, Safari 16.2–17, which includes iOS 16 and 17, and Firefox 113–127): a block that works every colour token out again from your dials with `color-mix()` alone, so your colours, themes, exact paper and ink, and `[data-dials]` scopes all apply. It's an approximation: the page is light (`.is-dark` bands are still dark); paper and ink come from `--grey` at fixed mixes, so the lightness dials, `--balance`, `--dark-lift`, `--tint-vividness` and `--text-contrast` have no effect; and button text can't switch with the fill, so each group has a fixed choice (white on brand, accent, danger and info, black on success and warning) and its fill is pulled a fixed amount darker or lighter to keep 4.5:1. Every theme passes the contrast check in this mode; with extreme dials of your own, check on-solid text yourself (`node checks/contrast.mjs --fallback` shows how).
+- **With `color-mix()` but without relative colour or `light-dark()`** (Chrome and Edge 111–122, Safari 16.2–17, which includes iOS 16 and 17, and Firefox 113–127): a block that works every colour token out again from your dials with `color-mix()` alone, so your colours, themes, exact paper and ink, and `[data-dials]` scopes all apply. It's an approximation: the page is light (`.is-dark` bands are still dark); paper and ink come from `--grey` at fixed mixes, so the lightness dials, `--balance`, `--dark-lift`, `--tint-vividness` and `--text-contrast` have no effect; button text can't switch with the fill, so each group has a fixed choice (white on brand, secondary, danger and info, black on success and warning) and its fill is pulled a fixed amount darker or lighter to keep 4.5:1; and coloured text and lines are the dial mixed a fixed amount into ink, so they hold their contrast but over-shoot it for most colours. Every theme passes the contrast check in this mode; with extreme dials of your own, check on-solid text yourself (`node checks/contrast.mjs --fallback` shows how).
 - **Without `color-mix()` either** (Chrome and Edge before 111, Safari before 16.2, Firefox before 113: 2022 and older): flat colours, the Hi-Fi house theme in light, generated by `tools/fallback.mjs` from the built file. Colour dials have no effect there, but every token is a valid colour, so pages stay readable and buttons stay visible.
 
 Type and space work as normal in both. Your own file, loaded after `dials.css`, still wins over the fallback, so set dials there as usual.
@@ -122,7 +123,7 @@ Don't register the tokens with `@property`: they must work out their colour wher
 
 ## Contributing
 
-The hand-edited sources are `src/colour.css`, `src/scale.css`, `src/base.css`, `src/fallback.css`, `presets/*/*.css` and `themes.json`; everything in the file list above that sits at the root, in `themes/`, `docs/` or `site/` (except `site/index.html`) is generated.
+The hand-edited sources are `src/colour.css`, `src/scale.css`, `src/base.css`, `src/fallback.css`, `src/patterns.md`, `presets/*/*.css` and `themes.json`; everything in the file list above that sits at the root, in `themes/`, `docs/` or `site/` (except `site/index.html`) is generated.
 
 ```sh
 python3 build.py              # build

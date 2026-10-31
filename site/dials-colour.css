@@ -1,9 +1,9 @@
-/*! Dials v0.1.2 | MIT | https://github.com/joops/dials */
+/*! Dials v0.2.0 | MIT | https://github.com/joops/dials */
 /* ============================================================
    Dials: colour (dials-colour.css)
    Dials: seven colours and a few numbers, the only typed values.
-   Derived: surfaces, text, lines, groups and gradients, worked out
-   live with color-mix() and relative colour, in light and dark.
+   Derived: surfaces, text, lines and groups, worked out live with
+   color-mix() and relative colour, in light and dark.
    Groups: .is-{group} points the ungrouped tokens at a group.
    Dials live on :root (and :host); the derived chain is declared on
    :root, [data-dials] and :host, so setting a dial on any
@@ -14,13 +14,13 @@
    ============================================================ */
 :root, :host {
   /* ---- Colour dials: any CSS colour, preferably HSL ---- */
-  --brand:   #f39c12;  /* the main colour: links, focus, primary buttons */
-  --accent:  #2ec4b6;  /* a second colour for highlights */
-  --success: #3fbf55;  /* status: done, saved, live */
-  --warning: #f2c230;  /* status: check this */
-  --danger:  #e0322b;  /* status: errors and destructive actions */
-  --info:    #3b82c4;  /* status: neutral news */
-  --grey:    hsl(42 7% 50%);  /* the hue and strength of the tint in paper and ink */
+  --brand:     #f39c12;  /* the main colour: links, focus, primary buttons */
+  --secondary: #2ec4b6;  /* a second colour: highlights and secondary actions (was --accent) */
+  --success:   #3fbf55;  /* status: done, saved, live */
+  --warning:   #f2c230;  /* status: check this */
+  --danger:    #e0322b;  /* status: errors and destructive actions */
+  --info:      #3b82c4;  /* status: neutral news */
+  --grey:      hsl(42 7% 50%);  /* the hue and strength of the tint in paper and ink */
 
   /* ---- Number dials ---- */
   --balance: 0;              /* 1: every fill at --fill-lightness, so they carry equal weight. 0: exactly as set */
@@ -38,11 +38,6 @@
   --paper-dark-lightness: 0.186;  /* page background in dark */
   --ink-lightness: 0.213;         /* strongest text in light */
   --ink-dark-lightness: 0.934;    /* strongest text in dark */
-
-  /* ---- Gradient dials: two stops, any colour or group token, and an angle ---- */
-  --gradient-from:  var(--brand-solid);   /* the first stop */
-  --gradient-to:    var(--danger-solid);  /* the second stop */
-  --gradient-angle: 90deg;                /* the direction of both gradients */
 }
 
 /* Follow the visitor's light or dark setting. To force one, set
@@ -59,18 +54,19 @@
   --dl-ink:   light-dark(var(--dl-ink-light), var(--dl-ink-dark));
   --dl-paper-grey: oklch(from var(--dl-paper) l 0 h);  /* paper without its tint: soft tints mix into this, so they keep their own hue */
 
-  --dl-brand-base:   oklch(from var(--brand)   calc(l + (var(--fill-lightness) - l) * var(--balance)) c h);
-  --dl-accent-base:  oklch(from var(--accent)  calc(l + (var(--fill-lightness) - l) * var(--balance)) c h);
-  --dl-success-base: oklch(from var(--success) calc(l + (var(--fill-lightness) - l) * var(--balance)) c h);
-  --dl-warning-base: oklch(from var(--warning) calc(l + (var(--fill-lightness) - l) * var(--balance)) c h);
-  --dl-danger-base:  oklch(from var(--danger)  calc(l + (var(--fill-lightness) - l) * var(--balance)) c h);
-  --dl-info-base:    oklch(from var(--info)    calc(l + (var(--fill-lightness) - l) * var(--balance)) c h);
-  --dl-brand:   light-dark(var(--dl-brand-base), oklch(from var(--dl-brand-base) calc(l + var(--dark-lift)) c h));
-  --dl-accent:  light-dark(var(--dl-accent-base), oklch(from var(--dl-accent-base) calc(l + var(--dark-lift)) c h));
-  --dl-success: light-dark(var(--dl-success-base), oklch(from var(--dl-success-base) calc(l + var(--dark-lift)) c h));
-  --dl-warning: light-dark(var(--dl-warning-base), oklch(from var(--dl-warning-base) calc(l + var(--dark-lift)) c h));
-  --dl-danger:  light-dark(var(--dl-danger-base), oklch(from var(--dl-danger-base) calc(l + var(--dark-lift)) c h));
-  --dl-info:    light-dark(var(--dl-info-base), oklch(from var(--dl-info-base) calc(l + var(--dark-lift)) c h));
+  --dl-secondary-dial: var(--accent, var(--secondary));  /* --accent is --secondary's old name: while a site still sets it, it wins */
+  --dl-brand-base:     oklch(from var(--brand)              calc(l + (var(--fill-lightness) - l) * var(--balance)) c h);
+  --dl-secondary-base: oklch(from var(--dl-secondary-dial)  calc(l + (var(--fill-lightness) - l) * var(--balance)) c h);
+  --dl-success-base:   oklch(from var(--success)            calc(l + (var(--fill-lightness) - l) * var(--balance)) c h);
+  --dl-warning-base:   oklch(from var(--warning)            calc(l + (var(--fill-lightness) - l) * var(--balance)) c h);
+  --dl-danger-base:    oklch(from var(--danger)             calc(l + (var(--fill-lightness) - l) * var(--balance)) c h);
+  --dl-info-base:      oklch(from var(--info)               calc(l + (var(--fill-lightness) - l) * var(--balance)) c h);
+  --dl-brand:     light-dark(var(--dl-brand-base), oklch(from var(--dl-brand-base) calc(l + var(--dark-lift)) c h));
+  --dl-secondary: light-dark(var(--dl-secondary-base), oklch(from var(--dl-secondary-base) calc(l + var(--dark-lift)) c h));
+  --dl-success:   light-dark(var(--dl-success-base), oklch(from var(--dl-success-base) calc(l + var(--dark-lift)) c h));
+  --dl-warning:   light-dark(var(--dl-warning-base), oklch(from var(--dl-warning-base) calc(l + var(--dark-lift)) c h));
+  --dl-danger:    light-dark(var(--dl-danger-base), oklch(from var(--dl-danger-base) calc(l + var(--dark-lift)) c h));
+  --dl-info:      light-dark(var(--dl-info-base), oklch(from var(--dl-info-base) calc(l + var(--dark-lift)) c h));
 
   /* ---- Surfaces ---- */
   --surface:         var(--dl-paper);                                            /* the page background */
@@ -85,14 +81,14 @@
   --text-muted:    color-mix(in oklab, var(--dl-ink) calc(70% + var(--text-contrast) * 1%), var(--dl-paper));    /* secondary text */
   --text-quiet:    color-mix(in oklab, var(--dl-ink) calc(64% + var(--text-contrast) * 1.2%), var(--dl-paper));  /* captions, dates, placeholders */
   --text-disabled: color-mix(in oklab, var(--dl-ink) 38%, var(--dl-paper));                                /* disabled controls: exempt from contrast rules */
-  --link:          var(--brand-on-soft);                                                                  /* links */
-  --link-hover:    light-dark(oklch(from var(--dl-brand) min(l, 0.36) c h), oklch(from var(--dl-brand) max(l, 0.88) c h));  /* links on hover: a step stronger */
+  --link:          var(--brand-on-soft);                                                                  /* links: 4.5:1 on every surface */
+  --link-hover:    light-dark(color(from var(--dl-brand-hover) srgb-linear calc(r * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) calc(g * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) calc(b * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) / 1), color(from color(from var(--dl-brand-hover) srgb-linear min(1, r * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) min(1, g * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) min(1, b * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) / alpha) srgb-linear calc(r + (1 - r) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) calc(g + (1 - g) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) calc(b + (1 - b) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) / 1));  /* links on hover: a step stronger (the link 0.08 darker in OKLCH lightness in light, lighter in dark), and on to 7:1 if that's short */
 
   /* ---- Lines and effects ---- */
   --border-quiet:  color-mix(in oklab, var(--dl-ink) 7%, var(--dl-paper));   /* dividers that should barely show */
   --border:        color-mix(in oklab, var(--dl-ink) 13%, var(--dl-paper));  /* card and table borders: decorative */
   --border-strong: color-mix(in oklab, var(--dl-ink) calc(46% + var(--text-contrast) * 1%), var(--dl-paper));  /* field and control borders: 3:1 on surfaces */
-  --focus:         var(--brand-on-soft);                                     /* the focus ring: opaque, 3:1 or more on surfaces */
+  --focus:         var(--brand-on-soft);                                     /* the focus ring: opaque, 4.5:1 on surfaces */
   --selection:     color-mix(in oklab, var(--dl-brand) 22%, var(--dl-paper));  /* selected text background */
   --shadow-color:  light-dark(color-mix(in oklab, black 10%, transparent), color-mix(in oklab, black 45%, transparent));  /* the colour of shadows */
   --shadow-s: 0 1px 3px var(--shadow-color);    /* a slight lift: buttons, chips */
@@ -104,25 +100,56 @@
   --mix-hover:  oklch(from currentColor calc(1 - l) c h) 12%;  /* hover: away from the text colour */
   --mix-active: oklch(from currentColor calc(1 - l) c h) 22%;  /* pressed: further still */
 
-  /* ---- Groups: brand, accent, neutral, success, warning, danger, info. Five roles each:
+  /* ---- Groups: brand, secondary, neutral, success, warning, danger, info. Five roles each:
      solid      a solid fill
      on-solid   text on it: white or black, whichever contrasts more (its sRGB luminance, as painted, vs --white-text-until)
      soft       a tinted background: the colour, held at L 0.7 or lighter in light (0.6 or darker in dark), mixed in OKLab
                 into paper with its own tint taken out, so a blue soft stays blue on cream paper
-     on-soft    text on soft, and coloured text on the page: the hue held below L 0.45 in light, above 0.8 in dark,
-                clipped to sRGB and held again, so a colour outside sRGB can't paint lighter than the limit
-     line       a border in the group's colour ---- */
+     on-soft    text on soft, and coloured text on the page: the fill, moved only as far as 4.5:1 needs
+     line       borders, icons and large text (24px, or 18.66px bold, and up): the dial, moved only as far as 3:1 needs
+
+     Coloured text and lines follow one rule: keep the colour, and move it only as far as its
+     contrast target needs, on the least contrasting background it sits on: its own soft tint,
+     --surface-lowered or --surface-raised (--surface always lies between them). Only its
+     linear-light RGB is scaled, which keeps the channels' ratios, so hue and saturation stay
+     (in dark, until a channel reaches 1).
+     --link-hover is the same rule at 7:1, starting from the link a step stronger.
+       Y   the colour's luminance, 0.2126 r + 0.7152 g + 0.0722 b in linear sRGB (clipped to sRGB first)
+       Yb  that background's luminance, as painted (clipped to sRGB)
+       T   the target, plus 0.1 headroom so painting in 8 bits can't round it under the line
+       light: Yt = (Yb + 0.05) / (T + 0.1) - 0.05; scale r, g and b by min(1, Yt / Y)
+       dark:  Yt = (T + 0.1) * (Yb + 0.05) - 0.05; scale r, g and b by max(1, Yt / Y), each capped
+              at 1; if a capped channel leaves it short, mix towards white only as far as Yt needs:
+              by (Yt - Y1) / (1 - Y1), where Y1 is the luminance after scaling
+     A colour that already passes keeps its exact value. CSS works out a relative colour from
+     one colour's channels only, so the steps carry their numbers in colours:
+       --dl-surfaces-y       the luminance of --surface-lowered in green, of --surface-raised in blue
+       --dl-{group}-under    plus the soft tint's in red, mixed 50/50: Yb is min(2r, 4g, 4b) in light, max in dark
+       --dl-{group}-text,    the colour, mixed 50/50 with a black whose alpha is s Yt, where s is 3 in
+       --dl-{group}-line,    light (Yt is at most 0.29 there) and 1 in dark: scaling it up means Firefox
+       --dl-brand-hover      rounding a mix's alpha to three decimals costs a third as much. Mixing
+                             premultiplies, so the mix has alpha a = (1 + s Yt) / 2 and channels c / 2a:
+                             the colour's channels are r * 2a, and Yt is (2a - 1) / s
+       on-soft, line, hover  unpack both and scale, as above ---- */
+  --dl-surfaces-y: color-mix(in srgb-linear, color(from var(--surface-lowered) srgb-linear 0 calc(0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1)) 0), color(from var(--surface-raised) srgb-linear 0 0 calc(0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))));
+
+--dl-brand-under: color-mix(in srgb-linear, color(from var(--brand-soft) srgb-linear calc(0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1)) 0 0), var(--dl-surfaces-y));
+  --dl-brand-text:  color-mix(in srgb-linear, color(from var(--dl-brand-base) srgb-linear clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1) / 1), light-dark(color(from var(--dl-brand-under) srgb-linear 0 0 0 / calc(clamp(0, 3 * ((min(2 * r, 4 * g, 4 * b) + 0.05) / (4.5 + 0.1) - 0.05), 1))), color(from var(--dl-brand-under) srgb-linear 0 0 0 / calc(clamp(0, (4.5 + 0.1) * (max(2 * r, 4 * g, 4 * b) + 0.05) - 0.05, 1)))));
+  --dl-brand-line:  color-mix(in srgb-linear, color(from var(--brand) srgb-linear clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1) / 1), light-dark(color(from var(--dl-brand-under) srgb-linear 0 0 0 / calc(clamp(0, 3 * ((min(2 * r, 4 * g, 4 * b) + 0.05) / (3 + 0.1) - 0.05), 1))), color(from var(--dl-brand-under) srgb-linear 0 0 0 / calc(clamp(0, (3 + 0.1) * (max(2 * r, 4 * g, 4 * b) + 0.05) - 0.05, 1)))));
   --brand-solid:    var(--dl-brand);
   --brand-on-solid: color(from var(--dl-brand) srgb-linear calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.18333) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.18333) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.18333) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) / 1);
   --brand-soft:     oklch(from color-mix(in oklab, light-dark(oklch(from var(--dl-brand) max(l, 0.7) c h), oklch(from var(--dl-brand) min(l, 0.6) c h)) var(--tint-strength), var(--dl-paper-grey)) l calc(c * var(--tint-vividness)) h);
-  --brand-on-soft:  light-dark(oklch(from color(from oklch(from var(--dl-brand) min(l, 0.45) c h) srgb clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1)) min(l, 0.45) c h), oklch(from color(from oklch(from var(--dl-brand) max(l, 0.8) c h) srgb clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1)) max(l, 0.8) c h));
-  --brand-line:     color-mix(in oklab, var(--dl-brand) 40%, var(--dl-paper));
+  --brand-on-soft:  light-dark(color(from var(--dl-brand-text) srgb-linear calc(r * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) calc(g * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) calc(b * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) / 1), color(from color(from var(--dl-brand-text) srgb-linear min(1, r * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) min(1, g * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) min(1, b * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) / alpha) srgb-linear calc(r + (1 - r) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) calc(g + (1 - g) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) calc(b + (1 - b) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) / 1));
+  --brand-line:     light-dark(color(from var(--dl-brand-line) srgb-linear calc(r * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) calc(g * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) calc(b * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) / 1), color(from color(from var(--dl-brand-line) srgb-linear min(1, r * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) min(1, g * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) min(1, b * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) / alpha) srgb-linear calc(r + (1 - r) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) calc(g + (1 - g) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) calc(b + (1 - b) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) / 1));
 
-  --accent-solid:    var(--dl-accent);
-  --accent-on-solid: color(from var(--dl-accent) srgb-linear calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.18333) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.18333) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.18333) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) / 1);
-  --accent-soft:     oklch(from color-mix(in oklab, light-dark(oklch(from var(--dl-accent) max(l, 0.7) c h), oklch(from var(--dl-accent) min(l, 0.6) c h)) var(--tint-strength), var(--dl-paper-grey)) l calc(c * var(--tint-vividness)) h);
-  --accent-on-soft:  light-dark(oklch(from color(from oklch(from var(--dl-accent) min(l, 0.45) c h) srgb clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1)) min(l, 0.45) c h), oklch(from color(from oklch(from var(--dl-accent) max(l, 0.8) c h) srgb clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1)) max(l, 0.8) c h));
-  --accent-line:     color-mix(in oklab, var(--dl-accent) 40%, var(--dl-paper));
+  --dl-secondary-under: color-mix(in srgb-linear, color(from var(--secondary-soft) srgb-linear calc(0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1)) 0 0), var(--dl-surfaces-y));
+  --dl-secondary-text:  color-mix(in srgb-linear, color(from var(--dl-secondary-base) srgb-linear clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1) / 1), light-dark(color(from var(--dl-secondary-under) srgb-linear 0 0 0 / calc(clamp(0, 3 * ((min(2 * r, 4 * g, 4 * b) + 0.05) / (4.5 + 0.1) - 0.05), 1))), color(from var(--dl-secondary-under) srgb-linear 0 0 0 / calc(clamp(0, (4.5 + 0.1) * (max(2 * r, 4 * g, 4 * b) + 0.05) - 0.05, 1)))));
+  --dl-secondary-line:  color-mix(in srgb-linear, color(from var(--dl-secondary-dial) srgb-linear clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1) / 1), light-dark(color(from var(--dl-secondary-under) srgb-linear 0 0 0 / calc(clamp(0, 3 * ((min(2 * r, 4 * g, 4 * b) + 0.05) / (3 + 0.1) - 0.05), 1))), color(from var(--dl-secondary-under) srgb-linear 0 0 0 / calc(clamp(0, (3 + 0.1) * (max(2 * r, 4 * g, 4 * b) + 0.05) - 0.05, 1)))));
+  --secondary-solid:    var(--dl-secondary);
+  --secondary-on-solid: color(from var(--dl-secondary) srgb-linear calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.18333) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.18333) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.18333) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) / 1);
+  --secondary-soft:     oklch(from color-mix(in oklab, light-dark(oklch(from var(--dl-secondary) max(l, 0.7) c h), oklch(from var(--dl-secondary) min(l, 0.6) c h)) var(--tint-strength), var(--dl-paper-grey)) l calc(c * var(--tint-vividness)) h);
+  --secondary-on-soft:  light-dark(color(from var(--dl-secondary-text) srgb-linear calc(r * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) calc(g * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) calc(b * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) / 1), color(from color(from var(--dl-secondary-text) srgb-linear min(1, r * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) min(1, g * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) min(1, b * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) / alpha) srgb-linear calc(r + (1 - r) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) calc(g + (1 - g) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) calc(b + (1 - b) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) / 1));
+  --secondary-line:     light-dark(color(from var(--dl-secondary-line) srgb-linear calc(r * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) calc(g * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) calc(b * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) / 1), color(from color(from var(--dl-secondary-line) srgb-linear min(1, r * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) min(1, g * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) min(1, b * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) / alpha) srgb-linear calc(r + (1 - r) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) calc(g + (1 - g) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) calc(b + (1 - b) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) / 1));
 
   --neutral-solid:    var(--dl-ink);
   --neutral-on-solid: var(--dl-paper);
@@ -130,38 +157,42 @@
   --neutral-on-soft:  var(--text);
   --neutral-line:     var(--border);
 
+  --dl-success-under: color-mix(in srgb-linear, color(from var(--success-soft) srgb-linear calc(0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1)) 0 0), var(--dl-surfaces-y));
+  --dl-success-text:  color-mix(in srgb-linear, color(from var(--dl-success-base) srgb-linear clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1) / 1), light-dark(color(from var(--dl-success-under) srgb-linear 0 0 0 / calc(clamp(0, 3 * ((min(2 * r, 4 * g, 4 * b) + 0.05) / (4.5 + 0.1) - 0.05), 1))), color(from var(--dl-success-under) srgb-linear 0 0 0 / calc(clamp(0, (4.5 + 0.1) * (max(2 * r, 4 * g, 4 * b) + 0.05) - 0.05, 1)))));
+  --dl-success-line:  color-mix(in srgb-linear, color(from var(--success) srgb-linear clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1) / 1), light-dark(color(from var(--dl-success-under) srgb-linear 0 0 0 / calc(clamp(0, 3 * ((min(2 * r, 4 * g, 4 * b) + 0.05) / (3 + 0.1) - 0.05), 1))), color(from var(--dl-success-under) srgb-linear 0 0 0 / calc(clamp(0, (3 + 0.1) * (max(2 * r, 4 * g, 4 * b) + 0.05) - 0.05, 1)))));
   --success-solid:    var(--dl-success);
   --success-on-solid: color(from var(--dl-success) srgb-linear calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.18333) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.18333) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.18333) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) / 1);
   --success-soft:     oklch(from color-mix(in oklab, light-dark(oklch(from var(--dl-success) max(l, 0.7) c h), oklch(from var(--dl-success) min(l, 0.6) c h)) var(--tint-strength), var(--dl-paper-grey)) l calc(c * var(--tint-vividness)) h);
-  --success-on-soft:  light-dark(oklch(from color(from oklch(from var(--dl-success) min(l, 0.45) c h) srgb clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1)) min(l, 0.45) c h), oklch(from color(from oklch(from var(--dl-success) max(l, 0.8) c h) srgb clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1)) max(l, 0.8) c h));
-  --success-line:     color-mix(in oklab, var(--dl-success) 40%, var(--dl-paper));
+  --success-on-soft:  light-dark(color(from var(--dl-success-text) srgb-linear calc(r * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) calc(g * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) calc(b * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) / 1), color(from color(from var(--dl-success-text) srgb-linear min(1, r * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) min(1, g * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) min(1, b * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) / alpha) srgb-linear calc(r + (1 - r) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) calc(g + (1 - g) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) calc(b + (1 - b) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) / 1));
+  --success-line:     light-dark(color(from var(--dl-success-line) srgb-linear calc(r * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) calc(g * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) calc(b * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) / 1), color(from color(from var(--dl-success-line) srgb-linear min(1, r * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) min(1, g * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) min(1, b * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) / alpha) srgb-linear calc(r + (1 - r) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) calc(g + (1 - g) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) calc(b + (1 - b) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) / 1));
 
+  --dl-warning-under: color-mix(in srgb-linear, color(from var(--warning-soft) srgb-linear calc(0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1)) 0 0), var(--dl-surfaces-y));
+  --dl-warning-text:  color-mix(in srgb-linear, color(from var(--dl-warning-base) srgb-linear clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1) / 1), light-dark(color(from var(--dl-warning-under) srgb-linear 0 0 0 / calc(clamp(0, 3 * ((min(2 * r, 4 * g, 4 * b) + 0.05) / (4.5 + 0.1) - 0.05), 1))), color(from var(--dl-warning-under) srgb-linear 0 0 0 / calc(clamp(0, (4.5 + 0.1) * (max(2 * r, 4 * g, 4 * b) + 0.05) - 0.05, 1)))));
+  --dl-warning-line:  color-mix(in srgb-linear, color(from var(--warning) srgb-linear clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1) / 1), light-dark(color(from var(--dl-warning-under) srgb-linear 0 0 0 / calc(clamp(0, 3 * ((min(2 * r, 4 * g, 4 * b) + 0.05) / (3 + 0.1) - 0.05), 1))), color(from var(--dl-warning-under) srgb-linear 0 0 0 / calc(clamp(0, (3 + 0.1) * (max(2 * r, 4 * g, 4 * b) + 0.05) - 0.05, 1)))));
   --warning-solid:    var(--dl-warning);
   --warning-on-solid: color(from var(--dl-warning) srgb-linear calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.18333) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.18333) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.18333) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) / 1);
   --warning-soft:     oklch(from color-mix(in oklab, light-dark(oklch(from var(--dl-warning) max(l, 0.7) c h), oklch(from var(--dl-warning) min(l, 0.6) c h)) var(--tint-strength), var(--dl-paper-grey)) l calc(c * var(--tint-vividness)) h);
-  --warning-on-soft:  light-dark(oklch(from color(from oklch(from var(--dl-warning) min(l, 0.45) c h) srgb clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1)) min(l, 0.45) c h), oklch(from color(from oklch(from var(--dl-warning) max(l, 0.8) c h) srgb clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1)) max(l, 0.8) c h));
-  --warning-line:     color-mix(in oklab, var(--dl-warning) 40%, var(--dl-paper));
+  --warning-on-soft:  light-dark(color(from var(--dl-warning-text) srgb-linear calc(r * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) calc(g * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) calc(b * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) / 1), color(from color(from var(--dl-warning-text) srgb-linear min(1, r * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) min(1, g * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) min(1, b * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) / alpha) srgb-linear calc(r + (1 - r) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) calc(g + (1 - g) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) calc(b + (1 - b) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) / 1));
+  --warning-line:     light-dark(color(from var(--dl-warning-line) srgb-linear calc(r * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) calc(g * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) calc(b * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) / 1), color(from color(from var(--dl-warning-line) srgb-linear min(1, r * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) min(1, g * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) min(1, b * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) / alpha) srgb-linear calc(r + (1 - r) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) calc(g + (1 - g) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) calc(b + (1 - b) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) / 1));
 
+  --dl-danger-under: color-mix(in srgb-linear, color(from var(--danger-soft) srgb-linear calc(0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1)) 0 0), var(--dl-surfaces-y));
+  --dl-danger-text:  color-mix(in srgb-linear, color(from var(--dl-danger-base) srgb-linear clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1) / 1), light-dark(color(from var(--dl-danger-under) srgb-linear 0 0 0 / calc(clamp(0, 3 * ((min(2 * r, 4 * g, 4 * b) + 0.05) / (4.5 + 0.1) - 0.05), 1))), color(from var(--dl-danger-under) srgb-linear 0 0 0 / calc(clamp(0, (4.5 + 0.1) * (max(2 * r, 4 * g, 4 * b) + 0.05) - 0.05, 1)))));
+  --dl-danger-line:  color-mix(in srgb-linear, color(from var(--danger) srgb-linear clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1) / 1), light-dark(color(from var(--dl-danger-under) srgb-linear 0 0 0 / calc(clamp(0, 3 * ((min(2 * r, 4 * g, 4 * b) + 0.05) / (3 + 0.1) - 0.05), 1))), color(from var(--dl-danger-under) srgb-linear 0 0 0 / calc(clamp(0, (3 + 0.1) * (max(2 * r, 4 * g, 4 * b) + 0.05) - 0.05, 1)))));
   --danger-solid:    var(--dl-danger);
   --danger-on-solid: color(from var(--dl-danger) srgb-linear calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.18333) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.18333) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.18333) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) / 1);
   --danger-soft:     oklch(from color-mix(in oklab, light-dark(oklch(from var(--dl-danger) max(l, 0.7) c h), oklch(from var(--dl-danger) min(l, 0.6) c h)) var(--tint-strength), var(--dl-paper-grey)) l calc(c * var(--tint-vividness)) h);
-  --danger-on-soft:  light-dark(oklch(from color(from oklch(from var(--dl-danger) min(l, 0.45) c h) srgb clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1)) min(l, 0.45) c h), oklch(from color(from oklch(from var(--dl-danger) max(l, 0.8) c h) srgb clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1)) max(l, 0.8) c h));
-  --danger-line:     color-mix(in oklab, var(--dl-danger) 40%, var(--dl-paper));
+  --danger-on-soft:  light-dark(color(from var(--dl-danger-text) srgb-linear calc(r * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) calc(g * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) calc(b * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) / 1), color(from color(from var(--dl-danger-text) srgb-linear min(1, r * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) min(1, g * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) min(1, b * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) / alpha) srgb-linear calc(r + (1 - r) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) calc(g + (1 - g) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) calc(b + (1 - b) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) / 1));
+  --danger-line:     light-dark(color(from var(--dl-danger-line) srgb-linear calc(r * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) calc(g * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) calc(b * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) / 1), color(from color(from var(--dl-danger-line) srgb-linear min(1, r * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) min(1, g * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) min(1, b * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) / alpha) srgb-linear calc(r + (1 - r) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) calc(g + (1 - g) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) calc(b + (1 - b) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) / 1));
 
+  --dl-info-under: color-mix(in srgb-linear, color(from var(--info-soft) srgb-linear calc(0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1)) 0 0), var(--dl-surfaces-y));
+  --dl-info-text:  color-mix(in srgb-linear, color(from var(--dl-info-base) srgb-linear clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1) / 1), light-dark(color(from var(--dl-info-under) srgb-linear 0 0 0 / calc(clamp(0, 3 * ((min(2 * r, 4 * g, 4 * b) + 0.05) / (4.5 + 0.1) - 0.05), 1))), color(from var(--dl-info-under) srgb-linear 0 0 0 / calc(clamp(0, (4.5 + 0.1) * (max(2 * r, 4 * g, 4 * b) + 0.05) - 0.05, 1)))));
+  --dl-info-line:  color-mix(in srgb-linear, color(from var(--info) srgb-linear clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1) / 1), light-dark(color(from var(--dl-info-under) srgb-linear 0 0 0 / calc(clamp(0, 3 * ((min(2 * r, 4 * g, 4 * b) + 0.05) / (3 + 0.1) - 0.05), 1))), color(from var(--dl-info-under) srgb-linear 0 0 0 / calc(clamp(0, (3 + 0.1) * (max(2 * r, 4 * g, 4 * b) + 0.05) - 0.05, 1)))));
   --info-solid:    var(--dl-info);
   --info-on-solid: color(from var(--dl-info) srgb-linear calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.18333) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.18333) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.18333) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) / 1);
   --info-soft:     oklch(from color-mix(in oklab, light-dark(oklch(from var(--dl-info) max(l, 0.7) c h), oklch(from var(--dl-info) min(l, 0.6) c h)) var(--tint-strength), var(--dl-paper-grey)) l calc(c * var(--tint-vividness)) h);
-  --info-on-soft:  light-dark(oklch(from color(from oklch(from var(--dl-info) min(l, 0.45) c h) srgb clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1)) min(l, 0.45) c h), oklch(from color(from oklch(from var(--dl-info) max(l, 0.8) c h) srgb clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1)) max(l, 0.8) c h));
-  --info-line:     color-mix(in oklab, var(--dl-info) 40%, var(--dl-paper));
-
-  /* ---- Gradients: blended in oklab so they cross straight over rather than
-     swinging round the colour wheel ---- */
-  --gradient-solid:     linear-gradient(in oklab var(--gradient-angle), var(--gradient-from), var(--gradient-to));  /* a bold band: hero, banner */
-  --gradient-soft-from: color-mix(in oklab, var(--gradient-from) 12%, var(--dl-paper));  /* the soft wash's first stop */
-  --gradient-soft-to:   color-mix(in oklab, var(--gradient-to) 12%, var(--dl-paper));    /* the soft wash's second stop */
-  --gradient-soft:      linear-gradient(in oklab var(--gradient-angle), var(--gradient-soft-from), var(--gradient-soft-to));  /* a wash for section backgrounds: body text sits on it */
-  /* text on the solid gradient: white or black, judged at its midpoint; the contrast check tests both ends */
-  --on-gradient: color(from color-mix(in oklab, var(--gradient-from), var(--gradient-to)) srgb-linear calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.18333) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.18333) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.18333) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) / 1);
+  --info-on-soft:  light-dark(color(from var(--dl-info-text) srgb-linear calc(r * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) calc(g * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) calc(b * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) / 1), color(from color(from var(--dl-info-text) srgb-linear min(1, r * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) min(1, g * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) min(1, b * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) / alpha) srgb-linear calc(r + (1 - r) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) calc(g + (1 - g) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) calc(b + (1 - b) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) / 1));
+  --info-line:     light-dark(color(from var(--dl-info-line) srgb-linear calc(r * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) calc(g * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) calc(b * 2 * alpha * min(1, (2 * alpha - 1) / 3 / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) / 1), color(from color(from var(--dl-info-line) srgb-linear min(1, r * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) min(1, g * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) min(1, b * 2 * alpha * max(1, (2 * alpha - 1) / max(0.000001, 2 * alpha * (0.2126 * r + 0.7152 * g + 0.0722 * b)))) / alpha) srgb-linear calc(r + (1 - r) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) calc(g + (1 - g) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) calc(b + (1 - b) * clamp(0, (2 * alpha - 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) / max(0.000001, 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b)), 1)) / 1));
+  --dl-brand-hover: color-mix(in srgb-linear, color(from light-dark(oklch(from var(--brand-on-soft) calc(l - 0.08) c h), oklch(from var(--brand-on-soft) calc(l + 0.08) c h)) srgb-linear clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1) / 1), light-dark(color(from var(--dl-brand-under) srgb-linear 0 0 0 / calc(clamp(0, 3 * ((min(2 * r, 4 * g, 4 * b) + 0.05) / (7 + 0.1) - 0.05), 1))), color(from var(--dl-brand-under) srgb-linear 0 0 0 / calc(clamp(0, (7 + 0.1) * (max(2 * r, 4 * g, 4 * b) + 0.05) - 0.05, 1)))));
 
   /* ---- Ungrouped: components use these; .is-{group} points them at a group ---- */
   --solid:    var(--brand-solid);
@@ -169,14 +200,22 @@
   --soft:     var(--brand-soft);
   --on-soft:  var(--brand-on-soft);
   --line:     var(--brand-line);
+
+  /* ---- Deprecated: --accent's tokens, renamed --secondary-*. They still work; rename them ---- */
+  --accent-solid:    var(--secondary-solid);     /* deprecated: use --secondary-solid */
+  --accent-on-solid: var(--secondary-on-solid);  /* deprecated: use --secondary-on-solid */
+  --accent-soft:     var(--secondary-soft);      /* deprecated: use --secondary-soft */
+  --accent-on-soft:  var(--secondary-on-soft);   /* deprecated: use --secondary-on-soft */
+  --accent-line:     var(--secondary-line);      /* deprecated: use --secondary-line */
 }
-.is-brand   { --solid: var(--brand-solid);   --on-solid: var(--brand-on-solid);   --soft: var(--brand-soft);   --on-soft: var(--brand-on-soft);   --line: var(--brand-line); }
-.is-accent  { --solid: var(--accent-solid);  --on-solid: var(--accent-on-solid);  --soft: var(--accent-soft);  --on-soft: var(--accent-on-soft);  --line: var(--accent-line); }
-.is-neutral { --solid: var(--neutral-solid); --on-solid: var(--neutral-on-solid); --soft: var(--neutral-soft); --on-soft: var(--neutral-on-soft); --line: var(--neutral-line); }
-.is-success { --solid: var(--success-solid); --on-solid: var(--success-on-solid); --soft: var(--success-soft); --on-soft: var(--success-on-soft); --line: var(--success-line); }
-.is-warning { --solid: var(--warning-solid); --on-solid: var(--warning-on-solid); --soft: var(--warning-soft); --on-soft: var(--warning-on-soft); --line: var(--warning-line); }
-.is-danger  { --solid: var(--danger-solid);  --on-solid: var(--danger-on-solid);  --soft: var(--danger-soft);  --on-soft: var(--danger-on-soft);  --line: var(--danger-line); }
-.is-info    { --solid: var(--info-solid);    --on-solid: var(--info-on-solid);    --soft: var(--info-soft);    --on-soft: var(--info-on-soft);    --line: var(--info-line); }
+.is-brand     { --solid: var(--brand-solid);     --on-solid: var(--brand-on-solid);     --soft: var(--brand-soft);     --on-soft: var(--brand-on-soft);     --line: var(--brand-line); }
+.is-secondary { --solid: var(--secondary-solid); --on-solid: var(--secondary-on-solid); --soft: var(--secondary-soft); --on-soft: var(--secondary-on-soft); --line: var(--secondary-line); }
+.is-neutral   { --solid: var(--neutral-solid);   --on-solid: var(--neutral-on-solid);   --soft: var(--neutral-soft);   --on-soft: var(--neutral-on-soft);   --line: var(--neutral-line); }
+.is-success   { --solid: var(--success-solid);   --on-solid: var(--success-on-solid);   --soft: var(--success-soft);   --on-soft: var(--success-on-soft);   --line: var(--success-line); }
+.is-warning   { --solid: var(--warning-solid);   --on-solid: var(--warning-on-solid);   --soft: var(--warning-soft);   --on-soft: var(--warning-on-soft);   --line: var(--warning-line); }
+.is-danger    { --solid: var(--danger-solid);    --on-solid: var(--danger-on-solid);    --soft: var(--danger-soft);    --on-soft: var(--danger-on-soft);    --line: var(--danger-line); }
+.is-info      { --solid: var(--info-solid);      --on-solid: var(--info-on-solid);      --soft: var(--info-soft);      --on-soft: var(--info-on-soft);      --line: var(--info-line); }
+.is-accent    { --solid: var(--secondary-solid); --on-solid: var(--secondary-on-solid); --soft: var(--secondary-soft); --on-soft: var(--secondary-on-soft); --line: var(--secondary-line); }  /* deprecated: use .is-secondary */
 /* A light or dark band: its own scheme, and its own background and text worked out in it */
 .is-light { color-scheme: light; background-color: var(--surface); color: var(--text); }
 .is-dark  { color-scheme: dark;  background-color: var(--surface); color: var(--text); }

@@ -1,4 +1,4 @@
-/*! Dials v0.1.2 | MIT | https://github.com/joops/dials */
+/*! Dials v0.2.0 | MIT | https://github.com/joops/dials */
 /* Dials theme: Editorial
    Presets: Nord colour, Editorial type, Roomy space (presets/colour/nord.css, presets/type/editorial.css,
    presets/space/roomy.css). Load after dials.css. This file doesn't set
@@ -8,7 +8,7 @@
 :root, :host {
   /* colour: Nord */
   --brand: #5e81ac;
-  --accent: #b48ead;
+  --secondary: #b48ead;
   --success: #a3be8c;
   --warning: #ebcb8b;
   --danger: #bf616a;
@@ -25,9 +25,6 @@
   --paper-dark-lightness: 0.16;
   --ink-lightness: 0.2;
   --ink-dark-lightness: 0.94;
-  --gradient-from: var(--brand-solid);
-  --gradient-to: var(--info-solid);
-  --gradient-angle: 135deg;
   --paper-light: #eceff4;
   --paper-dark: #2e3440;
   --ink-light: #2e3440;

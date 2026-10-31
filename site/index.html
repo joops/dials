@@ -152,10 +152,6 @@ section { display: grid; gap: 14px; min-width: 0; }
 .hue-track::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--surface-raised); border: 2px solid var(--text-strong); }
 .hue-track::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--surface-raised); border: 2px solid var(--text-strong); }
 
-.grad-ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; font-size: 13.5px; color: var(--text-muted); font-weight: 600; }
-.grad-ctl select { font: 500 13.5px var(--page-body); color: var(--text); background-color: var(--surface-raised); border: 1px solid var(--border-strong); border-radius: var(--radius-s); padding: 5px 8px; }
-.grad-ctl .dial { grid-template-columns: 50px 160px 52px; }
-.grad-sample { width: 120px; height: 28px; border-radius: var(--radius-s); background: var(--gradient-solid); box-shadow: inset 0 0 0 1px var(--border); }
 .cdial { position: relative; }
 .swatch { display: block; width: 100%; height: 44px; border-radius: var(--radius-s); border: 1px solid var(--border-strong); cursor: pointer; padding: 0; }
 .swatch:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
@@ -165,10 +161,8 @@ section { display: grid; gap: 14px; min-width: 0; }
 .pop .pop-val { font: 12px var(--page-mono); color: var(--text-muted); }
 .pop .pop-fmt { display: flex; gap: 2px; }
 .pop .pop-fmt .btn { padding: 4px 7px; font-size: 11.5px; flex: 1; }
-.hero { background: var(--gradient-solid); color: var(--on-gradient); border-radius: var(--radius-l); padding: var(--space-m); display: grid; gap: 4px; }
-.hero h4 { margin: 0; font: 600 var(--size-2)/1.2 var(--font-heading); color: inherit; }
-.hero p { font-size: var(--size--1); }
-.wash { background: var(--gradient-soft); color: var(--text); border-radius: var(--radius-l); padding: var(--space-s); display: grid; gap: 2px; font-size: var(--size--1); border: 1px solid var(--border-quiet); }
+/* a pattern, not a token: a wash between two soft tints (docs/tokens.md, Patterns) */
+.wash { background: linear-gradient(in oklab 135deg, var(--brand-soft), var(--info-soft)); color: var(--text); border-radius: var(--radius-l); padding: var(--space-s); display: grid; gap: 2px; font-size: var(--size--1); border: 1px solid var(--border-quiet); }
 .wash b { color: var(--text-strong); }
 
 .credits-foot { display: grid; gap: 8px; padding-top: 24px; border-top: 1px solid var(--border); color: var(--text-muted); }
@@ -219,7 +213,7 @@ section { display: grid; gap: 14px; min-width: 0; }
 .ladder .aa { font-family: var(--font-heading); color: var(--text-strong); line-height: 1.05; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .px { font: 12px var(--page-body); color: var(--text-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .spaces .bar { display: block; height: 12px; border-radius: 3px; background: var(--brand-solid); max-width: 100%; }
-.spaces .bar.pair { background: var(--accent-solid); }
+.spaces .bar.pair { background: var(--secondary-solid); }
 .layers { grid-template-columns: repeat(auto-fit, minmax(178px, 1fr)) !important; }
 
 /* components (they only ever use the ungrouped tokens) */
@@ -320,16 +314,16 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
     </div>
   </div>
   <h1>Dial in kick-ass sites and web apps</h1>
-  <p class="lede">Dials is an AI-first CSS framework, a token-based system designed to produce a huge diversity of looks from only a few dials: seven colours in HSL, a handful of type and space settings, three fonts and a corner radius. Everything else is derived from these values using plain CSS, live in the browser: every surface, text level, border, gradient and colour group, in light and dark, with contrast checked as you go; and every text and space size, fluid from phone to desktop with no breakpoints. Let's jam!</p>
+  <p class="lede">Dials is an AI-first CSS framework, a token-based system designed to produce a huge diversity of looks from only a few dials: seven colours in HSL, a handful of type and space settings, three fonts and a corner radius. Everything else is derived from these values using plain CSS, live in the browser: every surface, text level, border and colour group, in light and dark, with contrast checked as you go; and every text and space size, fluid from phone to desktop with no breakpoints. Let's jam!</p>
   <p class="lede">Other calculators and systems generate colours, type and space once, as fixed values, which limits what a theme can change on a live site. Dials derives all three dynamically from the values you define, so a theme can change the whole look of a page or app: its colours, type scale, spacing, faces and corners.</p>
   <p class="lede">AI-first means an agent gets a short set of rules and a small set of tokens, so it can build a theme quickly and stay within the guidelines, and you can riff on it in real time to dial in the perfect look for your new project.</p>
 </header>
 
 <section>
   <div class="layers">
-    <div class="layer"><b>1 · Dials</b><p>Seven colours in HSL. One switch evens out their lightness so they carry equal weight; two of them make the gradient.</p></div>
+    <div class="layer"><b>1 · Dials</b><p>Seven colours in HSL. One switch evens out their lightness so they carry equal weight.</p></div>
     <div class="layer"><b>2 · Derived</b><p>Surfaces, text, lines, focus and shadows, blended from paper and ink with <code>color-mix()</code> or relative colour.</p></div>
-    <div class="layer"><b>3 · Groups</b><p>Brand, accent, neutral and four status colours each get the same five roles. <code>.is-danger</code> points a component at one.</p></div>
+    <div class="layer"><b>3 · Groups</b><p>Brand, secondary, neutral and four status colours each get the same five roles. <code>.is-danger</code> points a component at one.</p></div>
     <div class="layer"><b>4 · Type and space</b><p>Body size and ratio at narrow and wide screens give fluid type and space, with no breakpoints. Three fonts, a density, a radius.</p></div>
     <div class="layer"><b>5 · Base (optional)</b><p>Plain HTML styled from the tokens at zero specificity: text, tables, forms and real buttons, no classes needed.</p></div>
   </div>
@@ -351,13 +345,6 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
       <label class="hex"><input type="checkbox" id="k_balance"> Even out lightness</label>
       <label class="dial"><span>Fill lightness</span><input type="range" id="k_lfill" min="0.3" max="0.75" step="0.01"><output id="k_lfill_out"></output></label>
       <p class="ctl-note">On: every button and badge gets the same lightness, so no colour shouts louder than another. Off: each colour exactly as set, for a brand that must match. Either way, button text flips between white and black to keep its contrast.</p>
-    </div>
-    <div class="grad-ctl">
-      <span>Gradient</span>
-      <label>from <select id="k_gfrom"></select></label>
-      <label>to <select id="k_gto"></select></label>
-      <label class="dial"><span>Angle</span><input type="range" id="k_gangle" min="0" max="360" step="5"><output id="k_gangle_out"></output></label>
-      <span class="grad-sample" aria-hidden="true"></span>
     </div>
     <details class="more"><summary>More: exact paper and ink, dark lift, tints, text contrast, button text</summary>
       <div class="more-body">
@@ -499,7 +486,7 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
 <footer class="credits-foot">
   <h2>Thanks</h2>
   <p>Inspired by <a href="https://utopia.fyi">Utopia</a> for type and space, and by <a href="https://web.dev/articles/baseline-in-action-color-theme">web.dev's Baseline colour themes</a>, <a href="https://webawesome.com/docs/tokens/color">Web Awesome</a> and <a href="https://www.radix-ui.com/themes">Radix Themes</a> for colour.</p>
-  <p>Colour ideas also come from web.dev (globals in <code>light-dark()</code>) and Web Awesome (the fill, border and "on" roles, which Dials calls solid, soft and line, and the hover fragment). Two tricks keep contrast without per-colour tuning: button text is white or black, whichever contrasts more, worked out from the fill's luminance with <code>color(from … srgb-linear r g b)</code>, and coloured text has its lightness capped in light and floored in dark.</p>
+  <p>Colour ideas also come from web.dev (globals in <code>light-dark()</code>) and Web Awesome (the fill, border and "on" roles, which Dials calls solid, soft and line, and the hover fragment). Two tricks keep contrast without per-colour tuning: button text is white or black, whichever contrasts more, worked out from the fill's luminance with <code>color(from … srgb-linear r g b)</code>, and coloured text and lines keep their colour, moved only as far as their contrast needs: their linear-light RGB is scaled, darker in light and lighter in dark, which keeps hue and saturation.</p>
 </footer>
 </div>
 
@@ -509,11 +496,11 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
    the token table and the export is fetched from this folder's copies of the dist files. */
 (function () {
   var root = document.documentElement, D = window.DIALS;
-  var GROUP_NAMES = ['brand', 'accent', 'neutral', 'success', 'warning', 'danger', 'info'];
-  var COLOUR_DIALS = [['brand', 'Brand'], ['accent', 'Accent'], ['success', 'Success'], ['warning', 'Warning'], ['danger', 'Danger'], ['info', 'Info'], ['grey', 'Grey tint']];
+  var GROUP_NAMES = ['brand', 'secondary', 'neutral', 'success', 'warning', 'danger', 'info'];
+  var COLOUR_DIALS = [['brand', 'Brand'], ['secondary', 'Secondary'], ['success', 'Success'], ['warning', 'Warning'], ['danger', 'Danger'], ['info', 'Info'], ['grey', 'Grey tint']];
   var NEUTRAL_HEX = [['--paper-light', 'Paper (light)'], ['--paper-dark', 'Paper (dark)'], ['--ink-light', 'Ink (light)'], ['--ink-dark', 'Ink (dark)']];
   var NUMBER_DIALS = ['--balance', '--fill-lightness', '--dark-lift', '--tint-strength', '--tint-vividness', '--text-contrast', '--white-text-until',
-    '--paper-lightness', '--paper-dark-lightness', '--ink-lightness', '--ink-dark-lightness', '--gradient-from', '--gradient-to', '--gradient-angle'];
+    '--paper-lightness', '--paper-dark-lightness', '--ink-lightness', '--ink-dark-lightness'];
   var TYPE_DIALS = ['--screen-min', '--screen-max', '--size-min', '--size-max', '--ratio-min', '--ratio-max', '--font-heading', '--font-body', '--font-mono'];
   var SPACE_DIALS = ['--space-min', '--space-max', '--space-density', '--radius-base'];
   var SRC = { colour: '', scale: '', base: '' };   /* the dist files' text, fetched below */
@@ -580,14 +567,6 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
     });
     dialEls[v] = [sw, txt];
   });
-  var gf = document.getElementById('k_gfrom'), gt = document.getElementById('k_gto'), ga = document.getElementById('k_gangle'), gao = document.getElementById('k_gangle_out');
-  [gf, gt].forEach(function (sel) {
-    GROUP_NAMES.forEach(function (o) { var op = document.createElement('option'); op.value = 'var(--' + o + '-solid)'; op.textContent = o[0].toUpperCase() + o.slice(1); sel.appendChild(op); });
-    var c = document.createElement('option'); c.value = ''; c.textContent = 'Preset colour'; c.disabled = true; sel.appendChild(c);
-    sel.addEventListener('change', function () { set(sel === gf ? '--gradient-from' : '--gradient-to', sel.value); refresh(); });
-  });
-  ga.addEventListener('input', function () { set('--gradient-angle', ga.value + 'deg'); gao.textContent = ga.value + '°'; refresh(); });
-  function syncSel(sel, val) { var hit = [].some.call(sel.options, function (o) { return o.value === val; }); sel.value = hit ? val : ''; }
   var bal = document.getElementById('k_balance'), lf = document.getElementById('k_lfill'), lfo = document.getElementById('k_lfill_out'), lift = document.getElementById('k_lift'), lifto = document.getElementById('k_lift_out');
   bal.addEventListener('change', function () { set('--balance', bal.checked ? '1' : '0'); lf.disabled = !bal.checked; refresh(); });
   lf.addEventListener('input', function () { set('--fill-lightness', lf.value); lfo.textContent = lf.value; refresh(); });
@@ -616,7 +595,7 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
   });
   function syncControls() {
     Object.keys(dialEls).forEach(function (v) { var t = get(v); dialEls[v][1].value = t; dialEls[v][1].removeAttribute('aria-invalid'); });
-    syncSel(gf, get('--gradient-from')); syncSel(gt, get('--gradient-to')); ga.value = parseInt(get('--gradient-angle'), 10); gao.textContent = ga.value + '°'; closePop();
+    closePop();
     bal.checked = get('--balance') === '1'; lf.disabled = !bal.checked; lf.value = get('--fill-lightness'); lfo.textContent = lf.value;
     lift.value = get('--dark-lift'); lifto.textContent = lift.value;
     wt.value = get('--white-text-until'); wto.textContent = wt.value;
@@ -643,8 +622,7 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
   /* preview panes */
   var PANE = '<span class="cap">{cap}</span>' +
     '<div class="card"><h4>Finish the mix</h4><p>Body text is ink blended into paper.</p><p class="t-muted">Muted text, a step quieter.</p><p class="t-quiet">Quiet text · captions and dates</p><p class="t-dis">Disabled text</p><p><a href="#css">A link in the brand colour</a></p></div>' +
-    '<div class="hero"><h4>In the booth</h4><p>Text on the solid gradient is white or black, whichever passes at both ends.</p></div>' +
-    '<div class="wash"><b>A soft gradient wash</b><span>For section backgrounds: body text sits on it.</span></div>' +
+    '<div class="wash"><b>A wash, built from two soft tints</b><span>A pattern, not a token: body text keeps 4.5:1 anywhere on it.</span></div>' +
     '<div class="row">' + GROUP_NAMES.map(function (g) { return '<button class="btn is-' + g + '" type="button">' + g[0].toUpperCase() + g.slice(1) + '</button>'; }).join('') + '</div>' +
     '<div class="row">' + GROUP_NAMES.map(function (g) { return '<button class="btn soft is-' + g + '" type="button">' + g[0].toUpperCase() + g.slice(1) + '</button>'; }).join('') + '<button class="btn ghost" type="button">Ghost</button><button class="btn" type="button" disabled>Disabled</button></div>' +
     '<div class="row">' + GROUP_NAMES.map(function (g) { return '<span class="badge is-' + g + '">' + g + '</span>'; }).join('') + '<span class="badge solid is-success">Live</span><span class="badge solid is-warning">Armed</span></div>' +
@@ -699,11 +677,10 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
   /* the pairings the contrast check tests: [text, background, minimum] */
   var PAIRS = [];
   ['--text-strong', '--text', '--text-muted', '--text-quiet', '--link', '--link-hover'].forEach(function (t) { ['--surface', '--surface-raised', '--surface-lowered'].forEach(function (s) { PAIRS.push([t, s, 4.5]); }); });
-  PAIRS.push(['--on-gradient', '--gradient-from', 4.5], ['--on-gradient', '--gradient-to', 4.5], ['--text', '--gradient-soft-from', 4.5], ['--text', '--gradient-soft-to', 4.5]);
   GROUP_NAMES.forEach(function (g) {
     PAIRS.push(['--' + g + '-on-solid', '--' + g + '-solid', 4.5]);
     PAIRS.push(['--' + g + '-on-soft', '--' + g + '-soft', 4.5]);
-    if (g !== 'neutral') PAIRS.push(['--' + g + '-on-soft', '--surface', 4.5]);
+    if (g !== 'neutral') PAIRS.push(['--' + g + '-on-soft', '--surface', 4.5], ['--' + g + '-line', '--surface', 3]);
   });
   ['--surface', '--surface-raised'].forEach(function (s) { PAIRS.push(['--focus', s, 3]); PAIRS.push(['--border-strong', s, 3]); });
   function chip(r, min) {
@@ -732,8 +709,8 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
 
   /* token table: the public tokens, read from dials-colour.css itself */
   function tokenTable() {
-    var GROUPS = [['Colour dials', /^--(brand|accent|success|warning|danger|info|grey)$/], ['Surfaces', /^--surface/], ['Text', /^--(text|link)/],
-      ['Lines and effects', /^--(border|focus|selection|shadow-color)/], ['Gradients', /^--(gradient-(from|to|solid|soft)|on-gradient)/], ['Hover and pressed', /^--mix-/]];
+    var GROUPS = [['Colour dials', /^--(brand|secondary|success|warning|danger|info|grey)$/], ['Surfaces', /^--surface/], ['Text', /^--(text|link)/],
+      ['Lines and effects', /^--(border|focus|selection|shadow-color)/], ['Hover and pressed', /^--mix-/]];
     var decl = [], seen = {};
     SRC.colour.replace(/^\s*(--[\w-]+):\s*([^;]+);/gm, function (_, n, v) { if (!seen[n] && n.indexOf('--dl-') !== 0) { seen[n] = 1; decl.push([n, v.trim()]); } });
     function swatch(n) { return '<span class="sw"><i class="l is-light"><i style="display:block;height:100%;background:var(' + n + ')"></i></i><i class="d is-dark"><i style="display:block;height:100%;background:var(' + n + ')"></i></i></span>'; }
@@ -742,7 +719,7 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
     var html = '';
     GROUPS.forEach(function (g) {
       html += '<tbody><tr class="gh"><th colspan="3">' + g[0] + '</th></tr>';
-      decl.filter(function (d) { return g[1].test(d[0]); }).forEach(function (d) { html += row(d, !/^--mix-|^--gradient-angle$|^--text-contrast$/.test(d[0])); });
+      decl.filter(function (d) { return g[1].test(d[0]); }).forEach(function (d) { html += row(d, !/^--mix-|^--text-contrast$/.test(d[0])); });
       html += '</tbody>';
     });
     GROUP_NAMES.forEach(function (g) {

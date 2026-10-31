@@ -16,9 +16,15 @@
    - on-solid text can't follow the fill's luminance: each group has a
      fixed choice, and its fill is pulled a fixed amount towards the
      other end so the text keeps 4.5:1 in every Dials theme. White on
-     brand, accent, danger and info, whose fills are darkened; black on
-     success, whose fill is lightened, and warning, as set. --on-gradient is
-     white, as the gradient stops are group fills.
+     brand, secondary, danger and info, whose fills are darkened; black
+     on success, whose fill is lightened, and warning, as set.
+   - Coloured text and lines can't move only as far as their target
+     needs: on-soft is the dial mixed a fixed amount into ink (so --link
+     and --focus too), line a smaller amount, and --link-hover further
+     still. The amounts hold 4.5:1 and 3:1 on every surface and soft
+     tint, for every theme and for extreme dials, so they over-shoot for
+     most colours. Ink is near-black on a light page and near-white in an
+     .is-dark band, so the same mix works in both.
    - No calc() and no percentages computed inside color-mix(): only
      literal percentages and dials that are one (--tint-strength).
    ============================================================ */
@@ -47,7 +53,7 @@
     --dl-paper: color-mix(in oklab, var(--dl-paper-dark) var(--dl-fb-dark), var(--dl-paper-light));
     --dl-ink:   color-mix(in oklab, var(--dl-ink-dark) var(--dl-fb-dark), var(--dl-ink-light));
     --dl-brand:   color-mix(in oklab, var(--brand) 72%, black);
-    --dl-accent:  color-mix(in oklab, var(--accent) 67%, black);
+    --dl-secondary: color-mix(in oklab, var(--accent, var(--secondary)) 67%, black);
     --dl-success: color-mix(in oklab, var(--success) 85%, white);
     --dl-warning: var(--warning);
     --dl-danger:  color-mix(in oklab, var(--danger) 78%, black);
@@ -82,18 +88,18 @@
     --mix-hover:  black 12%;
     --mix-active: black 22%;
 
-    /* ---- Groups: soft and line mixed into paper, on-soft mixed towards ink ---- */
+    /* ---- Groups: soft mixed into paper, on-soft and line mixed towards ink ---- */
     --brand-solid:    var(--dl-brand);
     --brand-on-solid: white;
     --brand-soft:     color-mix(in oklab, var(--brand) var(--tint-strength), var(--dl-paper));
     --brand-on-soft:  color-mix(in oklab, var(--brand) 26%, var(--dl-ink));
-    --brand-line:     color-mix(in oklab, var(--brand) 40%, var(--dl-paper));
+    --brand-line:     color-mix(in oklab, var(--brand) 40%, var(--dl-ink));
 
-    --accent-solid:    var(--dl-accent);
-    --accent-on-solid: white;
-    --accent-soft:     color-mix(in oklab, var(--accent) var(--tint-strength), var(--dl-paper));
-    --accent-on-soft:  color-mix(in oklab, var(--accent) 26%, var(--dl-ink));
-    --accent-line:     color-mix(in oklab, var(--accent) 40%, var(--dl-paper));
+    --secondary-solid:    var(--dl-secondary);
+    --secondary-on-solid: white;
+    --secondary-soft:     color-mix(in oklab, var(--accent, var(--secondary)) var(--tint-strength), var(--dl-paper));
+    --secondary-on-soft:  color-mix(in oklab, var(--accent, var(--secondary)) 26%, var(--dl-ink));
+    --secondary-line:     color-mix(in oklab, var(--accent, var(--secondary)) 40%, var(--dl-ink));
 
     --neutral-solid:    var(--dl-ink);
     --neutral-on-solid: var(--dl-paper);
@@ -105,32 +111,25 @@
     --success-on-solid: black;
     --success-soft:     color-mix(in oklab, var(--success) var(--tint-strength), var(--dl-paper));
     --success-on-soft:  color-mix(in oklab, var(--success) 26%, var(--dl-ink));
-    --success-line:     color-mix(in oklab, var(--success) 40%, var(--dl-paper));
+    --success-line:     color-mix(in oklab, var(--success) 40%, var(--dl-ink));
 
     --warning-solid:    var(--dl-warning);
     --warning-on-solid: black;
     --warning-soft:     color-mix(in oklab, var(--warning) var(--tint-strength), var(--dl-paper));
     --warning-on-soft:  color-mix(in oklab, var(--warning) 26%, var(--dl-ink));
-    --warning-line:     color-mix(in oklab, var(--warning) 40%, var(--dl-paper));
+    --warning-line:     color-mix(in oklab, var(--warning) 40%, var(--dl-ink));
 
     --danger-solid:    var(--dl-danger);
     --danger-on-solid: white;
     --danger-soft:     color-mix(in oklab, var(--danger) var(--tint-strength), var(--dl-paper));
     --danger-on-soft:  color-mix(in oklab, var(--danger) 26%, var(--dl-ink));
-    --danger-line:     color-mix(in oklab, var(--danger) 40%, var(--dl-paper));
+    --danger-line:     color-mix(in oklab, var(--danger) 40%, var(--dl-ink));
 
     --info-solid:    var(--dl-info);
     --info-on-solid: white;
     --info-soft:     color-mix(in oklab, var(--info) var(--tint-strength), var(--dl-paper));
     --info-on-soft:  color-mix(in oklab, var(--info) 26%, var(--dl-ink));
-    --info-line:     color-mix(in oklab, var(--info) 40%, var(--dl-paper));
-
-    /* ---- Gradients: the default interpolation, as some of these browsers can't blend in oklab ---- */
-    --gradient-solid:     linear-gradient(var(--gradient-angle), var(--gradient-from), var(--gradient-to));
-    --gradient-soft-from: color-mix(in oklab, var(--gradient-from) 12%, var(--dl-paper));
-    --gradient-soft-to:   color-mix(in oklab, var(--gradient-to) 12%, var(--dl-paper));
-    --gradient-soft:      linear-gradient(var(--gradient-angle), var(--gradient-soft-from), var(--gradient-soft-to));
-    --on-gradient: white;
+    --info-line:     color-mix(in oklab, var(--info) 40%, var(--dl-ink));
 
     /* ---- Ungrouped ---- */
     --solid:    var(--brand-solid);
@@ -138,13 +137,21 @@
     --soft:     var(--brand-soft);
     --on-soft:  var(--brand-on-soft);
     --line:     var(--brand-line);
+
+    /* ---- Deprecated: the old names for the secondary group ---- */
+    --accent-solid:    var(--secondary-solid);
+    --accent-on-solid: var(--secondary-on-solid);
+    --accent-soft:     var(--secondary-soft);
+    --accent-on-soft:  var(--secondary-on-soft);
+    --accent-line:     var(--secondary-line);
   }
   /* the group classes again, so they still win on a [data-dials] element or a band */
-  .is-brand   { --solid: var(--brand-solid);   --on-solid: var(--brand-on-solid);   --soft: var(--brand-soft);   --on-soft: var(--brand-on-soft);   --line: var(--brand-line); }
-  .is-accent  { --solid: var(--accent-solid);  --on-solid: var(--accent-on-solid);  --soft: var(--accent-soft);  --on-soft: var(--accent-on-soft);  --line: var(--accent-line); }
-  .is-neutral { --solid: var(--neutral-solid); --on-solid: var(--neutral-on-solid); --soft: var(--neutral-soft); --on-soft: var(--neutral-on-soft); --line: var(--neutral-line); }
-  .is-success { --solid: var(--success-solid); --on-solid: var(--success-on-solid); --soft: var(--success-soft); --on-soft: var(--success-on-soft); --line: var(--success-line); }
-  .is-warning { --solid: var(--warning-solid); --on-solid: var(--warning-on-solid); --soft: var(--warning-soft); --on-soft: var(--warning-on-soft); --line: var(--warning-line); }
-  .is-danger  { --solid: var(--danger-solid);  --on-solid: var(--danger-on-solid);  --soft: var(--danger-soft);  --on-soft: var(--danger-on-soft);  --line: var(--danger-line); }
-  .is-info    { --solid: var(--info-solid);    --on-solid: var(--info-on-solid);    --soft: var(--info-soft);    --on-soft: var(--info-on-soft);    --line: var(--info-line); }
+  .is-brand     { --solid: var(--brand-solid);     --on-solid: var(--brand-on-solid);     --soft: var(--brand-soft);     --on-soft: var(--brand-on-soft);     --line: var(--brand-line); }
+  .is-secondary { --solid: var(--secondary-solid); --on-solid: var(--secondary-on-solid); --soft: var(--secondary-soft); --on-soft: var(--secondary-on-soft); --line: var(--secondary-line); }
+  .is-neutral   { --solid: var(--neutral-solid);   --on-solid: var(--neutral-on-solid);   --soft: var(--neutral-soft);   --on-soft: var(--neutral-on-soft);   --line: var(--neutral-line); }
+  .is-success   { --solid: var(--success-solid);   --on-solid: var(--success-on-solid);   --soft: var(--success-soft);   --on-soft: var(--success-on-soft);   --line: var(--success-line); }
+  .is-warning   { --solid: var(--warning-solid);   --on-solid: var(--warning-on-solid);   --soft: var(--warning-soft);   --on-soft: var(--warning-on-soft);   --line: var(--warning-line); }
+  .is-danger    { --solid: var(--danger-solid);    --on-solid: var(--danger-on-solid);    --soft: var(--danger-soft);    --on-soft: var(--danger-on-soft);    --line: var(--danger-line); }
+  .is-info      { --solid: var(--info-solid);      --on-solid: var(--info-on-solid);      --soft: var(--info-soft);      --on-soft: var(--info-on-soft);      --line: var(--info-line); }
+  .is-accent    { --solid: var(--secondary-solid); --on-solid: var(--secondary-on-solid); --soft: var(--secondary-soft); --on-soft: var(--secondary-on-soft); --line: var(--secondary-line); }
 }

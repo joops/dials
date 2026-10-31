@@ -13,25 +13,28 @@ const arg = process.argv.find(a => a.startsWith('--browser='));
 const BROWSERS = arg ? [arg.split('=')[1]] : ['chromium', 'firefox'];
 const dials = readFileSync(join(ROOT, 'dials.css'), 'utf8');
 const ref = JSON.parse(readFileSync(join(ROOT, 'docs/tokens.json'), 'utf8'));
-const COLOURS = ref.tokens.filter(t => t.file === 'dials-colour.css' && !/^--(gradient-solid|gradient-soft|shadow-[sml]|mix-hover|mix-active)$/.test(t.name)).map(t => t.name);
+const COLOURS = ref.tokens.filter(t => t.file === 'dials-colour.css' && !/^--(shadow-[sml]|mix-hover|mix-active)$/.test(t.name)).map(t => t.name);
 const fallback = emulateFallback(dials), flat = emulateFallback(dials, 'flat');
 for (const [level, r] of [['color-mix', fallback], ['flat', flat]]) console.log(`emulated ${level} fallback, patched: ` + Object.entries(r.patched).map(([k, n]) => `${k} ×${n}`).join(', '));
 if (!fallback.patched['@supports color-mix'] && !fallback.patched['@supports v0.1.0']) { console.error('scoping.mjs: dials.css has no fallback block to test'); process.exit(1); }
 
 const TEST = () => `<!doctype html><html lang="en" style="color-scheme: light"><head><meta charset="utf-8">
 <link rel="stylesheet" href="/dials.css"><link rel="stylesheet" href="/dials-base.css">
-<style>:where(button) { background: rgb(9, 9, 9); } #user-input:focus-visible { outline-color: rgb(9, 9, 9); }</style></head><body>
+<style>:where(button) { background: rgb(9, 9, 9); } #user-input:focus-visible { outline-color: rgb(9, 9, 9); }
+:root { --accent: hsl(200 80% 40%); } #acc-btn, #sec-btn { background: var(--solid); }</style></head><body>
 <div id="root-probe"></div>
 <div data-dials id="scoped" style="--brand: purple; --space-density: .8"><div id="scoped-probe"></div></div>
 <div data-dials id="grey" style="--grey: hsl(220 60% 50%)"><div id="grey-probe"></div></div>
 <div data-dials id="exact" style="--paper-light: #ffffff"><div id="exact-probe"></div></div>
+<div data-dials id="acc" style="--accent: purple"><div id="acc-probe"></div></div>
+<button id="acc-btn" class="is-accent">Old</button><button id="sec-btn" class="is-secondary">New</button>
 <button id="btn">Button</button><input id="user-input">
 </body></html>`;
 // a site's own file after dials.css: a purple brand and exact paper; a green [data-dials] scope; a dark band
 const FALLBACK = (url) => `<!doctype html><html lang="en"><head><meta charset="utf-8">
 <style>${url.searchParams.get('level') === 'flat' ? flat.css : fallback.css}</style><link rel="stylesheet" href="/dials-base.css">
-<style>:root { --brand: purple; --paper-light: #fafafa; }</style></head><body>
-<div id="root-probe"></div><button id="btn">Button</button><button id="danger" class="is-danger">Delete</button>
+<style>:root { --brand: purple; --paper-light: #fafafa; --accent: hsl(200 80% 40%); }</style></head><body>
+<div id="root-probe"></div><button id="btn">Button</button><button id="danger" class="is-danger">Delete</button><button id="acc" class="is-accent">Old</button>
 <div data-dials id="scoped" style="--brand: hsl(140 60% 30%)"><div id="scoped-probe"></div><button id="scoped-btn">Button</button>
   <button id="scoped-danger" data-dials class="is-danger">Delete</button></div>
 <div class="is-dark" id="band"><div id="band-probe"></div></div>
@@ -43,13 +46,12 @@ const READ_FALLBACK = (colours) => {
   const out = { invalid: [] };
   for (const id of ['root-probe', 'scoped-probe', 'band-probe']) for (const v of colours) if (!col(id, v)) out.invalid.push(`${v} in #${id}`);
   for (const [k, id, v] of [['brandSolid', 'root-probe', '--brand-solid'], ['brandSoft', 'root-probe', '--brand-soft'], ['link', 'root-probe', '--link'],
-    ['scopedSolid', 'scoped-probe', '--brand-solid'], ['scopedLink', 'scoped-probe', '--link']]) out[k] = hue(col(id, v));
+    ['scopedSolid', 'scoped-probe', '--brand-solid'], ['scopedLink', 'scoped-probe', '--link'], ['secSoft', 'root-probe', '--secondary-soft'], ['accSoft', 'root-probe', '--accent-soft']]) out[k] = hue(col(id, v));
   const paint = (id) => { const s = getComputedStyle(document.getElementById(id)); return { bg: __rgba(s.backgroundColor), fg: __rgba(s.color) }; };
-  for (const id of ['btn', 'danger', 'scoped-btn', 'scoped-danger']) { const p = paint(id); out[id] = { hue: hue(p.bg), ratio: __ratio(p.fg, p.bg), bg: __hex(p.bg), alpha: p.bg[3] }; }
+  for (const id of ['btn', 'danger', 'acc', 'scoped-btn', 'scoped-danger']) { const p = paint(id); out[id] = { hue: hue(p.bg), ratio: __ratio(p.fg, p.bg), bg: __hex(p.bg), alpha: p.bg[3] }; }
   out.surface = __hex(col('root-probe', '--surface')); out.scopedSurface = __hex(col('scoped-probe', '--surface'));
   out.bandSurface = __lum(col('band-probe', '--surface')); out.bandText = __ratio(col('band-probe', '--text'), col('band-probe', '--surface'));
   out.declared = getComputedStyle(document.documentElement).getPropertyValue('--surface').trim();
-  const g = document.getElementById('root-probe'); g.style.backgroundImage = 'var(--gradient-solid)'; out.gradient = getComputedStyle(g).backgroundImage;
   out.scheme = getComputedStyle(document.documentElement).colorScheme; out.bandScheme = getComputedStyle(document.getElementById('band')).colorScheme;
   return out;
 };
@@ -76,8 +78,17 @@ try {
         paperRoot: col('root-probe', '--surface'), paperGrey: col('grey-probe', '--surface'),
         inkRoot: col('root-probe', '--text-strong'), inkGrey: col('grey-probe', '--text-strong'),
         paperExact: col('exact-probe', '--surface'),
+        secRoot: col('root-probe', '--secondary-solid'), accRoot: col('root-probe', '--accent-solid'), accLink: col('root-probe', '--accent-on-soft'), secLink: col('root-probe', '--secondary-on-soft'),
+        secScoped: col('acc-probe', '--secondary-solid'), accScoped: col('acc-probe', '--accent-solid'),
+        accBtn: __hex(__rgba(getComputedStyle(document.getElementById('acc-btn')).backgroundColor)), secBtn: __hex(__rgba(getComputedStyle(document.getElementById('sec-btn')).backgroundColor)),
       };
     });
+    // --accent is --secondary's old name: a site that still sets it gets its colour, and the old tokens and class follow
+    const hueOf = (hex) => { const [r, g, b] = [1, 3, 5].map(i => parseInt(hex.substr(i, 2), 16) / 255), mx = Math.max(r, g, b), d = mx - Math.min(r, g, b); if (!d) return null; const h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; return (h * 60 + 360) % 360; };
+    expect(name, near(hueOf(r.secRoot), 200, 10) && r.accRoot === r.secRoot, `:root { --accent } still sets the secondary colour: --secondary-solid ${r.secRoot}, --accent-solid ${r.accRoot} (want hue 200, and equal)`);
+    expect(name, r.accLink === r.secLink, `--accent-on-soft follows --secondary-on-soft (${r.accLink} vs ${r.secLink})`);
+    expect(name, r.secScoped === '#800080' && r.accScoped === '#800080', `[data-dials] --accent: purple: --secondary-solid ${r.secScoped}, --accent-solid ${r.accScoped} (want #800080)`);
+    expect(name, r.accBtn === r.secBtn && near(hueOf(r.accBtn), 200, 10), `.is-accent points at the secondary group, as .is-secondary does (${r.accBtn} vs ${r.secBtn})`);
     expect(name, r.brandScoped !== r.brandRoot && r.brandScoped === '#800080', `[data-dials] --brand: --brand-solid ${r.brandRoot} -> ${r.brandScoped} (want #800080)`);
     expect(name, r.linkScoped !== r.linkRoot, `[data-dials] --brand: --link ${r.linkRoot} -> ${r.linkScoped}`);
     expect(name, Math.abs(r.spaceScoped - r.spaceRoot * 0.8) < 0.5, `[data-dials] --space-density .8: --space-m ${r.spaceRoot}px -> ${r.spaceScoped}px`);
@@ -106,7 +117,7 @@ try {
     expect(name, fb.scopedSurface === '#fafafa', `fallback: the scope keeps the site's exact paper (${fb.scopedSurface})`);
     expect(name, near(fb['scoped-danger'].hue, 15, 25), `fallback: .is-danger still wins on a [data-dials] element (hue ${fb['scoped-danger'].hue?.toFixed(0)})`);
     expect(name, fb.bandSurface < 0.05 && fb.bandText >= 4.5 && fb.bandScheme === 'dark', `fallback: an .is-dark band is dark (paper luminance ${fb.bandSurface.toFixed(3)}, text ${fb.bandText.toFixed(2)}:1, scheme ${fb.bandScheme})`);
-    expect(name, /gradient/.test(fb.gradient), `fallback: --gradient-solid is a valid gradient (got ${fb.gradient})`);
+    expect(name, near(fb.secSoft, 200, 20) && near(fb.accSoft, 200, 20) && near(fb.acc.hue, 200, 20), `fallback: :root { --accent } still sets the secondary colour, and .is-accent follows (--secondary-soft hue ${fb.secSoft?.toFixed(0)}, --accent-soft ${fb.accSoft?.toFixed(0)}, .is-accent button ${fb.acc.hue?.toFixed(0)})`);
     expect(name, fb.scheme === 'light', `fallback: the page is light (got ${fb.scheme})`);
 
     // the last resort, emulated (no color-mix() either): valid, flat and in charge, scopes included

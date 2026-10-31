@@ -1,4 +1,4 @@
-/*! Dials v0.1.2 | MIT | https://github.com/joops/dials */
+/*! Dials v0.2.0 | MIT | https://github.com/joops/dials */
 /* Dials theme: Ink
    Presets: Monochrome colour, Compact type, Square space (presets/colour/monochrome.css, presets/type/compact.css,
    presets/space/square.css). Load after dials.css. This file doesn't set
@@ -8,7 +8,7 @@
 :root, :host {
   /* colour: Monochrome */
   --brand: hsl(0 0% 20%);
-  --accent: hsl(0 0% 45%);
+  --secondary: hsl(0 0% 45%);
   --success: hsl(145 63% 30%);
   --warning: hsl(38 92% 40%);
   --danger: hsl(0 70% 46%);
@@ -25,9 +25,6 @@
   --paper-dark-lightness: 0.16;
   --ink-lightness: 0.2;
   --ink-dark-lightness: 0.94;
-  --gradient-from: var(--brand-solid);
-  --gradient-to: var(--accent-solid);
-  --gradient-angle: 135deg;
   /* type: Compact */
   --screen-min: 360;
   --screen-max: 1240;

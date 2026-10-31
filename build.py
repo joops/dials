@@ -4,6 +4,7 @@
 Sources (hand-edited):  src/colour.css, src/scale.css, src/base.css, src/fallback.css,
                         presets/{colour,type,space}/*.css, themes.json,
                         the rules section of AGENTS.md
+                        src/patterns.md (appended to docs/tokens.md)
 Generated source:       src/fallback-flat.css (by tools/fallback.mjs, which needs a browser;
                         --check fails when its recorded hash of src/colour.css is out of date)
 Outputs:                dials.css, dials-colour.css, dials-scale.css, dials-base.css,
@@ -21,7 +22,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 REPO = "https://github.com/joops/dials"
-GROUPS = ["brand", "accent", "neutral", "success", "warning", "danger", "info"]
+GROUPS = ["brand", "secondary", "neutral", "success", "warning", "danger", "info"]
 KINDS = ["colour", "type", "space"]
 
 
@@ -91,11 +92,10 @@ def load_presets():
 
 # ---------------------------------------------------------------- preset rules
 
-COLOUR_REQUIRED = ["--brand", "--accent", "--success", "--warning", "--danger", "--info", "--grey",
+COLOUR_REQUIRED = ["--brand", "--secondary", "--success", "--warning", "--danger", "--info", "--grey",
                    "--balance", "--fill-lightness", "--dark-lift", "--tint-strength", "--tint-vividness",
                    "--text-contrast", "--white-text-until",
-                   "--paper-lightness", "--paper-dark-lightness", "--ink-lightness", "--ink-dark-lightness",
-                   "--gradient-from", "--gradient-to", "--gradient-angle"]
+                   "--paper-lightness", "--paper-dark-lightness", "--ink-lightness", "--ink-dark-lightness"]
 COLOUR_OPTIONAL = ["--paper-light", "--paper-dark", "--ink-light", "--ink-dark"]
 TYPE_REQUIRED = ["--screen-min", "--screen-max", "--size-min", "--size-max", "--ratio-min", "--ratio-max",
                  "--font-heading", "--font-body", "--font-mono"]
@@ -195,7 +195,7 @@ NO_FALLBACK = [("relative colour", r"\bfrom\s"), ("light-dark()", r"light-dark\(
 def validate_fallback(fallback_src, flat_src, colour_src, scale_src):
     """The fallback blocks use only what older browsers have, never set a dial, and cover every colour token."""
     rows = documented(colour_src, "dials-colour.css") + documented(scale_src, "dials-scale.css")
-    dials = {r["name"] for r in rows if r["kind"] == "dial"} | {"--paper-light", "--paper-dark", "--ink-light", "--ink-dark"}
+    dials = {r["name"] for r in rows if r["kind"] == "dial"} | {"--paper-light", "--paper-dark", "--ink-light", "--ink-dark"} | set(DEPRECATED_DIALS)
     colour_tokens = [r["name"] for r in documented(colour_src, "dials-colour.css") if r["kind"] == "token"]
     for name, src in (("src/fallback.css", fallback_src), ("src/fallback-flat.css", flat_src)):
         body = re.sub(r"@supports[^{]*\{", "", strip_comments(src))
@@ -276,9 +276,11 @@ GROUP_ROLES = {
     "solid": "a solid fill",
     "on-solid": "text on the solid fill: white or black, whichever contrasts more",
     "soft": "a tinted background",
-    "on-soft": "text on the soft tint, and coloured text on the page",
-    "line": "a border in the group's colour",
+    "on-soft": "text on the soft tint, and coloured text on the page: 4.5:1 on its soft tint and every surface",
+    "line": "borders, icons and large text (24px, or 18.66px bold, and up): 3:1 on its soft tint and every surface",
 }
+# Old names that still work, with what replaces them. Not declared anywhere: a site may set them.
+DEPRECATED_DIALS = {"--accent": "--secondary"}
 
 
 def documented(src, file):
@@ -310,8 +312,6 @@ def token_reference(colour_src, scale_src):
                 r["description"] = {"solid": "neutral: ink as a fill", "on-solid": "neutral: paper, as text on the ink fill",
                                     "soft": "neutral: a quiet grey background (--surface-lowered)", "on-soft": "neutral: body text (--text)",
                                     "line": "neutral: the default border (--border)"}[g.group(2)]
-        if r["name"] == "--on-gradient":
-            r["description"] = "text on --gradient-solid: white or black, judged at its midpoint"
         if r["name"] in ("--solid", "--on-solid", "--soft", "--on-soft", "--line"):
             r["description"] = f"the current group's {r['name'][2:]}: brand unless an .is-{{group}} class says otherwise"
         if r["name"].startswith("--space-") and r["kind"] == "token":
@@ -323,20 +323,26 @@ def token_reference(colour_src, scale_src):
         ("--paper-light", "exact page background in light"), ("--paper-dark", "exact page background in dark"),
         ("--ink-light", "exact strongest text in light"), ("--ink-dark", "exact strongest text in dark")]]
     classes = [{"name": f".is-{g}", "description": f"points --solid, --on-solid, --soft, --on-soft and --line at the {g} group"} for g in GROUPS]
+    classes += [{"name": ".is-accent", "description": "deprecated: the old name for .is-secondary, which it still points at"}]
     classes += [{"name": ".is-light", "description": "a light band: color-scheme light, with its own background and text"},
                 {"name": ".is-dark", "description": "a dark band: color-scheme dark, with its own background and text"},
                 {"name": "[data-dials]", "description": "a scope: dials set on it re-derive every token inside it"}]
-    data = {"version": VERSION, "dials": [r for r in rows if r["kind"] == "dial"], "overrides": overrides,
+    deprecated = [{"name": n, "kind": "deprecated", "file": "dials-colour.css", "section": "Renamed colour dials",
+                   "default": "(unset)", "description": f"deprecated: the old name for {new}. While set, it wins over {new}; rename it"}
+                  for n, new in DEPRECATED_DIALS.items()]
+    data = {"version": VERSION, "dials": [r for r in rows if r["kind"] == "dial"], "overrides": overrides, "deprecated": deprecated,
             "tokens": [r for r in rows if r["kind"] == "token"], "classes": classes}
 
     def cell(x):
         return x.replace("|", "\\|")
 
     md = [f"# Dials v{VERSION}: token reference", "",
-          "Generated by `build.py` from `src/colour.css` and `src/scale.css`; don't edit. Machine-readable copy: [`tokens.json`](tokens.json).", "",
+          "Generated by `build.py` from `src/colour.css`, `src/scale.css` and `src/patterns.md`; don't edit. Machine-readable copy: [`tokens.json`](tokens.json).", "",
+          f"This is the reference for Dials v{VERSION}. Names can change between versions: for another one, read this file at its tag, `{REPO}/blob/vX.Y.Z/docs/tokens.md` (the version is in the first line of `dials.css`).", "",
           "**Dials** are the inputs: set them at `:root`, in your own file loaded after `dials.css`, or on a `[data-dials]` element to re-theme part of a page. "
           "**Tokens** are worked out from the dials: use them, never set them. Internal plumbing is prefixed `--dl-` and isn't listed: don't use it.", ""]
-    for title, items, intro in [("Dials", data["dials"], None), ("Optional exact colours", overrides, "Unset by default. Set any of them to use an exact colour instead of the one derived from `--grey`."), ("Tokens", data["tokens"], None)]:
+    for title, items, intro in [("Dials", data["dials"], None), ("Optional exact colours", overrides, "Unset by default. Set any of them to use an exact colour instead of the one derived from `--grey`."),
+                                ("Deprecated dials", deprecated, "Old names that still work in this release. Rename them: they'll be removed in a later one."), ("Tokens", data["tokens"], None)]:
         md += [f"## {title}", ""]
         if intro:
             md += [intro, ""]
@@ -351,6 +357,7 @@ def token_reference(colour_src, scale_src):
                 md.append("")
     md += ["## Classes", "", "| Class | What it does |", "|---|---|"]
     md += [f"| `{c['name']}` | {c['description']} |" for c in classes]
+    md += ["", read("src/patterns.md").strip()]
     return "\n".join(md) + "\n", json.dumps(data, indent=2, ensure_ascii=False) + "\n"
 
 

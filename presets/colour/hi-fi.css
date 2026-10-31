@@ -2,7 +2,7 @@
    Part of the Dials house style: a brushed-aluminium faceplate (black in dark), amber VU meters, a teal display and LED status lights. */
 :root, :host {
   --brand: #f39c12;
-  --accent: #2ec4b6;
+  --secondary: #2ec4b6;
   --success: #3fbf55;
   --warning: #f2c230;
   --danger: #e0322b;
@@ -19,7 +19,4 @@
   --paper-dark-lightness: 0.186;
   --ink-lightness: 0.213;
   --ink-dark-lightness: 0.934;
-  --gradient-from: var(--brand-solid);
-  --gradient-to: var(--danger-solid);
-  --gradient-angle: 90deg;
 }

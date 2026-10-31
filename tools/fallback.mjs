@@ -34,9 +34,6 @@ const values = await page.evaluate((names) => {
     if (c) { out[n] = c; continue; }
     skipped.push(n);
   }
-  const angle = cs.getPropertyValue('--gradient-angle').trim();
-  out['--gradient-solid'] = `linear-gradient(${angle}, ${colour('--gradient-from')}, ${colour('--gradient-to')})`;
-  out['--gradient-soft'] = `linear-gradient(${angle}, ${colour('--gradient-soft-from')}, ${colour('--gradient-soft-to')})`;
   for (const s of ['s', 'm', 'l']) {   // keep the geometry, flatten the colour
     const geo = cs.getPropertyValue(`--shadow-${s}`).trim().match(/^((?:-?[\d.]+(?:px)?\s+){2,3})/);
     out[`--shadow-${s}`] = geo[1].trim() + ' ' + out['--shadow-color'];
