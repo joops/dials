@@ -2,7 +2,7 @@
    Catppuccin Latte in light, Mocha in dark. */
 :root, :host {
   --brand: #8839ef;
-  --accent: #ea76cb;
+  --secondary: #ea76cb;
   --success: #40a02b;
   --warning: #df8e1d;
   --danger: #d20f39;
@@ -19,9 +19,6 @@
   --paper-dark-lightness: 0.16;
   --ink-lightness: 0.2;
   --ink-dark-lightness: 0.94;
-  --gradient-from: var(--brand-solid);
-  --gradient-to: var(--info-solid);
-  --gradient-angle: 135deg;
   --paper-light: #eff1f5;
   --paper-dark: #1e1e2e;
   --ink-light: #4c4f69;

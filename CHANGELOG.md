@@ -1,5 +1,45 @@
 # Changelog
 
+## 0.2.0
+
+The colour pass, from field testing on two real sites.
+
+### Upgrading from 0.1
+
+- **Rename `--accent` to `--secondary`**, and its tokens and class with it: `--accent-solid` → `--secondary-solid` (and `-on-solid`, `-soft`, `-on-soft`, `-line`), `.is-accent` → `.is-secondary`. The old names still work in 0.2 and are deprecated: a site that sets `--accent`, at `:root` or on a `[data-dials]` element, still gets its colour (while it's set, it wins over `--secondary`), and `--accent-*` and `.is-accent` point at the secondary group.
+- **Gradients are gone** (breaking). Remove the dials `--gradient-from`, `--gradient-to` and `--gradient-angle` from your own file, and replace the tokens:
+  - `--gradient-soft` → a wash between two soft tints, declared once in your own file: `--wash: linear-gradient(in oklab 90deg, var(--brand-soft), var(--danger-soft));`. Body text (`--text`, `--text-strong`) keeps 4.5:1 on it.
+  - `--gradient-soft-from` / `--gradient-soft-to` → the soft tints themselves (`--brand-soft` …).
+  - `--gradient-solid` → `linear-gradient(in oklab 90deg, var(--brand-solid), var(--danger-solid))` in your own file, as decoration only.
+  - `--on-gradient` → no replacement: no single text colour passes across a band. Put text on a solid panel (`--solid` with `--on-solid`) or on a wash.
+  - See "Gradients are patterns" in [docs/tokens.md](docs/tokens.md#gradients-are-patterns).
+- **Coloured text is closer to your colour.** `--link`, `--focus` and every `--*-on-soft` were darkened (in dark, lightened) to a fixed OKLCH lightness; now they move only as far as 4.5:1 needs, so most sites' links get lighter and more saturated in light. If you set a colour to pass on purpose, it now stays exactly as set.
+- **`--*-line` is now strong**: a 3:1 colour for borders, icons and large text, where it was a decorative 40% tint into paper. Borders built on `--line` (or `--*-line`) get heavier. To keep one subtle, such as around a tinted message box, use the pattern in [docs/tokens.md](docs/tokens.md#a-subtle-border-in-a-groups-colour): `color-mix(in oklab, var(--line) 40%, var(--border))`, declared once on the component; or use `--border` for a plain one.
+- **The rules block in AGENTS.md is new, and version-agnostic**: copy it again once. From now on it names no dial, token or class (names are in `docs/tokens.md`, for the version you use) and doesn't change between minor versions unless the CHANGELOG says so.
+
+### Changed
+
+- **Coloured text and lines move only as far as their contrast needs.** `--*-on-soft` (so `--link` and `--focus`) and `--*-line` used fixed lightness caps (OKLCH L 0.45 or less in light, 0.8 or more in dark), which over-shot: text landed at 7 to 10.5:1 where 4.5:1 was the target, and the caps cost chroma at the gamut edge. A teal `#007a70`, already 5.2:1 on white, became `#00655c`; an orange `#d04a04` became a deep red `#a01600`; teal text on a navy band went to 10.5:1. Now each colour's linear-light RGB is scaled to the luminance that clears its target on the least contrasting background it sits on (its soft tint, `--surface-lowered` or `--surface-raised`), darker in light and lighter in dark, which keeps its hue and saturation; in dark, once a channel reaches 1, it mixes towards white only as far as still needed. A colour that already passes keeps its exact value. The target has 0.1 of headroom so 8-bit painting can't round it under. Now `#007a70` stays `#007a70`, `#d04a04` gives `#c34503` (4.58:1 at worst), and teal on the navy band gives 4.6 to 4.9:1. The formula is explained in `src/colour.css`.
+- **`--*-line` guarantees 3:1** on its soft tint and every surface, by the same rule with a 3:1 target, starting from the dial rather than the fill, so a bright colour survives in its line where `--balance` darkens the fill. Use it for borders, icons and large text (24px, or 18.66px bold, and up). `--neutral-line` is still `--border`.
+- **`--link-hover`** is the link a step stronger (0.08 darker in OKLCH lightness in light, lighter in dark), moved on to 7:1 if that's short. It was a fixed lightness cap, which left it identical to the link when the link was already past the cap.
+- The target luminance is carried in a colour's alpha, scaled up three times in light, so Firefox rounding a mix's alpha to three decimals costs a third as much. In the contrast check, Firefox's tightest 7:1 hover rises from 7.01:1 to 7.05:1, level with Chromium.
+- `--white-text-until` and on-solid text are unchanged: on-solid compares one fill against a fixed threshold, so the new rule has nothing to simplify there.
+- The fallback for browsers without relative colour can't move a colour only as far as it needs: on-soft is still the dial mixed 26% into ink, and line is now the dial mixed 40% into ink (was 40% into paper), which holds 3:1 for every theme and the random dial sets, light and in `.is-dark` bands. Both over-shoot for most colours there.
+- **The rules block in AGENTS.md is version-agnostic**: it says how to use and tune Dials and names no dial, token or class, except `dials.css`, `dials-base.css`, `docs/tokens.md`, `[data-dials]` and the `--dl-` prefix. It points at the `docs/tokens.md` of the version in use (and how to find a pinned version's), and doesn't change between minor versions unless the CHANGELOG says so. It adds the token rule: Dials has a token only where it works something out or guarantees something; anything built from tokens is a documented pattern.
+
+### Removed
+
+- **Breaking**: the gradient dials `--gradient-from`, `--gradient-to`, `--gradient-angle`, and the tokens `--gradient-solid`, `--gradient-soft`, `--gradient-soft-from`, `--gradient-soft-to` and `--on-gradient`, from the chain, both fallbacks, the presets, themes, docs and playground. The dials only pointed at tokens, `--on-gradient` was judged at the midpoint so either end could fail, and any two soft tints already give what `--gradient-soft` promised. They're patterns now: see "Upgrading from 0.1".
+
+### Deprecated
+
+- `--accent`, `--accent-solid`, `--accent-on-solid`, `--accent-soft`, `--accent-on-soft`, `--accent-line` and `.is-accent`: renamed `--secondary` …; they still work in 0.2.
+
+### Checks
+
+- Contrast: each group's line at 3:1 on its soft tint and every surface; on-soft at 4.5:1 on all three surfaces as well as its tint; `--text` on every soft tint and on a wash; `--link-hover` at 7:1. A new over-shoot check fails a coloured text or line that moves further than its target needs (more than 0.35 past it, at worst), and the field numbers above are asserted in Chromium and Firefox. The gradient pairings are gone.
+- Scoping: a site that sets `--accent` at `:root` or in a scope still gets its colour, in the chain and the fallback, and `--accent-*` and `.is-accent` follow.
+
 ## 0.1.2
 
 ### Fixed

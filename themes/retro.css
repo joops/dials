@@ -1,4 +1,4 @@
-/*! Dials v0.1.2 | MIT | https://github.com/joops/dials */
+/*! Dials v0.2.0 | MIT | https://github.com/joops/dials */
 /* Dials theme: Retro
    Presets: Gruvbox colour, Dramatic type, Square space (presets/colour/gruvbox.css, presets/type/dramatic.css,
    presets/space/square.css). Load after dials.css. This file doesn't set
@@ -8,7 +8,7 @@
 :root, :host {
   /* colour: Gruvbox */
   --brand: #d65d0e;
-  --accent: #b16286;
+  --secondary: #b16286;
   --success: #98971a;
   --warning: #d79921;
   --danger: #cc241d;
@@ -25,9 +25,6 @@
   --paper-dark-lightness: 0.16;
   --ink-lightness: 0.2;
   --ink-dark-lightness: 0.94;
-  --gradient-from: var(--brand-solid);
-  --gradient-to: var(--accent-solid);
-  --gradient-angle: 135deg;
   --paper-light: #fbf1c7;
   --paper-dark: #282828;
   --ink-light: #3c3836;

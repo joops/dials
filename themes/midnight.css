@@ -1,4 +1,4 @@
-/*! Dials v0.1.2 | MIT | https://github.com/joops/dials */
+/*! Dials v0.2.0 | MIT | https://github.com/joops/dials */
 /* Dials theme: Midnight
    Presets: Dracula colour, Compact type, Compact space (presets/colour/dracula.css, presets/type/compact.css,
    presets/space/compact.css). Load after dials.css. This file doesn't set
@@ -8,7 +8,7 @@
 :root, :host {
   /* colour: Dracula */
   --brand: #bd93f9;
-  --accent: #ff79c6;
+  --secondary: #ff79c6;
   --success: #50fa7b;
   --warning: #ffb86c;
   --danger: #ff5555;
@@ -25,9 +25,6 @@
   --paper-dark-lightness: 0.16;
   --ink-lightness: 0.2;
   --ink-dark-lightness: 0.94;
-  --gradient-from: var(--brand-solid);
-  --gradient-to: var(--accent-solid);
-  --gradient-angle: 135deg;
   --paper-dark: #282a36;
   --ink-dark: #f8f8f2;
   /* type: Compact */

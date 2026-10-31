@@ -1,4 +1,4 @@
-/*! Dials v0.1.2 | MIT | https://github.com/joops/dials */
+/*! Dials v0.2.0 | MIT | https://github.com/joops/dials */
 /* Dials theme: Loud
    Presets: Vivid colour, Dramatic type, Roomy space (presets/colour/vivid.css, presets/type/dramatic.css,
    presets/space/roomy.css). Load after dials.css. This file doesn't set
@@ -8,7 +8,7 @@
 :root, :host {
   /* colour: Vivid */
   --brand: hsl(340 85% 50%);
-  --accent: hsl(42 100% 50%);
+  --secondary: hsl(42 100% 50%);
   --success: hsl(150 80% 35%);
   --warning: hsl(35 100% 45%);
   --danger: hsl(0 85% 50%);
@@ -25,9 +25,6 @@
   --paper-dark-lightness: 0.16;
   --ink-lightness: 0.2;
   --ink-dark-lightness: 0.94;
-  --gradient-from: var(--brand-solid);
-  --gradient-to: var(--accent-solid);
-  --gradient-angle: 135deg;
   /* type: Dramatic */
   --screen-min: 360;
   --screen-max: 1240;

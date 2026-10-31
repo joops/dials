@@ -2,7 +2,7 @@
    Dracula: neon purple and pink on its classic dark grey. */
 :root, :host {
   --brand: #bd93f9;
-  --accent: #ff79c6;
+  --secondary: #ff79c6;
   --success: #50fa7b;
   --warning: #ffb86c;
   --danger: #ff5555;
@@ -19,9 +19,6 @@
   --paper-dark-lightness: 0.16;
   --ink-lightness: 0.2;
   --ink-dark-lightness: 0.94;
-  --gradient-from: var(--brand-solid);
-  --gradient-to: var(--accent-solid);
-  --gradient-angle: 135deg;
   --paper-dark: #282a36;
   --ink-dark: #f8f8f2;
 }

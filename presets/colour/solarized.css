@@ -2,7 +2,7 @@
    Solarized light and dark. */
 :root, :host {
   --brand: #268bd2;
-  --accent: #d33682;
+  --secondary: #d33682;
   --success: #859900;
   --warning: #b58900;
   --danger: #dc322f;
@@ -19,9 +19,6 @@
   --paper-dark-lightness: 0.16;
   --ink-lightness: 0.2;
   --ink-dark-lightness: 0.94;
-  --gradient-from: var(--brand-solid);
-  --gradient-to: var(--accent-solid);
-  --gradient-angle: 135deg;
   --paper-light: #fdf6e3;
   --paper-dark: #002b36;
   --ink-light: #073642;

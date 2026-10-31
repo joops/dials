@@ -2,7 +2,7 @@
    Tokyo Night and its Day variant. */
 :root, :host {
   --brand: #7aa2f7;
-  --accent: #bb9af7;
+  --secondary: #bb9af7;
   --success: #9ece6a;
   --warning: #e0af68;
   --danger: #f7768e;
@@ -19,9 +19,6 @@
   --paper-dark-lightness: 0.16;
   --ink-lightness: 0.2;
   --ink-dark-lightness: 0.94;
-  --gradient-from: var(--brand-solid);
-  --gradient-to: var(--accent-solid);
-  --gradient-angle: 135deg;
   --paper-light: #e1e2e7;
   --paper-dark: #1a1b26;
   --ink-light: #343b58;

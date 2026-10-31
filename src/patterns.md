@@ -1,0 +1,42 @@
+## Patterns
+
+A token exists when Dials computes or guarantees something: a colour worked out from the dials, or a contrast it holds. Anything you can build from existing tokens is a pattern, written in your own file, not a token. These are the documented ones.
+
+### Gradients are patterns
+
+Dials has no gradient tokens. Build a gradient from the group tokens, blended `in oklab` so it crosses straight over rather than swinging round the colour wheel. Declare it once as a custom property in your own file, with a comment, like any other new shade.
+
+```css
+:root {
+  /* a wash for section backgrounds: body text sits on it */
+  --wash: linear-gradient(in oklab 135deg, var(--brand-soft), var(--info-soft));
+  /* a band: decoration only, no text on it */
+  --band: linear-gradient(in oklab 90deg, var(--brand-solid), var(--brand-soft));
+}
+.feature { background: var(--wash); color: var(--text); }
+.hero-strip { background: var(--band); }
+```
+
+- **A wash** runs between two soft tints (`--brand-soft` to `--info-soft`, say). Every soft tint keeps 4.5:1 with `--text` and `--text-strong`, and a blend of two in OKLab sits between them, so body text and headings can sit anywhere on it (the contrast check tests `--text` on every tint and on a wash's midpoint). A group's `--*-on-soft` is only promised on its own tint, so don't use it across a wash.
+- **A band or fade** runs from a solid to a soft tint (`--brand-solid` to `--brand-soft`) or from one solid to another. It's decoration only: no single text colour passes across it, because each end wants the opposite one. Put text on a solid panel (`--solid` with `--on-solid`) or a surface on top of it instead.
+- Browsers without gradient interpolation (2022 and older) drop a declaration that uses `in oklab`. If you support them, write the same gradient without it first: `background: linear-gradient(135deg, var(--brand-soft), var(--info-soft)); background: var(--wash);`.
+
+### A subtle border in a group's colour
+
+Each group's line is strong on purpose: it holds 3:1, for borders that must be seen, icons and large text. For a border that only hints at the group, such as around a tinted message box, blend the line into the decorative border. It's a pattern, declared once, not a token:
+
+```css
+.message {
+  /* a quiet border in the group's colour: decoration, no contrast promised */
+  --message-border: color-mix(in oklab, var(--line) 40%, var(--border));
+  background: var(--soft); color: var(--on-soft);
+  border: var(--border-width-s) solid var(--message-border);
+}
+```
+
+```html
+<div class="message is-warning">Check your levels.</div>
+```
+
+- Declare it on the component, not at `:root`. A custom property works out its `var()` where it's declared, so one declared at `:root` would always use the brand group's line, whatever group class the box has.
+- Choose the percentage to taste: 0% is the plain `--border` and 100% is the full line. A border drawn this way is decoration, so don't rely on it alone to mark a control or a state.

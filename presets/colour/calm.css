@@ -2,7 +2,7 @@
    Low saturation, cool greys. */
 :root, :host {
   --brand: hsl(215 35% 40%);
-  --accent: hsl(160 25% 40%);
+  --secondary: hsl(160 25% 40%);
   --success: hsl(150 35% 32%);
   --warning: hsl(38 55% 42%);
   --danger: hsl(5 50% 45%);
@@ -19,7 +19,4 @@
   --paper-dark-lightness: 0.16;
   --ink-lightness: 0.2;
   --ink-dark-lightness: 0.94;
-  --gradient-from: var(--brand-solid);
-  --gradient-to: var(--info-solid);
-  --gradient-angle: 135deg;
 }

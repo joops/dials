@@ -33,7 +33,7 @@ try {
         if (kind !== 'colour') await p.click(`[role=tab][aria-controls=tab-${kind}]`); else await p.click('[role=tab][aria-controls=tab-colour]');
         await p.click(`[${attr}="${slug}"]`);
         const bad = await p.evaluate(({ dials }) => Object.entries(dials).filter(([k, v]) => {
-          if (/^--(brand|accent|success|warning|danger|info|grey)$/.test(k)) return !document.documentElement.style.getPropertyValue(k);   // rewritten in the chosen format
+          if (/^--(brand|secondary|success|warning|danger|info|grey)$/.test(k)) return !document.documentElement.style.getPropertyValue(k);   // rewritten in the chosen format
           return document.documentElement.style.getPropertyValue(k).trim() !== String(v);
         }).map(([k]) => k), { dials: D[kind][slug].dials });
         expect(name, !bad.length, `${kind} preset ${slug}: not applied: ${bad.join(', ')}`);
@@ -46,7 +46,7 @@ try {
       const ok = await p.evaluate(({ t, D }) => {
         const s = document.documentElement.style;
         const want = { ...D.colour[t.colour].dials, ...D.type[t.type].dials, ...D.space[t.space].dials };
-        return Object.entries(want).every(([k, v]) => /^--(brand|accent|success|warning|danger|info|grey)$/.test(k) ? !!s.getPropertyValue(k) : s.getPropertyValue(k).trim() === String(v))
+        return Object.entries(want).every(([k, v]) => /^--(brand|secondary|success|warning|danger|info|grey)$/.test(k) ? !!s.getPropertyValue(k) : s.getPropertyValue(k).trim() === String(v))
           && document.querySelector(`[data-preset="${t.colour}"]`).getAttribute('aria-pressed') === 'true';
       }, { t, D });
       const fails = await p.$eval('#summary', el => el.textContent);

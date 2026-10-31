@@ -2,7 +2,7 @@
    Gruvbox: retro warm, light and dark. */
 :root, :host {
   --brand: #d65d0e;
-  --accent: #b16286;
+  --secondary: #b16286;
   --success: #98971a;
   --warning: #d79921;
   --danger: #cc241d;
@@ -19,9 +19,6 @@
   --paper-dark-lightness: 0.16;
   --ink-lightness: 0.2;
   --ink-dark-lightness: 0.94;
-  --gradient-from: var(--brand-solid);
-  --gradient-to: var(--accent-solid);
-  --gradient-angle: 135deg;
   --paper-light: #fbf1c7;
   --paper-dark: #282828;
   --ink-light: #3c3836;

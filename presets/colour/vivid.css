@@ -1,8 +1,8 @@
 /* Dials colour preset: Vivid
-   High saturation, rose brand, sunny accent. */
+   High saturation, rose brand, sunny secondary. */
 :root, :host {
   --brand: hsl(340 85% 50%);
-  --accent: hsl(42 100% 50%);
+  --secondary: hsl(42 100% 50%);
   --success: hsl(150 80% 35%);
   --warning: hsl(35 100% 45%);
   --danger: hsl(0 85% 50%);
@@ -19,7 +19,4 @@
   --paper-dark-lightness: 0.16;
   --ink-lightness: 0.2;
   --ink-dark-lightness: 0.94;
-  --gradient-from: var(--brand-solid);
-  --gradient-to: var(--accent-solid);
-  --gradient-angle: 135deg;
 }

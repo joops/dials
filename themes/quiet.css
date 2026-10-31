@@ -1,4 +1,4 @@
-/*! Dials v0.1.2 | MIT | https://github.com/joops/dials */
+/*! Dials v0.2.0 | MIT | https://github.com/joops/dials */
 /* Dials theme: Quiet
    Presets: Calm colour, Balanced type, Airy layout space (presets/colour/calm.css, presets/type/balanced.css,
    presets/space/airy-layout.css). Load after dials.css. This file doesn't set
@@ -8,7 +8,7 @@
 :root, :host {
   /* colour: Calm */
   --brand: hsl(215 35% 40%);
-  --accent: hsl(160 25% 40%);
+  --secondary: hsl(160 25% 40%);
   --success: hsl(150 35% 32%);
   --warning: hsl(38 55% 42%);
   --danger: hsl(5 50% 45%);
@@ -25,9 +25,6 @@
   --paper-dark-lightness: 0.16;
   --ink-lightness: 0.2;
   --ink-dark-lightness: 0.94;
-  --gradient-from: var(--brand-solid);
-  --gradient-to: var(--info-solid);
-  --gradient-angle: 135deg;
   /* type: Balanced */
   --screen-min: 360;
   --screen-max: 1240;
