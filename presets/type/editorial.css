@@ -1,0 +1,13 @@
+/* Dials type preset: Editorial
+   Long reading: serif throughout, a perfect fourth on desktop. */
+:root, :host {
+  --screen-min: 360;
+  --screen-max: 1240;
+  --size-min: 18;
+  --size-max: 21;
+  --ratio-min: 1.2;
+  --ratio-max: 1.333;
+  --font-heading: "Fraunces", ui-serif, Georgia, serif;
+  --font-body: "Source Serif 4", ui-serif, Georgia, serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}

@@ -1,0 +1,46 @@
+/*! Dials v0.1.0 | MIT | https://github.com/joops/dials */
+/* Dials theme: Quiet
+   Presets: Calm colour, Balanced type, Airy layout space (presets/colour/calm.css, presets/type/balanced.css,
+   presets/space/airy-layout.css). Load after dials.css. This file doesn't set
+   color-scheme: the theme works in light and dark, and follows the page's setting.
+   Faces: <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700&family=Figtree:wght@400;700&display=swap">
+*/
+:root, :host {
+  /* colour: Calm */
+  --brand: hsl(215 35% 40%);
+  --accent: hsl(160 25% 40%);
+  --success: hsl(150 35% 32%);
+  --warning: hsl(38 55% 42%);
+  --danger: hsl(5 50% 45%);
+  --info: hsl(210 40% 44%);
+  --grey: hsl(220 12% 50%);
+  --balance: 1;
+  --fill-lightness: 0.5;
+  --dark-lift: 0.1;
+  --tint-strength: 11%;
+  --tint-vividness: 1;
+  --text-contrast: 0;
+  --white-text-until: 0.179;
+  --paper-lightness: 0.985;
+  --paper-dark-lightness: 0.16;
+  --ink-lightness: 0.2;
+  --ink-dark-lightness: 0.94;
+  --gradient-from: var(--brand-solid);
+  --gradient-to: var(--info-solid);
+  --gradient-angle: 135deg;
+  /* type: Balanced */
+  --screen-min: 360;
+  --screen-max: 1240;
+  --size-min: 16;
+  --size-max: 19;
+  --ratio-min: 1.2;
+  --ratio-max: 1.25;
+  --font-heading: "Fraunces", ui-serif, Georgia, serif;
+  --font-body: "Figtree", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  /* space: Airy layout */
+  --space-min: 18;
+  --space-max: 28;
+  --space-density: 1;
+  --radius-base: 12;
+}

@@ -1,0 +1,8 @@
+/* Dials space preset: Default
+   Follows body text size, density 1, 10px corners. */
+:root, :host {
+  --space-min: var(--size-min);
+  --space-max: var(--size-max);
+  --space-density: 1;
+  --radius-base: 10;
+}

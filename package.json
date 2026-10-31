@@ -1,0 +1,39 @@
+{
+  "name": "@joops/dials",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Dials: an AI-first CSS framework. A token-based system that derives colour, type and space live in the browser from a few dials.",
+  "license": "MIT",
+  "author": "joops",
+  "homepage": "https://github.com/joops/dials",
+  "repository": { "type": "git", "url": "git+https://github.com/joops/dials.git" },
+  "keywords": ["css", "design-tokens", "theme", "oklch", "fluid-type", "ai"],
+  "style": "dials.css",
+  "files": [
+    "dials.css",
+    "dials-colour.css",
+    "dials-scale.css",
+    "dials-base.css",
+    "themes/",
+    "presets/",
+    "docs/",
+    "AGENTS.md",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "python3 build.py",
+    "check:build": "python3 build.py --check",
+    "fallback": "node tools/fallback.mjs",
+    "check:fallback": "node tools/fallback.mjs --check",
+    "check:contrast": "node checks/contrast.mjs",
+    "check:scoping": "node checks/scoping.mjs",
+    "check:playground": "node checks/playground.mjs",
+    "check": "python3 build.py --check && node tools/fallback.mjs --check && node checks/contrast.mjs && node checks/scoping.mjs && node checks/playground.mjs",
+    "serve": "python3 -m http.server 8000"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
+  }
+}

@@ -1,0 +1,8 @@
+/* Dials space preset: Roomy
+   Generous spacing, soft corners. */
+:root, :host {
+  --space-min: var(--size-min);
+  --space-max: var(--size-max);
+  --space-density: 1.3;
+  --radius-base: 16;
+}

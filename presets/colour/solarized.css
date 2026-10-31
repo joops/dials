@@ -1,0 +1,29 @@
+/* Dials colour preset: Solarized
+   Solarized light and dark. */
+:root, :host {
+  --brand: #268bd2;
+  --accent: #d33682;
+  --success: #859900;
+  --warning: #b58900;
+  --danger: #dc322f;
+  --info: #2aa198;
+  --grey: #657b83;
+  --balance: 0;
+  --fill-lightness: 0.52;
+  --dark-lift: 0.08;
+  --tint-strength: 11%;
+  --tint-vividness: 1;
+  --text-contrast: 5;
+  --white-text-until: 0.179;
+  --paper-lightness: 0.985;
+  --paper-dark-lightness: 0.16;
+  --ink-lightness: 0.2;
+  --ink-dark-lightness: 0.94;
+  --gradient-from: var(--brand-solid);
+  --gradient-to: var(--accent-solid);
+  --gradient-angle: 135deg;
+  --paper-light: #fdf6e3;
+  --paper-dark: #002b36;
+  --ink-light: #073642;
+  --ink-dark: #eee8d5;
+}

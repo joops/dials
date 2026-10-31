@@ -1,0 +1,107 @@
+{
+  "$comment": "Each theme is one colour, one type and one space preset from presets/. build.py concatenates them into themes/<key>.css. \"preview\" is only the scheme the playground shows the theme in first; theme files never set color-scheme. \"presetOrder\" is the order the playground lists the presets in.",
+  "themes": {
+    "hi-fi": {
+      "name": "Hi-Fi",
+      "colour": "hi-fi",
+      "type": "hi-fi",
+      "space": "machined",
+      "preview": "system"
+    },
+    "editorial": {
+      "name": "Editorial",
+      "colour": "nord",
+      "type": "editorial",
+      "space": "roomy",
+      "preview": "light"
+    },
+    "midnight": {
+      "name": "Midnight",
+      "colour": "dracula",
+      "type": "compact",
+      "space": "compact",
+      "preview": "dark"
+    },
+    "soft": {
+      "name": "Soft",
+      "colour": "catppuccin",
+      "type": "friendly",
+      "space": "roomy",
+      "preview": "light"
+    },
+    "retro": {
+      "name": "Retro",
+      "colour": "gruvbox",
+      "type": "dramatic",
+      "space": "square",
+      "preview": "dark"
+    },
+    "terminal": {
+      "name": "Terminal",
+      "colour": "tokyo-night",
+      "type": "terminal",
+      "space": "compact",
+      "preview": "dark"
+    },
+    "paper": {
+      "name": "Paper",
+      "colour": "solarized",
+      "type": "editorial",
+      "space": "default",
+      "preview": "light"
+    },
+    "quiet": {
+      "name": "Quiet",
+      "colour": "calm",
+      "type": "balanced",
+      "space": "airy-layout",
+      "preview": "light"
+    },
+    "loud": {
+      "name": "Loud",
+      "colour": "vivid",
+      "type": "dramatic",
+      "space": "roomy",
+      "preview": "light"
+    },
+    "ink": {
+      "name": "Ink",
+      "colour": "monochrome",
+      "type": "compact",
+      "space": "square",
+      "preview": "light"
+    }
+  },
+  "presetOrder": {
+    "colour": [
+      "hi-fi",
+      "dracula",
+      "tokyo-night",
+      "nord",
+      "solarized",
+      "gruvbox",
+      "catppuccin",
+      "one-dark",
+      "calm",
+      "vivid",
+      "monochrome"
+    ],
+    "type": [
+      "hi-fi",
+      "balanced",
+      "compact",
+      "terminal",
+      "editorial",
+      "friendly",
+      "dramatic"
+    ],
+    "space": [
+      "machined",
+      "default",
+      "compact",
+      "roomy",
+      "airy-layout",
+      "square"
+    ]
+  }
+}

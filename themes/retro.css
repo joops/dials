@@ -1,0 +1,50 @@
+/*! Dials v0.1.0 | MIT | https://github.com/joops/dials */
+/* Dials theme: Retro
+   Presets: Gruvbox colour, Dramatic type, Square space (presets/colour/gruvbox.css, presets/type/dramatic.css,
+   presets/space/square.css). Load after dials.css. This file doesn't set
+   color-scheme: the theme works in light and dark, and follows the page's setting.
+   Faces: <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700&family=Figtree:wght@400;700&display=swap">
+*/
+:root, :host {
+  /* colour: Gruvbox */
+  --brand: #d65d0e;
+  --accent: #b16286;
+  --success: #98971a;
+  --warning: #d79921;
+  --danger: #cc241d;
+  --info: #458588;
+  --grey: #928374;
+  --balance: 0;
+  --fill-lightness: 0.52;
+  --dark-lift: 0.1;
+  --tint-strength: 11%;
+  --tint-vividness: 1;
+  --text-contrast: 10;
+  --white-text-until: 0.179;
+  --paper-lightness: 0.985;
+  --paper-dark-lightness: 0.16;
+  --ink-lightness: 0.2;
+  --ink-dark-lightness: 0.94;
+  --gradient-from: var(--brand-solid);
+  --gradient-to: var(--accent-solid);
+  --gradient-angle: 135deg;
+  --paper-light: #fbf1c7;
+  --paper-dark: #282828;
+  --ink-light: #3c3836;
+  --ink-dark: #ebdbb2;
+  /* type: Dramatic */
+  --screen-min: 360;
+  --screen-max: 1240;
+  --size-min: 16;
+  --size-max: 18;
+  --ratio-min: 1.2;
+  --ratio-max: 1.5;
+  --font-heading: "Fraunces", ui-serif, Georgia, serif;
+  --font-body: "Figtree", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  /* space: Square */
+  --space-min: var(--size-min);
+  --space-max: var(--size-max);
+  --space-density: 1;
+  --radius-base: 0;
+}

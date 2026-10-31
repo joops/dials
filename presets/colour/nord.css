@@ -1,0 +1,29 @@
+/* Dials colour preset: Nord
+   Nord: arctic blues on Polar Night and Snow Storm. */
+:root, :host {
+  --brand: #5e81ac;
+  --accent: #b48ead;
+  --success: #a3be8c;
+  --warning: #ebcb8b;
+  --danger: #bf616a;
+  --info: #88c0d0;
+  --grey: #4c566a;
+  --balance: 0;
+  --fill-lightness: 0.52;
+  --dark-lift: 0.08;
+  --tint-strength: 11%;
+  --tint-vividness: 1;
+  --text-contrast: 8;
+  --white-text-until: 0.179;
+  --paper-lightness: 0.985;
+  --paper-dark-lightness: 0.16;
+  --ink-lightness: 0.2;
+  --ink-dark-lightness: 0.94;
+  --gradient-from: var(--brand-solid);
+  --gradient-to: var(--info-solid);
+  --gradient-angle: 135deg;
+  --paper-light: #eceff4;
+  --paper-dark: #2e3440;
+  --ink-light: #2e3440;
+  --ink-dark: #eceff4;
+}

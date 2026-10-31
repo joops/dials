@@ -1,0 +1,27 @@
+/* Dials colour preset: One Dark
+   One Dark, from Atom. */
+:root, :host {
+  --brand: #61afef;
+  --accent: #c678dd;
+  --success: #98c379;
+  --warning: #e5c07b;
+  --danger: #e06c75;
+  --info: #56b6c2;
+  --grey: #5c6370;
+  --balance: 0;
+  --fill-lightness: 0.52;
+  --dark-lift: 0;
+  --tint-strength: 11%;
+  --tint-vividness: 1;
+  --text-contrast: 18;
+  --white-text-until: 0.179;
+  --paper-lightness: 0.985;
+  --paper-dark-lightness: 0.16;
+  --ink-lightness: 0.2;
+  --ink-dark-lightness: 0.94;
+  --gradient-from: var(--brand-solid);
+  --gradient-to: var(--accent-solid);
+  --gradient-angle: 135deg;
+  --paper-dark: #282c34;
+  --ink-dark: #abb2bf;
+}

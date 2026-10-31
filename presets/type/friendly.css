@@ -1,0 +1,13 @@
+/* Dials type preset: Friendly
+   Large, very legible body text and soft serif headings. */
+:root, :host {
+  --screen-min: 360;
+  --screen-max: 1240;
+  --size-min: 17;
+  --size-max: 20;
+  --ratio-min: 1.2;
+  --ratio-max: 1.333;
+  --font-heading: "Lora", ui-serif, Georgia, serif;
+  --font-body: "Atkinson Hyperlegible", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}

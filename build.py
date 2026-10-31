@@ -1,0 +1,386 @@
+#!/usr/bin/env python3
+"""Build Dials from its sources. Python 3 standard library only.
+
+Sources (hand-edited):  src/colour.css, src/scale.css, src/base.css,
+                        presets/{colour,type,space}/*.css, themes.json,
+                        the rules section of AGENTS.md
+Generated source:       src/fallback.css (by tools/fallback.mjs)
+Outputs:                dials.css, dials-colour.css, dials-scale.css, dials-base.css,
+                        themes/*.css, docs/tokens.md, docs/tokens.json,
+                        site/presets.js, site/dials*.css, site/dials-base-demo.css, site/favicon.svg
+
+    python3 build.py           write every output
+    python3 build.py --check   exit 1 if any output is stale (writes nothing)
+"""
+import json
+import re
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+REPO = "https://github.com/joops/dials"
+GROUPS = ["brand", "accent", "neutral", "success", "warning", "danger", "info"]
+KINDS = ["colour", "type", "space"]
+
+
+def read(rel):
+    return (ROOT / rel).read_text(encoding="utf-8")
+
+
+def fail(msg):
+    sys.stderr.write("build.py: " + msg + "\n")
+    sys.exit(2)
+
+
+VERSION = json.loads(read("package.json"))["version"]
+BANNER = f"/*! Dials v{VERSION} | MIT | {REPO} */\n"
+
+
+# ---------------------------------------------------------------- CSS parsing
+
+def strip_comments(css):
+    return re.sub(r"/\*.*?\*/", "", css, flags=re.S)
+
+
+def blocks(css):
+    """Top-level rules as (selector, body) pairs. Dials sources have no nesting."""
+    out = []
+    for m in re.finditer(r"([^{}]+)\{([^{}]*)\}", strip_comments(css)):
+        out.append((" ".join(m.group(1).split()), m.group(2)))
+    return out
+
+
+def decls(body):
+    """Custom property declarations in a rule body, in order: [(name, value)]."""
+    return [(m.group(1), " ".join(m.group(2).split()))
+            for m in re.finditer(r"(--[\w-]+)\s*:\s*([^;]+);", body)]
+
+
+def first_block(css, selector):
+    for sel, body in blocks(css):
+        if sel == selector:
+            return dict(decls(body))
+    fail(f"no '{selector}' block found")
+
+
+def preset(kind, slug):
+    text = read(f"presets/{kind}/{slug}.css")
+    m = re.match(r"/\*\s*Dials \w+ preset:\s*(.+?)\n\s*(.*?)\s*\*/", text, re.S)
+    if not m:
+        fail(f"presets/{kind}/{slug}.css: missing '/* Dials {kind} preset: Name' header")
+    name, note = m.group(1).strip(), " ".join(m.group(2).split())
+    bl = blocks(text)
+    if len(bl) != 1 or bl[0][0] != ":root, :host":
+        fail(f"presets/{kind}/{slug}.css: expected one ':root, :host' block")
+    return {"name": name, "note": note, "dials": dict(decls(bl[0][1]))}
+
+
+def load_presets():
+    """Every preset, in themes.json's presetOrder (which must list each one)."""
+    out, order = {}, json.loads(read("themes.json")).get("presetOrder", {})
+    for kind in KINDS:
+        files = sorted(f.stem for f in (ROOT / "presets" / kind).glob("*.css"))
+        listed = order.get(kind, files)
+        if sorted(listed) != files:
+            fail(f"themes.json presetOrder.{kind} must list exactly the files in presets/{kind}/: {files}")
+        out[kind] = {slug: preset(kind, slug) for slug in listed}
+    return out
+
+
+# ---------------------------------------------------------------- preset rules
+
+COLOUR_REQUIRED = ["--brand", "--accent", "--success", "--warning", "--danger", "--info", "--grey",
+                   "--balance", "--fill-lightness", "--dark-lift", "--tint-strength", "--tint-vividness",
+                   "--text-contrast", "--white-text-until",
+                   "--paper-lightness", "--paper-dark-lightness", "--ink-lightness", "--ink-dark-lightness",
+                   "--gradient-from", "--gradient-to", "--gradient-angle"]
+COLOUR_OPTIONAL = ["--paper-light", "--paper-dark", "--ink-light", "--ink-dark"]
+TYPE_REQUIRED = ["--screen-min", "--screen-max", "--size-min", "--size-max", "--ratio-min", "--ratio-max",
+                 "--font-heading", "--font-body", "--font-mono"]
+SPACE_REQUIRED = ["--space-min", "--space-max", "--space-density", "--radius-base"]
+REQUIRED = {"colour": (COLOUR_REQUIRED, COLOUR_OPTIONAL), "type": (TYPE_REQUIRED, []), "space": (SPACE_REQUIRED, [])}
+
+
+def validate_presets(presets):
+    for kind, items in presets.items():
+        req, opt = REQUIRED[kind]
+        for slug, p in items.items():
+            keys = list(p["dials"])
+            missing = [k for k in req if k not in keys]
+            extra = [k for k in keys if k not in req + opt]
+            if missing or extra:
+                fail(f"presets/{kind}/{slug}.css: missing {missing} unexpected {extra}")
+
+
+def validate_defaults(presets, colour_src, scale_src):
+    """dials.css's defaults must be the Hi-Fi house theme: one source, checked here."""
+    dc = first_block(colour_src, ":root, :host")
+    ds = first_block(scale_src, ":root, :host")
+    house = THEMES["hi-fi"]
+    for kind, src in (("colour", dc), ("type", ds), ("space", ds)):
+        p = presets[kind][house[kind]]["dials"]
+        for k, v in p.items():
+            if k in COLOUR_OPTIONAL:
+                fail(f"the house colour preset must not set {k}: the default derives it from --grey")
+            if src.get(k) != v:
+                fail(f"src default {k}: {src.get(k)!r} differs from house preset {house[kind]} ({v!r})")
+
+
+# ---------------------------------------------------------------- Google Fonts
+
+def gf_table():
+    """The playground's list of Google Fonts: {lower name: (name, category, weights)}."""
+    m = re.search(r"var GF = (\[.*?\]);\n", read("site/index.html"), re.S)
+    if not m:
+        fail("could not find the GF font list in site/index.html")
+    return {f[0].lower(): f for f in json.loads(m.group(1))}
+
+
+def face(stack):
+    """The web font a stack asks for: its first family, if quoted (else a system stack)."""
+    m = re.match(r'\s*"([^"]+)"', stack or "")
+    return m.group(1) if m else None
+
+
+def gf_param(name, table):
+    f = table.get(name.lower())
+    if not f:
+        fail(f"font '{name}' is not in the playground's Google Fonts list")
+    w = f[2]
+    near = lambda t: min(w, key=lambda x: (abs(x - t), x))
+    chosen = sorted(set([near(400), near(700)])) if len(w) > 1 else []
+    return "family=" + f[0].replace(" ", "+") + (":wght@" + ";".join(map(str, chosen)) if len(chosen) > 1 else "")
+
+
+def fonts_link(type_dials, table):
+    names = []
+    for k in ("--font-heading", "--font-body", "--font-mono"):
+        n = face(type_dials.get(k))
+        if n and n not in names:
+            names.append(n)
+    if not names:
+        return None
+    return ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?'
+            + "&".join(gf_param(n, table) for n in names) + '&display=swap">')
+
+
+# ---------------------------------------------------------------- outputs
+
+def header_comment(src, title):
+    """Swap the source file's first comment line for the dist file's own title."""
+    return re.sub(r"^(/\* =+\n   )Dials: [^\n]*\n", r"\g<1>" + title + "\n", src, count=1)
+
+
+def dist_files(colour_src, scale_src, base_src, fallback_src, house_link):
+    colour = header_comment(colour_src, "Dials: colour (dials-colour.css)")
+    scale = header_comment(scale_src, "Dials: type and space (dials-scale.css)")
+    base = header_comment(base_src, "Dials: base (dials-base.css, optional)")
+    fallback = fallback_src.strip() + "\n" if fallback_src.strip() else ""
+    intro = ("/* Dials: an AI-first CSS framework. This file is the fallback for older browsers,\n"
+             "   then dials-colour.css, then dials-scale.css; dials-base.css is optional.\n"
+             "   Default theme: Hi-Fi. Load its faces with:\n   " + house_link + "\n*/\n")
+    return {
+        "dials-colour.css": BANNER + colour,
+        "dials-scale.css": BANNER + scale,
+        "dials-base.css": BANNER + base,
+        "dials.css": BANNER + intro + fallback + colour + scale,
+    }
+
+
+def theme_file(key, t, presets, table):
+    parts = [(k, presets[k][t[k]]) for k in KINDS]
+    link = fonts_link(presets["type"][t["type"]]["dials"], table)
+    names = ", ".join(f"{p['name']} {k}" for k, p in parts)
+    out = [BANNER.rstrip("\n"),
+           f"/* Dials theme: {t['name']}" + (" (the house theme, and dials.css's default)" if key == "hi-fi" else ""),
+           f"   Presets: {names} (presets/colour/{t['colour']}.css, presets/type/{t['type']}.css,",
+           f"   presets/space/{t['space']}.css). Load after dials.css. This file doesn't set",
+           "   color-scheme: the theme works in light and dark, and follows the page's setting.",
+           f"   Faces: {link}" if link else "   Faces: system fonts only.",
+           "*/",
+           ":root, :host {"]
+    for k, p in parts:
+        out.append(f"  /* {k}: {p['name']} */")
+        out += [f"  {n}: {v};" for n, v in p["dials"].items()]
+    out.append("}")
+    return "\n".join(out) + "\n"
+
+
+def scoped_base(base_src, scope=".base-demo"):
+    """dials-base.css with every rule confined to `scope`, for the playground's demo boxes."""
+    out = [f"/* Generated by build.py from src/base.css: the same rules confined to {scope}, so the\n"
+           "   playground can show plain HTML without restyling its own page. Don't edit. */"]
+    for sel, body in blocks(base_src):
+        sels = []
+        for s in [x.strip() for x in re.split(r",(?![^()]*\))", sel)]:
+            if s == ":where(html)":
+                continue
+            sels.append(scope if s == ":where(body)" else f"{scope} {s}")
+        if sels:
+            out.append(", ".join(sels) + " { " + " ".join(body.split()) + " }")
+    return "\n".join(out) + "\n"
+
+
+def agents_rules():
+    m = re.search(r"<!-- rules:start -->\n(.*?)<!-- rules:end -->", read("AGENTS.md"), re.S)
+    if not m:
+        fail("AGENTS.md needs a <!-- rules:start --> ... <!-- rules:end --> section")
+    return m.group(1).strip() + "\n"
+
+
+def presets_js(presets, table, dial_names):
+    data = {"version": VERSION, "colour": {}, "type": {}, "space": {}, "themes": {}, "rules": agents_rules(), "dialNames": dial_names}
+    for kind in KINDS:
+        for slug, p in presets[kind].items():
+            data[kind][slug] = {"name": p["name"], "note": p["note"], "dials": p["dials"]}
+    for slug, p in presets["type"].items():
+        data["type"][slug]["fonts"] = fonts_link(p["dials"], table)
+    for key, t in THEMES.items():
+        data["themes"][key] = dict(t)
+    return ("/* Generated by build.py from presets/, themes.json and AGENTS.md. Don't edit. */\n"
+            "window.DIALS = " + json.dumps(data, indent=1, ensure_ascii=False) + ";\n")
+
+
+# ---------------------------------------------------------------- token reference
+
+GROUP_ROLES = {
+    "solid": "a solid fill",
+    "on-solid": "text on the solid fill: white or black, whichever contrasts more",
+    "soft": "a tinted background",
+    "on-soft": "text on the soft tint, and coloured text on the page",
+    "line": "a border in the group's colour",
+}
+
+
+def documented(src, file):
+    """Every declaration with its section and trailing comment, from one source file."""
+    rows, section, block = [], "", None
+    for line in src.splitlines():
+        s = line.strip()
+        if re.match(r"^[^/*\s].*\{\s*$", s):
+            block = "dial" if s.startswith(":root, :host {") else "token"
+        h = re.match(r"/\* -{4} (.+?)(?: -{4} \*/|:?$)", s)
+        if h:
+            section = h.group(1).rstrip(":. ")
+            continue
+        m = re.match(r"(--[\w-]+)\s*:\s*(.+?);\s*(?:/\*\s*(.*?)\s*(?:\*/)?)?$", s)
+        if m and block and not m.group(1).startswith("--dl-"):
+            rows.append({"name": m.group(1), "kind": block, "file": file, "section": section,
+                         "default": " ".join(m.group(2).split()), "description": (m.group(3) or "").strip()})
+    return rows
+
+
+def token_reference(colour_src, scale_src):
+    rows = documented(colour_src, "dials-colour.css") + documented(scale_src, "dials-scale.css")
+    for r in rows:
+        g = re.match(r"--(" + "|".join(GROUPS) + r")-(solid|on-solid|soft|on-soft|line)$", r["name"])
+        if g:
+            r["section"] = "Groups"
+            r["description"] = f"{g.group(1)}: {GROUP_ROLES[g.group(2)]}"
+            if g.group(1) == "neutral":
+                r["description"] = {"solid": "neutral: ink as a fill", "on-solid": "neutral: paper, as text on the ink fill",
+                                    "soft": "neutral: a quiet grey background (--surface-lowered)", "on-soft": "neutral: body text (--text)",
+                                    "line": "neutral: the default border (--border)"}[g.group(2)]
+        if r["name"] == "--on-gradient":
+            r["description"] = "text on --gradient-solid: white or black, judged at its midpoint"
+        if r["name"] in ("--solid", "--on-solid", "--soft", "--on-soft", "--line"):
+            r["description"] = f"the current group's {r['name'][2:]}: brand unless an .is-{{group}} class says otherwise"
+        if r["name"].startswith("--space-") and r["kind"] == "token":
+            r["description"] = r["description"] or "fluid space between its two ends"
+        if r["name"].startswith("--size-") and r["kind"] == "token":
+            r["description"] = r["description"] or ("body text" if r["name"] == "--size-0" else "a step of the type scale")
+    overrides = [{"name": n, "kind": "override", "file": "dials-colour.css", "section": "Paper and ink",
+                  "default": "(unset: derived from --grey)", "description": d} for n, d in [
+        ("--paper-light", "exact page background in light"), ("--paper-dark", "exact page background in dark"),
+        ("--ink-light", "exact strongest text in light"), ("--ink-dark", "exact strongest text in dark")]]
+    classes = [{"name": f".is-{g}", "description": f"points --solid, --on-solid, --soft, --on-soft and --line at the {g} group"} for g in GROUPS]
+    classes += [{"name": ".is-light", "description": "a light band: color-scheme light, with its own background and text"},
+                {"name": ".is-dark", "description": "a dark band: color-scheme dark, with its own background and text"},
+                {"name": "[data-dials]", "description": "a scope: dials set on it re-derive every token inside it"}]
+    data = {"version": VERSION, "dials": [r for r in rows if r["kind"] == "dial"], "overrides": overrides,
+            "tokens": [r for r in rows if r["kind"] == "token"], "classes": classes}
+
+    def cell(x):
+        return x.replace("|", "\\|")
+
+    md = [f"# Dials v{VERSION}: token reference", "",
+          "Generated by `build.py` from `src/colour.css` and `src/scale.css`; don't edit. Machine-readable copy: [`tokens.json`](tokens.json).", "",
+          "**Dials** are the inputs: set them at `:root`, in your own file loaded after `dials.css`, or on a `[data-dials]` element to re-theme part of a page. "
+          "**Tokens** are worked out from the dials: use them, never set them. Internal plumbing is prefixed `--dl-` and isn't listed: don't use it.", ""]
+    for title, items, intro in [("Dials", data["dials"], None), ("Optional exact colours", overrides, "Unset by default. Set any of them to use an exact colour instead of the one derived from `--grey`."), ("Tokens", data["tokens"], None)]:
+        md += [f"## {title}", ""]
+        if intro:
+            md += [intro, ""]
+        section = None
+        for r in items:
+            if r["section"] != section:
+                section = r["section"]
+                md += [f"### {section}", "", "| Name | Default | What it is |", "|---|---|---|"]
+            shown = r["default"] if r["kind"] != "token" or len(r["default"]) <= 48 else "derived: see tokens.json"
+            md.append(f"| `{r['name']}` | `{cell(shown)}` | {cell(r['description'])} |")
+            if r is items[-1] or items[items.index(r) + 1]["section"] != section:
+                md.append("")
+    md += ["## Classes", "", "| Class | What it does |", "|---|---|"]
+    md += [f"| `{c['name']}` | {c['description']} |" for c in classes]
+    return "\n".join(md) + "\n", json.dumps(data, indent=2, ensure_ascii=False) + "\n"
+
+
+# ---------------------------------------------------------------- main
+
+THEMES = json.loads(read("themes.json"))["themes"]
+
+
+def build():
+    colour_src, scale_src, base_src = read("src/colour.css"), read("src/scale.css"), read("src/base.css")
+    fallback_src = read("src/fallback.css") if (ROOT / "src/fallback.css").exists() else ""
+    presets = load_presets()
+    validate_presets(presets)
+    for key, t in THEMES.items():
+        for k in KINDS:
+            if t[k] not in presets[k]:
+                fail(f"themes.json: {key} names a missing {k} preset '{t[k]}'")
+    validate_defaults(presets, colour_src, scale_src)
+    table = gf_table()
+    house_link = fonts_link(presets["type"][THEMES["hi-fi"]["type"]]["dials"], table)
+
+    out = dist_files(colour_src, scale_src, base_src, fallback_src, house_link)
+    for name in list(out):
+        out["site/" + name] = out[name]
+    for key, t in THEMES.items():
+        out[f"themes/{key}.css"] = theme_file(key, t, presets, table)
+    out["site/dials-base-demo.css"] = scoped_base(base_src)
+    out["site/favicon.svg"] = (ROOT / "brand/mark/favicon.svg").read_text()
+    rows = documented(colour_src, "dials-colour.css") + documented(scale_src, "dials-scale.css")
+    out["site/presets.js"] = presets_js(presets, table, [r["name"] for r in rows if r["kind"] in ("dial", "override")])
+    out["docs/tokens.md"], out["docs/tokens.json"] = token_reference(colour_src, scale_src)
+    return out
+
+
+def main():
+    check = "--check" in sys.argv[1:]
+    out = build()
+    stale = [p for p, text in out.items()
+             if not (ROOT / p).exists() or (ROOT / p).read_text(encoding="utf-8") != text]
+    orphans = [str(f.relative_to(ROOT)) for f in (ROOT / "themes").glob("*.css") if f"themes/{f.name}" not in out]
+    if check:
+        if stale or orphans:
+            for p in stale:
+                print(f"stale: {p}")
+            for p in orphans:
+                print(f"not generated (remove it, or add it to themes.json): {p}")
+            print("Run: python3 build.py")
+            sys.exit(1)
+        print(f"build.py --check: {len(out)} generated files are up to date (v{VERSION})")
+        return
+    for p in stale:
+        f = ROOT / p
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_text(out[p], encoding="utf-8")
+        print(f"wrote {p}")
+    for p in orphans:
+        print(f"warning: {p} isn't in themes.json")
+    print(f"{len(stale)} of {len(out)} files changed (v{VERSION})")
+
+
+if __name__ == "__main__":
+    main()

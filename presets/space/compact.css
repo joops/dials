@@ -1,0 +1,8 @@
+/* Dials space preset: Compact
+   Tight spacing and small corners. */
+:root, :host {
+  --space-min: var(--size-min);
+  --space-max: var(--size-max);
+  --space-density: 0.75;
+  --radius-base: 6;
+}

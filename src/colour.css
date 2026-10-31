@@ -1,0 +1,181 @@
+/* ============================================================
+   Dials: colour (src/colour.css, the source of dials-colour.css)
+   Dials: seven colours and a few numbers, the only typed values.
+   Derived: surfaces, text, lines, groups and gradients, worked out
+   live with color-mix() and relative colour, in light and dark.
+   Groups: .is-{group} points the ungrouped tokens at a group.
+   Dials live on :root (and :host); the derived chain is declared on
+   :root, [data-dials] and :host, so setting a dial on any
+   [data-dials] element re-derives every token inside it.
+   Needs color-mix(), light-dark() and relative colour. Don't
+   register these with @property: they must resolve where they're
+   used, which is what makes .is-dark bands work.
+   ============================================================ */
+:root, :host {
+  /* ---- Colour dials: any CSS colour, preferably HSL ---- */
+  --brand:   #f39c12;  /* the main colour: links, focus, primary buttons */
+  --accent:  #2ec4b6;  /* a second colour for highlights */
+  --success: #3fbf55;  /* status: done, saved, live */
+  --warning: #f2c230;  /* status: check this */
+  --danger:  #e0322b;  /* status: errors and destructive actions */
+  --info:    #3b82c4;  /* status: neutral news */
+  --grey:    hsl(42 7% 50%);  /* the hue and strength of the tint in paper and ink */
+
+  /* ---- Number dials ---- */
+  --balance: 0;              /* 1: every fill at --fill-lightness, so they carry equal weight. 0: exactly as set */
+  --fill-lightness: 0.52;    /* the shared OKLCH lightness used when --balance is 1 */
+  --dark-lift: 0.04;         /* how much lighter the fills are in dark */
+  --tint-strength: 8%;       /* how much colour goes into a soft tint */
+  --tint-vividness: 1;       /* 1-3: how saturated soft tints are, for crisper pastels */
+  --text-contrast: 0;        /* 0-30: strengthens body, muted and quiet text and strong borders, for paper and ink that sit close together */
+  --white-text-until: 0.179; /* fills below this luminance get white text, above it black. 0.179 gives each fill whichever contrasts more; held between 0.175 and 0.183, where both still give 4.5:1 */
+
+  /* ---- Paper and ink: near-white and near-black, tinted by --grey at these OKLCH lightnesses.
+     To use exact colours instead, set --paper-light, --paper-dark, --ink-light and/or
+     --ink-dark (unset by default) to any colour. ---- */
+  --paper-lightness: 0.922;       /* page background in light */
+  --paper-dark-lightness: 0.186;  /* page background in dark */
+  --ink-lightness: 0.213;         /* strongest text in light */
+  --ink-dark-lightness: 0.934;    /* strongest text in dark */
+
+  /* ---- Gradient dials: two stops, any colour or group token, and an angle ---- */
+  --gradient-from:  var(--brand-solid);   /* the first stop */
+  --gradient-to:    var(--danger-solid);  /* the second stop */
+  --gradient-angle: 90deg;                /* the direction of both gradients */
+}
+
+/* Follow the visitor's light or dark setting. To force one, set
+   :root { color-scheme: light; } (or dark) after dials.css. */
+:root { color-scheme: light dark; }
+
+:root, [data-dials], :host {
+  /* ---- Internal: paper, ink and the six fills, worked out from the dials ---- */
+  --dl-paper-light: var(--paper-light, oklch(from var(--grey) var(--paper-lightness) calc(c * 0.12) h));
+  --dl-paper-dark:  var(--paper-dark,  oklch(from var(--grey) var(--paper-dark-lightness) calc(c * 0.15) h));
+  --dl-ink-light:   var(--ink-light,   oklch(from var(--grey) var(--ink-lightness) calc(c * 0.25) h));
+  --dl-ink-dark:    var(--ink-dark,    oklch(from var(--grey) var(--ink-dark-lightness) calc(c * 0.12) h));
+  --dl-paper: light-dark(var(--dl-paper-light), var(--dl-paper-dark));
+  --dl-ink:   light-dark(var(--dl-ink-light), var(--dl-ink-dark));
+  --dl-paper-grey: oklch(from var(--dl-paper) l 0 h);  /* paper without its tint: soft tints mix into this, so they keep their own hue */
+
+  --dl-brand-base:   oklch(from var(--brand)   calc(l + (var(--fill-lightness) - l) * var(--balance)) c h);
+  --dl-accent-base:  oklch(from var(--accent)  calc(l + (var(--fill-lightness) - l) * var(--balance)) c h);
+  --dl-success-base: oklch(from var(--success) calc(l + (var(--fill-lightness) - l) * var(--balance)) c h);
+  --dl-warning-base: oklch(from var(--warning) calc(l + (var(--fill-lightness) - l) * var(--balance)) c h);
+  --dl-danger-base:  oklch(from var(--danger)  calc(l + (var(--fill-lightness) - l) * var(--balance)) c h);
+  --dl-info-base:    oklch(from var(--info)    calc(l + (var(--fill-lightness) - l) * var(--balance)) c h);
+  --dl-brand:   light-dark(var(--dl-brand-base), oklch(from var(--dl-brand-base) calc(l + var(--dark-lift)) c h));
+  --dl-accent:  light-dark(var(--dl-accent-base), oklch(from var(--dl-accent-base) calc(l + var(--dark-lift)) c h));
+  --dl-success: light-dark(var(--dl-success-base), oklch(from var(--dl-success-base) calc(l + var(--dark-lift)) c h));
+  --dl-warning: light-dark(var(--dl-warning-base), oklch(from var(--dl-warning-base) calc(l + var(--dark-lift)) c h));
+  --dl-danger:  light-dark(var(--dl-danger-base), oklch(from var(--dl-danger-base) calc(l + var(--dark-lift)) c h));
+  --dl-info:    light-dark(var(--dl-info-base), oklch(from var(--dl-info-base) calc(l + var(--dark-lift)) c h));
+
+  /* ---- Surfaces ---- */
+  --surface:         var(--dl-paper);                                            /* the page background */
+  --surface-raised:  oklch(from var(--dl-paper) calc(l + 0.03) calc(c * 0.5) h);  /* cards, fields, popovers */
+  --surface-lowered: color-mix(in oklab, var(--dl-ink) 4%, var(--dl-paper));     /* wells, table headers, quiet panels */
+  --surface-sunken:  color-mix(in oklab, var(--dl-ink) 8%, var(--dl-paper));     /* code, inset areas, disabled fills */
+  --surface-overlay: color-mix(in oklab, black 45%, transparent);                /* the scrim behind a dialog */
+
+  /* ---- Text ---- */
+  --text-strong:   var(--dl-ink);                                                                         /* headings, labels, emphasis */
+  --text:          color-mix(in oklab, var(--dl-ink) calc(86% + var(--text-contrast) * 0.4%), var(--dl-paper));  /* body text */
+  --text-muted:    color-mix(in oklab, var(--dl-ink) calc(70% + var(--text-contrast) * 1%), var(--dl-paper));    /* secondary text */
+  --text-quiet:    color-mix(in oklab, var(--dl-ink) calc(64% + var(--text-contrast) * 1.2%), var(--dl-paper));  /* captions, dates, placeholders */
+  --text-disabled: color-mix(in oklab, var(--dl-ink) 38%, var(--dl-paper));                                /* disabled controls: exempt from contrast rules */
+  --link:          var(--brand-on-soft);                                                                  /* links */
+  --link-hover:    light-dark(oklch(from var(--dl-brand) min(l, 0.36) c h), oklch(from var(--dl-brand) max(l, 0.88) c h));  /* links on hover: a step stronger */
+
+  /* ---- Lines and effects ---- */
+  --border-quiet:  color-mix(in oklab, var(--dl-ink) 7%, var(--dl-paper));   /* dividers that should barely show */
+  --border:        color-mix(in oklab, var(--dl-ink) 13%, var(--dl-paper));  /* card and table borders: decorative */
+  --border-strong: color-mix(in oklab, var(--dl-ink) calc(46% + var(--text-contrast) * 1%), var(--dl-paper));  /* field and control borders: 3:1 on surfaces */
+  --focus:         var(--brand-on-soft);                                     /* the focus ring: opaque, 3:1 or more on surfaces */
+  --selection:     color-mix(in oklab, var(--dl-brand) 22%, var(--dl-paper));  /* selected text background */
+  --shadow-color:  light-dark(color-mix(in oklab, black 10%, transparent), color-mix(in oklab, black 45%, transparent));  /* the colour of shadows */
+  --shadow-s: 0 1px 3px var(--shadow-color);    /* a slight lift: buttons, chips */
+  --shadow-m: 0 4px 14px var(--shadow-color);   /* cards */
+  --shadow-l: 0 12px 32px var(--shadow-color);  /* popovers, menus, dialogs */
+
+  /* ---- Hover and pressed: the second half of a color-mix(), from Web Awesome.
+     Use as color-mix(in oklch, var(--solid), var(--mix-hover)). ---- */
+  --mix-hover:  oklch(from currentColor calc(1 - l) c h) 12%;  /* hover: away from the text colour */
+  --mix-active: oklch(from currentColor calc(1 - l) c h) 22%;  /* pressed: further still */
+
+  /* ---- Groups: brand, accent, neutral, success, warning, danger, info. Five roles each:
+     solid      a solid fill
+     on-solid   text on it: white or black, whichever contrasts more (its sRGB luminance, as painted, vs --white-text-until)
+     soft       a tinted background: the colour, held at L 0.7 or lighter in light (0.6 or darker in dark), mixed in OKLab
+                into paper with its own tint taken out, so a blue soft stays blue on cream paper
+     on-soft    text on soft, and coloured text on the page: the hue held below L 0.45 in light, above 0.8 in dark,
+                clipped to sRGB and held again, so a colour outside sRGB can't paint lighter than the limit
+     line       a border in the group's colour ---- */
+  --brand-solid:    var(--dl-brand);
+  --brand-on-solid: color(from var(--dl-brand) srgb-linear calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.183) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.183) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.183) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) / 1);
+  --brand-soft:     oklch(from color-mix(in oklab, light-dark(oklch(from var(--dl-brand) max(l, 0.7) c h), oklch(from var(--dl-brand) min(l, 0.6) c h)) var(--tint-strength), var(--dl-paper-grey)) l calc(c * var(--tint-vividness)) h);
+  --brand-on-soft:  light-dark(oklch(from color(from oklch(from var(--dl-brand) min(l, 0.45) c h) srgb clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1)) min(l, 0.45) c h), oklch(from color(from oklch(from var(--dl-brand) max(l, 0.8) c h) srgb clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1)) max(l, 0.8) c h));
+  --brand-line:     color-mix(in oklab, var(--dl-brand) 40%, var(--dl-paper));
+
+  --accent-solid:    var(--dl-accent);
+  --accent-on-solid: color(from var(--dl-accent) srgb-linear calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.183) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.183) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.183) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) / 1);
+  --accent-soft:     oklch(from color-mix(in oklab, light-dark(oklch(from var(--dl-accent) max(l, 0.7) c h), oklch(from var(--dl-accent) min(l, 0.6) c h)) var(--tint-strength), var(--dl-paper-grey)) l calc(c * var(--tint-vividness)) h);
+  --accent-on-soft:  light-dark(oklch(from color(from oklch(from var(--dl-accent) min(l, 0.45) c h) srgb clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1)) min(l, 0.45) c h), oklch(from color(from oklch(from var(--dl-accent) max(l, 0.8) c h) srgb clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1)) max(l, 0.8) c h));
+  --accent-line:     color-mix(in oklab, var(--dl-accent) 40%, var(--dl-paper));
+
+  --neutral-solid:    var(--dl-ink);
+  --neutral-on-solid: var(--dl-paper);
+  --neutral-soft:     var(--surface-lowered);
+  --neutral-on-soft:  var(--text);
+  --neutral-line:     var(--border);
+
+  --success-solid:    var(--dl-success);
+  --success-on-solid: color(from var(--dl-success) srgb-linear calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.183) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.183) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.183) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) / 1);
+  --success-soft:     oklch(from color-mix(in oklab, light-dark(oklch(from var(--dl-success) max(l, 0.7) c h), oklch(from var(--dl-success) min(l, 0.6) c h)) var(--tint-strength), var(--dl-paper-grey)) l calc(c * var(--tint-vividness)) h);
+  --success-on-soft:  light-dark(oklch(from color(from oklch(from var(--dl-success) min(l, 0.45) c h) srgb clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1)) min(l, 0.45) c h), oklch(from color(from oklch(from var(--dl-success) max(l, 0.8) c h) srgb clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1)) max(l, 0.8) c h));
+  --success-line:     color-mix(in oklab, var(--dl-success) 40%, var(--dl-paper));
+
+  --warning-solid:    var(--dl-warning);
+  --warning-on-solid: color(from var(--dl-warning) srgb-linear calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.183) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.183) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.183) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) / 1);
+  --warning-soft:     oklch(from color-mix(in oklab, light-dark(oklch(from var(--dl-warning) max(l, 0.7) c h), oklch(from var(--dl-warning) min(l, 0.6) c h)) var(--tint-strength), var(--dl-paper-grey)) l calc(c * var(--tint-vividness)) h);
+  --warning-on-soft:  light-dark(oklch(from color(from oklch(from var(--dl-warning) min(l, 0.45) c h) srgb clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1)) min(l, 0.45) c h), oklch(from color(from oklch(from var(--dl-warning) max(l, 0.8) c h) srgb clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1)) max(l, 0.8) c h));
+  --warning-line:     color-mix(in oklab, var(--dl-warning) 40%, var(--dl-paper));
+
+  --danger-solid:    var(--dl-danger);
+  --danger-on-solid: color(from var(--dl-danger) srgb-linear calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.183) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.183) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.183) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) / 1);
+  --danger-soft:     oklch(from color-mix(in oklab, light-dark(oklch(from var(--dl-danger) max(l, 0.7) c h), oklch(from var(--dl-danger) min(l, 0.6) c h)) var(--tint-strength), var(--dl-paper-grey)) l calc(c * var(--tint-vividness)) h);
+  --danger-on-soft:  light-dark(oklch(from color(from oklch(from var(--dl-danger) min(l, 0.45) c h) srgb clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1)) min(l, 0.45) c h), oklch(from color(from oklch(from var(--dl-danger) max(l, 0.8) c h) srgb clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1)) max(l, 0.8) c h));
+  --danger-line:     color-mix(in oklab, var(--dl-danger) 40%, var(--dl-paper));
+
+  --info-solid:    var(--dl-info);
+  --info-on-solid: color(from var(--dl-info) srgb-linear calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.183) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.183) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.183) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) / 1);
+  --info-soft:     oklch(from color-mix(in oklab, light-dark(oklch(from var(--dl-info) max(l, 0.7) c h), oklch(from var(--dl-info) min(l, 0.6) c h)) var(--tint-strength), var(--dl-paper-grey)) l calc(c * var(--tint-vividness)) h);
+  --info-on-soft:  light-dark(oklch(from color(from oklch(from var(--dl-info) min(l, 0.45) c h) srgb clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1)) min(l, 0.45) c h), oklch(from color(from oklch(from var(--dl-info) max(l, 0.8) c h) srgb clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1)) max(l, 0.8) c h));
+  --info-line:     color-mix(in oklab, var(--dl-info) 40%, var(--dl-paper));
+
+  /* ---- Gradients: blended in oklab so they cross straight over rather than
+     swinging round the colour wheel ---- */
+  --gradient-solid:     linear-gradient(in oklab var(--gradient-angle), var(--gradient-from), var(--gradient-to));  /* a bold band: hero, banner */
+  --gradient-soft-from: color-mix(in oklab, var(--gradient-from) 12%, var(--dl-paper));  /* the soft wash's first stop */
+  --gradient-soft-to:   color-mix(in oklab, var(--gradient-to) 12%, var(--dl-paper));    /* the soft wash's second stop */
+  --gradient-soft:      linear-gradient(in oklab var(--gradient-angle), var(--gradient-soft-from), var(--gradient-soft-to));  /* a wash for section backgrounds: body text sits on it */
+  /* text on the solid gradient: white or black, judged at its midpoint; the contrast check tests both ends */
+  --on-gradient: color(from color-mix(in oklab, var(--gradient-from), var(--gradient-to)) srgb-linear calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.183) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.183) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) calc(clamp(0, (clamp(0.175, var(--white-text-until), 0.183) - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1000000, 1)) / 1);
+
+  /* ---- Ungrouped: components use these; .is-{group} points them at a group ---- */
+  --solid:    var(--brand-solid);
+  --on-solid: var(--brand-on-solid);
+  --soft:     var(--brand-soft);
+  --on-soft:  var(--brand-on-soft);
+  --line:     var(--brand-line);
+}
+.is-brand   { --solid: var(--brand-solid);   --on-solid: var(--brand-on-solid);   --soft: var(--brand-soft);   --on-soft: var(--brand-on-soft);   --line: var(--brand-line); }
+.is-accent  { --solid: var(--accent-solid);  --on-solid: var(--accent-on-solid);  --soft: var(--accent-soft);  --on-soft: var(--accent-on-soft);  --line: var(--accent-line); }
+.is-neutral { --solid: var(--neutral-solid); --on-solid: var(--neutral-on-solid); --soft: var(--neutral-soft); --on-soft: var(--neutral-on-soft); --line: var(--neutral-line); }
+.is-success { --solid: var(--success-solid); --on-solid: var(--success-on-solid); --soft: var(--success-soft); --on-soft: var(--success-on-soft); --line: var(--success-line); }
+.is-warning { --solid: var(--warning-solid); --on-solid: var(--warning-on-solid); --soft: var(--warning-soft); --on-soft: var(--warning-on-soft); --line: var(--warning-line); }
+.is-danger  { --solid: var(--danger-solid);  --on-solid: var(--danger-on-solid);  --soft: var(--danger-soft);  --on-soft: var(--danger-on-soft);  --line: var(--danger-line); }
+.is-info    { --solid: var(--info-solid);    --on-solid: var(--info-on-solid);    --soft: var(--info-soft);    --on-soft: var(--info-on-soft);    --line: var(--info-line); }
+/* A light or dark band: its own scheme, and its own background and text worked out in it */
+.is-light { color-scheme: light; background-color: var(--surface); color: var(--text); }
+.is-dark  { color-scheme: dark;  background-color: var(--surface); color: var(--text); }

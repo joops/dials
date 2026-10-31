@@ -1,0 +1,13 @@
+/* Dials type preset: Terminal
+   Compact sizes with monospace headings: IBM Plex Mono over IBM Plex Sans, for tools and dashboards that should feel like a console. */
+:root, :host {
+  --screen-min: 360;
+  --screen-max: 1240;
+  --size-min: 14;
+  --size-max: 16;
+  --ratio-min: 1.125;
+  --ratio-max: 1.2;
+  --font-heading: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-body: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}

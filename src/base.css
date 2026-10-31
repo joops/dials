@@ -1,0 +1,68 @@
+/* ============================================================
+   Dials: base (optional; src/base.css, the source of dials-base.css)
+   Plain HTML elements styled from the Dials tokens, so a page with
+   no classes already looks right. Every rule, states included, is
+   wrapped in :where(), which has zero specificity: any rule your
+   site writes wins without a fight. The two pseudo-element rules
+   (::selection, ::placeholder) can't go inside :where(), so they
+   carry the lowest specificity a selector can have, (0,0,1).
+   Logical properties throughout, so right-to-left pages work.
+   No component classes: a link that should look like a button is
+   your own component, built from --solid and --on-solid.
+   ============================================================ */
+:where(html) { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+:where(body) { margin: 0; background: var(--surface); color: var(--text); font: var(--size-0)/1.6 var(--font-body); }
+::selection { background: var(--selection); }
+:where(:focus-visible) { outline: var(--border-width-l) solid var(--focus); outline-offset: var(--border-width-m); }
+
+/* Text */
+:where(h1, h2, h3, h4, h5, h6) { font-family: var(--font-heading); font-weight: 600; color: var(--text-strong); line-height: 1.15; text-wrap: balance; margin-block: var(--space-l) var(--space-xs); margin-inline: 0; }
+:where(h1) { font-size: var(--size-5); }
+:where(h2) { font-size: var(--size-3); }
+:where(h3) { font-size: var(--size-2); }
+:where(h4) { font-size: var(--size-1); }
+:where(h5) { font-size: var(--size-0); }
+:where(h6) { font-size: var(--size--1); }
+:where(p, ul, ol, dl, blockquote, pre, table, figure, details) { margin-block: 0 var(--space-s); margin-inline: 0; }
+:where(ul, ol) { padding-inline-start: 1.4em; }
+:where(li + li) { margin-block-start: var(--space-3xs); }
+:where(strong, b) { color: var(--text-strong); }
+:where(small) { font-size: var(--size--1); color: var(--text-muted); }
+:where(a) { color: var(--link); text-underline-offset: 0.15em; }
+:where(a:hover) { color: var(--link-hover); }
+:where(mark) { background: var(--warning-soft); color: var(--warning-on-soft); padding-inline: 0.15em; }
+:where(hr) { border: 0; border-block-start: var(--border-width-s) solid var(--border); margin-block: var(--space-l); margin-inline: 0; }
+:where(blockquote) { margin-inline-start: 0; padding-inline-start: var(--space-s); border-inline-start: var(--border-width-l) solid var(--brand-line); color: var(--text-muted); }
+:where(code, kbd, samp, pre) { font-family: var(--font-mono); font-size: 0.9em; }
+:where(code, kbd) { background: var(--surface-sunken); padding: 0.1em 0.35em; border-radius: var(--radius-s); }
+:where(pre) { background: var(--surface-sunken); padding: var(--space-s); border-radius: var(--radius-m); overflow-x: auto; }
+:where(pre code) { background: none; padding: 0; }
+:where(img, svg, video, canvas) { max-width: 100%; height: auto; }
+:where(figcaption) { font-size: var(--size--1); color: var(--text-muted); margin-block-start: var(--space-2xs); }
+:where(summary) { cursor: pointer; font-weight: 600; color: var(--text-strong); }
+
+/* Tables */
+:where(table) { border-collapse: collapse; width: 100%; }
+:where(th, td) { text-align: start; padding-block: var(--space-2xs); padding-inline: var(--space-xs); border-block-end: var(--border-width-s) solid var(--border); }
+:where(th) { color: var(--text-strong); font-weight: 600; }
+:where(caption) { text-align: start; color: var(--text-muted); font-size: var(--size--1); padding-block-end: var(--space-2xs); }
+
+/* Forms: field borders use --border-strong, which keeps 3:1 against the surfaces */
+:where(label) { font-weight: 600; color: var(--text-strong); }
+:where(input:not([type=checkbox], [type=radio], [type=range], [type=color], [type=submit], [type=button], [type=reset]), select, textarea) {
+  font: inherit; color: var(--text); background: var(--surface-raised); border: var(--border-width-s) solid var(--border-strong);
+  border-radius: var(--radius-s); padding-block: var(--space-2xs); padding-inline: var(--space-xs); max-width: 100%; box-sizing: border-box; }
+:where(input:focus-visible, select:focus-visible, textarea:focus-visible) { outline: var(--border-width-l) solid var(--focus); outline-offset: var(--border-width-s); border-color: var(--focus); }
+::placeholder { color: var(--text-quiet); opacity: 1; }
+:where(input[type=checkbox], input[type=radio], input[type=range], progress) { accent-color: var(--brand-on-soft); }
+:where([aria-invalid="true"]) { border-color: var(--danger-on-soft); background: var(--danger-soft); }
+:where(fieldset) { border: var(--border-width-s) solid var(--border); border-radius: var(--radius-m); padding: var(--space-s); margin-block: 0 var(--space-s); margin-inline: 0; }
+:where(legend) { font-weight: 600; color: var(--text-strong); padding-inline: var(--space-3xs); }
+
+/* Buttons: the real <button>, solid in the brand colour; .is-danger and friends switch the group */
+:where(button, input[type=submit], input[type=button], input[type=reset]) {
+  font: 600 var(--size--1)/1 var(--font-body); padding-block: var(--space-xs); padding-inline: var(--space-s); border-radius: var(--radius-s);
+  border: var(--border-width-s) solid transparent; background: var(--solid); color: var(--on-solid); cursor: pointer; }
+:where(button:hover, input[type=submit]:hover, input[type=button]:hover, input[type=reset]:hover) { background: color-mix(in oklch, var(--solid), var(--mix-hover)); }
+:where(button:active, input[type=submit]:active, input[type=button]:active, input[type=reset]:active) { background: color-mix(in oklch, var(--solid), var(--mix-active)); }
+:where(button:disabled, input[type=submit]:disabled, input[type=button]:disabled, input[type=reset]:disabled) { background: var(--surface-sunken); color: var(--text-disabled); cursor: not-allowed; }

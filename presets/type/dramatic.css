@@ -1,0 +1,13 @@
+/* Dials type preset: Dramatic
+   A perfect fifth on desktop: big display headings over modest body text. With a ratio this large, set page titles a step or two lower. The golden ratio (1.618) goes further still; try it in the ratio menu. */
+:root, :host {
+  --screen-min: 360;
+  --screen-max: 1240;
+  --size-min: 16;
+  --size-max: 18;
+  --ratio-min: 1.2;
+  --ratio-max: 1.5;
+  --font-heading: "Fraunces", ui-serif, Georgia, serif;
+  --font-body: "Figtree", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}

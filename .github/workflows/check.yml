@@ -1,0 +1,29 @@
+name: check
+on:
+  push:
+  pull_request:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Generated files are up to date
+        run: python3 build.py --check
+      - name: Install Playwright
+        run: |
+          npm install --no-audit --no-fund
+          npx playwright install --with-deps chromium firefox
+      - name: Fallback is up to date
+        run: node tools/fallback.mjs --check
+      - name: Contrast (Chromium and Firefox)
+        run: node checks/contrast.mjs
+      - name: Scoping, specificity and fallback
+        run: node checks/scoping.mjs
+      - name: Playground
+        run: node checks/playground.mjs

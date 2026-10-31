@@ -1,0 +1,1017 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dials</title>
+<meta name="description" content="Dials: an AI-first CSS framework for building sites and web apps. A huge diversity of looks from a few dials.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,640&family=Figtree:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&family=Michroma&family=Barlow:wght@400;500;600;700&family=Share+Tech+Mono&family=Audiowide&display=swap">
+<!-- The real files: build.py copies them into this folder. dials-base.css is linked for its text only
+     (media="not all"); the plain-HTML demo uses dials-base-demo.css, the same rules confined to .base-demo. -->
+<link rel="stylesheet" href="dials.css">
+<link rel="stylesheet" href="dials-base.css" media="not all">
+<link rel="stylesheet" href="dials-base-demo.css">
+<script src="presets.js"></script>
+<!-- The colour picker: vanilla-colorful 0.7.2, loaded from jsDelivr. The integrity hash covers this
+     entry file; the modules it imports from the same pinned version aren't covered by it. -->
+<script type="module" src="https://cdn.jsdelivr.net/npm/vanilla-colorful@0.7.2/hsl-string-color-picker.js" integrity="sha384-Wdx7bCBHObWud8Gfq6HZawTMAWjZqpOkBD1iTyvlomE9KPKqQh6WOsMyhZRwle1H" crossorigin="anonymous"></script>
+<style>
+/* Page: built on the system above. Layout: one column; a control strip; a light/dark preview pair; a token table; the CSS. */
+:root { color-scheme: light;
+  --page-display: var(--font-heading);
+  --page-body: var(--font-body);
+  --page-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }   /* the page's own code face; --font-mono is the theme's */
+@media (prefers-color-scheme: dark) { :root:not([data-scheme]) { color-scheme: dark; } }
+:root[data-scheme="light"] { color-scheme: light; }
+:root[data-scheme="dark"] { color-scheme: dark; }
+.top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.seg { display: inline-flex; gap: 4px; padding: 4px; border-radius: var(--radius-l); background: var(--surface-lowered); border: 1px solid var(--border); }
+.seg .btn { padding: 6px 12px; font-size: 13px; }
+/* the Dials mark, drawn from this page's own tokens, so it re-colours with every theme */
+.brandmark { display: inline-flex; align-items: center; gap: 10px; font: 400 27px/1 "Audiowide", ui-sans-serif, sans-serif; letter-spacing: 0.01em; color: var(--text-strong);
+  --logo-knob: var(--text-strong); --logo-track: var(--border); --logo-level: var(--brand-solid); --logo-pointer: var(--surface); }
+.brandmark svg { width: 34px; height: 34px; }
+.gh-link { margin-inline-end: auto; display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; font: 600 13px var(--page-body); color: var(--text-muted); text-decoration: none; border: 1px solid var(--border); border-radius: var(--radius-m); background: var(--surface-raised); }
+.gh-link:hover { color: var(--text-strong); border-color: var(--border-strong); }
+.gh-link svg { width: 16px; height: 16px; }
+.gh-stars { padding-inline-start: 7px; border-inline-start: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+.dial-ico { width: 15px; height: 15px; vertical-align: -3px; margin-inline-end: 5px; }
+.bm-word { white-space: nowrap; }
+.bm-tag { font: 400 .27em/1 "Audiowide", ui-sans-serif, sans-serif; letter-spacing: .06em; padding: .26em .36em .22em; border-radius: .3em; vertical-align: 1.75em; margin-left: .3em;
+  background: var(--logo-level); color: var(--brand-on-solid); }
+.floatbar { position: fixed; z-index: 30; top: calc(12px + env(safe-area-inset-top, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); display: flex; align-items: center; gap: 6px; padding: 4px; border-radius: var(--radius-l); background: var(--surface-raised); border: 1px solid var(--border); box-shadow: 0 8px 24px var(--shadow-color); max-width: calc(100vw - 32px); }
+.floatbar .fb-group { display: flex; align-items: center; gap: 6px; }
+.floatbar .fb-sep { width: 1px; align-self: stretch; margin: 4px 2px; background: var(--border); }
+.floatbar .fb-scheme { border: 0; padding: 2px; gap: 2px; background: var(--surface-lowered); border-radius: var(--radius-m); }
+.floatbar .btn svg { width: 16px; height: 16px; flex: none; }
+.floatbar #shuffle { display: inline-flex; align-items: center; gap: 6px; }
+.floatbar .btn.icon { padding: 6px 8px; display: inline-grid; place-items: center; }
+.floatbar .fb-scheme .btn { border-color: transparent; background: transparent; }
+.floatbar .fb-scheme .btn[aria-pressed="true"] { background: var(--neutral-solid); color: var(--neutral-on-solid); }
+.floatbar .btn { padding: 6px 12px; font-size: 13px; }
+.floatbar select { font: 600 13px var(--page-body); color: var(--text); background-color: var(--surface-lowered); border: 1px solid var(--border); border-radius: var(--radius-m); padding: 6px 30px 6px 10px; max-width: 200px; }
+/* every dropdown on the page: a drawn chevron, inset from the edge, in the theme's colour */
+.floatbar select, .grad-ctl select, .type-ctl select, .fontbox input { -webkit-appearance: none; appearance: none; cursor: pointer;
+  background-image: linear-gradient(45deg, transparent 50%, var(--text-muted) 50%), linear-gradient(135deg, var(--text-muted) 50%, transparent 50%);
+  background-position: calc(100% - 17px) 55%, calc(100% - 12px) 55%; background-size: 5px 5px, 5px 5px; background-repeat: no-repeat; }
+.grad-ctl select, .type-ctl select, .fontbox input { padding-right: 32px; }
+.fontbox input { cursor: text; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.tipwrap { position: relative; display: inline-flex; }
+.tip { position: absolute; z-index: 40; top: calc(100% + 10px); left: 50%; transform: translateX(-50%); width: 230px; padding: 9px 11px; border-radius: var(--radius-m); background: var(--neutral-solid); color: var(--neutral-on-solid); font: 500 12.5px/1.45 var(--page-body); box-shadow: 0 10px 24px var(--shadow-color); opacity: 0; visibility: hidden; transition: opacity .15s, visibility .15s; pointer-events: none; text-align: left; }
+.tipwrap:hover .tip, .tipwrap:focus-within .tip { opacity: 1; visibility: visible; }
+@media (max-width: 600px) {
+  .tip { top: auto; bottom: calc(100% + 12px); }
+  .floatbar { top: auto; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); right: 50%; transform: translateX(50%); }
+  .floatbar { gap: 4px; }
+  .floatbar #shuffle .lbl { display: none; }
+  .floatbar select { max-width: 170px; }
+  .floatbar select { max-width: 92px; padding: 6px 24px 6px 8px; background-position: calc(100% - 15px) 55%, calc(100% - 10px) 55%; }
+  .floatbar .btn, .floatbar .seg .btn { padding: 6px 8px; font-size: 12.5px; }
+  .floatbar .seg { gap: 2px; }
+  .wrap { padding-bottom: 96px; }
+}
+body { background: var(--surface); color: var(--text); font: 16px/1.55 var(--page-body); }
+::selection { background: var(--selection); }
+.wrap { max-width: 1040px; margin: 0 auto; padding-block: 40px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 44px; }
+h1, h2, h3 { font-family: var(--page-display); font-weight: 640; color: var(--text-strong); text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(24px, 3.6vw, 36px); line-height: 1.2; font-weight: 400; letter-spacing: -0.01em; }
+h2 { font-size: 21px; font-weight: 400; }
+h3 { font-size: 15px; font-weight: 400; }
+p { margin: 0; max-width: 68ch; }
+.lede { color: var(--text-muted); }
+.wrap > header h1 { margin-bottom: 10px; }
+.wrap > header h1 + .lede { margin-bottom: 10px; font-size: 19.5px; line-height: 1.5; max-width: 62ch; color: var(--text); }
+code { font-family: var(--page-mono); font-size: 13px; }
+a { color: var(--link); }
+a:hover { color: var(--link-hover); }
+section { display: grid; gap: 14px; min-width: 0; }
+
+.layers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.layer { background: var(--surface-raised); border: 1px solid var(--border); border-radius: var(--radius-l); padding: 16px; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.layer b { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--brand-on-soft); }
+.layer p { font-size: 15px; color: var(--text-muted); }
+@media (max-width: 720px) { .layers { grid-template-columns: 1fr; } }
+
+/* controls */
+.controls { background: var(--surface-raised); border: 1px solid var(--border); border-radius: var(--radius-l); padding: 18px; display: grid; gap: 16px; box-shadow: 0 6px 20px var(--shadow-color); }
+
+.knob { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; min-width: 0; }
+.knob input[type=color] { flex: none; inline-size: 38px; block-size: 30px; padding: 0; border: 1px solid var(--border-strong); border-radius: var(--radius-s); background: none; cursor: pointer; }
+.knob small { display: block; font: 12px var(--page-mono); color: var(--text-quiet); font-weight: 400; }
+.knob input[type=range] { width: 100%; accent-color: var(--brand-on-soft); }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.row .label { font-size: 13px; color: var(--text-quiet); margin-right: 4px; }
+
+.cdials { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.cdial { display: grid; gap: 6px; padding: 10px; border-radius: var(--radius-m); background: var(--surface-lowered); min-width: 0; }
+.cdial b { font-size: 13.5px; color: var(--text-strong); }
+.cdial input[type=color] { width: 100%; height: 44px; padding: 0; border: 1px solid var(--border-strong); border-radius: var(--radius-s); background: none; cursor: pointer; }
+.cdial input[type=text] { width: 100%; box-sizing: border-box; font: 12px var(--page-mono); color: var(--text); background: var(--surface-raised); border: 1px solid var(--border); border-radius: var(--radius-s); padding: 5px 6px; }
+.cdial input[type=text]:focus { outline: 2px solid var(--focus); }
+.cdial input[type=text][aria-invalid="true"] { border-color: var(--danger-line); }
+.balance { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 18px; align-items: center; }
+.balance .ctl-note { grid-column: 1 / -1; }
+.balance .dial { grid-template-columns: 100px minmax(0, 1fr) 44px; }
+@media (max-width: 560px) { .balance { grid-template-columns: 1fr; } }
+.more { border: 1px solid var(--border); border-radius: var(--radius-m); padding: 10px 14px; }
+.more summary { cursor: pointer; font-weight: 600; color: var(--text-muted); font-size: 14px; }
+.more-body { display: grid; gap: 10px; padding-top: 10px; }
+.more .dial { grid-template-columns: 100px minmax(0, 1fr) 44px; max-width: 460px; }
+.ctl-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; align-items: start; }
+.btn.soft[aria-pressed="true"] { background: var(--neutral-solid); color: var(--neutral-on-solid); border-color: transparent; }
+.ctl-note { font-size: 13px; color: var(--text-quiet); margin-top: 4px; }
+@media (max-width: 760px) { .ctl-grid { grid-template-columns: 1fr; } }
+.ctl { border: 1px solid var(--border); border-radius: var(--radius-l); padding: 12px 14px 14px; margin: 0; min-width: 0; }
+.ctl legend { font: 560 15px var(--page-display); color: var(--text-strong); padding: 0 6px; }
+.ctl-rows { display: grid; gap: 8px; }
+.dial { display: grid; grid-template-columns: 112px minmax(0, 1fr) 52px; align-items: center; gap: 10px; font-size: 13.5px; }
+.dial span { color: var(--text-muted); font-weight: 600; }
+.dial output { font: 12px var(--page-mono); color: var(--text-quiet); text-align: right; font-variant-numeric: tabular-nums; }
+.dial input[type=range] { width: 100%; accent-color: var(--brand-on-soft); }
+.hexrow { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 13px; color: var(--text-muted); padding-top: 4px; }
+.hex { position: relative; display: inline-flex; align-items: center; gap: 6px; }
+.hex label { cursor: pointer; }
+.swatch.mini { width: 30px; height: 24px; }
+.swatch.mini:disabled { opacity: .35; cursor: default; }
+.colours { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 12px; }
+.colour { display: grid; gap: 6px; padding: 10px 12px; border-radius: var(--radius-m); background: var(--surface-lowered); min-width: 0; }
+.colour header { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--text-strong); }
+.colour header i { width: 26px; height: 26px; border-radius: var(--radius-s); box-shadow: inset 0 0 0 1px var(--border); }
+.colour header .hex { margin-left: auto; font-weight: 500; }
+.colour .dial { grid-template-columns: 70px minmax(0, 1fr) 46px; }
+.colour.hexed .dial { opacity: .4; }
+.hue-track { -webkit-appearance: none; appearance: none; height: 10px; border-radius: var(--radius-l);
+  background: linear-gradient(90deg, oklch(.7 .13 0), oklch(.7 .13 60), oklch(.7 .13 120), oklch(.7 .13 180), oklch(.7 .13 240), oklch(.7 .13 300), oklch(.7 .13 360)); }
+.hue-track::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--surface-raised); border: 2px solid var(--text-strong); }
+.hue-track::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--surface-raised); border: 2px solid var(--text-strong); }
+
+.grad-ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; font-size: 13.5px; color: var(--text-muted); font-weight: 600; }
+.grad-ctl select { font: 500 13.5px var(--page-body); color: var(--text); background-color: var(--surface-raised); border: 1px solid var(--border-strong); border-radius: var(--radius-s); padding: 5px 8px; }
+.grad-ctl .dial { grid-template-columns: 50px 160px 52px; }
+.grad-sample { width: 120px; height: 28px; border-radius: var(--radius-s); background: var(--gradient-solid); box-shadow: inset 0 0 0 1px var(--border); }
+.cdial { position: relative; }
+.swatch { display: block; width: 100%; height: 44px; border-radius: var(--radius-s); border: 1px solid var(--border-strong); cursor: pointer; padding: 0; }
+.swatch:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.pop { position: absolute; z-index: 20; top: 100%; left: 0; margin-top: 6px; padding: 12px; border-radius: var(--radius-l); background: var(--surface-raised); border: 1px solid var(--border); box-shadow: 0 12px 32px var(--shadow-color); display: grid; gap: 8px; width: 220px; }
+.pop[hidden], [hidden] { display: none; }
+.pop hsl-string-color-picker { width: 196px; height: 180px; }
+.pop .pop-val { font: 12px var(--page-mono); color: var(--text-muted); }
+.pop .pop-fmt { display: flex; gap: 2px; }
+.pop .pop-fmt .btn { padding: 4px 7px; font-size: 11.5px; flex: 1; }
+.hero { background: var(--gradient-solid); color: var(--on-gradient); border-radius: var(--radius-l); padding: var(--space-m); display: grid; gap: 4px; }
+.hero h4 { margin: 0; font: 600 var(--size-2)/1.2 var(--font-heading); color: inherit; }
+.hero p { font-size: var(--size--1); }
+.wash { background: var(--gradient-soft); color: var(--text); border-radius: var(--radius-l); padding: var(--space-s); display: grid; gap: 2px; font-size: var(--size--1); border: 1px solid var(--border-quiet); }
+.wash b { color: var(--text-strong); }
+
+.credits-foot { display: grid; gap: 8px; padding-top: 24px; border-top: 1px solid var(--border); color: var(--text-muted); }
+.credits-foot h2 { font-size: 17px; }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin: -4px 0 4px; }
+.tabs [role=tab] { font: 650 15px var(--page-body); color: var(--text-muted); background: none; border: 0; border-bottom: 3px solid transparent; padding: 8px 14px; cursor: pointer; margin-bottom: -1px; }
+.tabs [role=tab][aria-selected="true"] { color: var(--text-strong); border-bottom-color: var(--brand-solid); }
+.tabs [role=tab]:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: var(--radius-s); }
+.tabpanel { display: grid; gap: 16px; }
+.tabpanel[hidden] { display: none; }
+.type-ctl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 32px; }
+@media (max-width: 760px) { .type-ctl { grid-template-columns: 1fr; } }
+.type-ctl .lbl { color: var(--text-muted); font-weight: 600; font-size: 13.5px; display: inline-flex; align-items: center; }
+.type-ctl .lbl label { cursor: pointer; }
+.type-ctl .dial { grid-template-columns: 150px minmax(0, 1fr) 52px; }
+.type-ctl label.fontrow, .type-ctl div.fontrow { display: grid; align-items: center; gap: 10px; grid-template-columns: 150px minmax(0, 1fr); position: relative; }
+.info { display: inline-grid; place-items: center; width: 16px; height: 16px; margin-left: 5px; padding: 0; border-radius: 50%; border: 1px solid var(--border-strong); background: var(--surface-raised); color: var(--text-quiet); font: 700 10px/1 var(--page-body); cursor: help; position: relative; vertical-align: 1px; }
+.info:hover, .info:focus-visible { color: var(--text-strong); border-color: var(--text-muted); }
+.info::after { content: attr(data-tip); display: none; position: absolute; z-index: 45; left: -8px; bottom: calc(100% + 8px); width: 250px; padding: 9px 11px; border-radius: var(--radius-m); background: var(--neutral-solid); color: var(--neutral-on-solid); font: 500 12.5px/1.45 var(--page-body); text-align: left; box-shadow: 0 10px 24px var(--shadow-color); white-space: normal; }
+.info:hover::after, .info:focus-visible::after { display: block; }
+.fontbox { position: relative; min-width: 0; }
+.fontlist { position: absolute; z-index: 40; left: 0; right: 0; top: calc(100% + 4px); max-height: 260px; overflow-y: auto; margin: 0; padding: 4px; list-style: none; background: var(--surface-raised); border: 1px solid var(--border-strong); border-radius: var(--radius-m); box-shadow: 0 12px 28px var(--shadow-color); }
+.fontlist li { display: flex; justify-content: space-between; gap: 8px; padding: 6px 8px; border-radius: var(--radius-s); cursor: pointer; font-size: 13.5px; }
+.fontlist li small { color: var(--text-quiet); font-size: 11.5px; }
+.fontlist li[aria-selected="true"], .fontlist li:hover { background: var(--brand-soft); color: var(--brand-on-soft); }
+.type-ctl label.fontrow { display: grid; grid-template-columns: 150px minmax(0, 1fr); align-items: center; gap: 10px; font-size: 13.5px; }
+.type-ctl label.fontrow span { color: var(--text-muted); font-weight: 600; }
+.type-ctl select, .type-ctl input[type=text] { font: 500 13.5px var(--page-body); color: var(--text); background-color: var(--surface-raised); border: 1px solid var(--border-strong); border-radius: var(--radius-s); padding: 5px 8px; min-width: 0; width: 100%; box-sizing: border-box; }
+.font-preview { font-size: 13px; color: var(--text-quiet); grid-column: 2; }
+.specimen { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 18px; }
+@media (max-width: 860px) { .specimen { grid-template-columns: 1fr; } }
+.article { background: var(--surface-raised); border: 1px solid var(--border); border-radius: var(--radius-l); padding: var(--space-l); font-family: var(--font-body); font-size: var(--size-0); line-height: 1.55; color: var(--text); min-width: 0; }
+.article > * + * { margin-top: var(--space-s); }
+.article p { max-width: none; }
+.article .kicker { display: block; font-size: var(--size--1); letter-spacing: .06em; text-transform: uppercase; color: var(--brand-on-soft); font-weight: 700; }
+.article h3 { font: 600 var(--size-4)/1.08 var(--font-heading); color: var(--text-strong); margin-top: var(--space-2xs); }
+.article .lead { font-size: var(--size-1); color: var(--text-muted); line-height: 1.4; }
+.article h4 { font: 600 var(--size-2)/1.15 var(--font-heading); color: var(--text-strong); margin-top: var(--space-l); }
+.article h5 { font: 600 var(--size-1)/1.25 var(--font-heading); color: var(--text-strong); margin-top: var(--space-m); }
+.article small { display: block; font-size: var(--size--1); color: var(--text-quiet); }
+.article .stat { display: flex; gap: var(--space-l); flex-wrap: wrap; margin-top: var(--space-m); }
+.article .stat b { display: block; font: 600 var(--size-6)/1 var(--font-heading); color: var(--text-strong); }
+.ladder, .spaces { display: grid; gap: 4px; min-width: 0; }
+.ladder .r, .spaces .r { display: grid; grid-template-columns: 124px minmax(0, 1fr) auto; gap: 10px; border-bottom: 1px solid var(--border-quiet); padding-bottom: 4px; min-width: 0; }
+.ladder .r { align-items: baseline; }
+.spaces .r { align-items: center; }
+.ladder code, .spaces code { font-size: 12px; color: var(--text-quiet); }
+.ladder .aa { font-family: var(--font-heading); color: var(--text-strong); line-height: 1.05; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.px { font: 12px var(--page-body); color: var(--text-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.spaces .bar { display: block; height: 12px; border-radius: 3px; background: var(--brand-solid); max-width: 100%; }
+.spaces .bar.pair { background: var(--accent-solid); }
+.layers { grid-template-columns: repeat(auto-fit, minmax(178px, 1fr)) !important; }
+
+/* components (they only ever use the ungrouped tokens) */
+.btn { font: 650 14px var(--page-body); font-weight: 650; border-radius: var(--radius-m); padding: 9px 15px; cursor: pointer; border: 1px solid transparent;
+  background: var(--solid); color: var(--on-solid); }
+.btn:hover { background: color-mix(in oklch, var(--solid), var(--mix-hover)); }
+.btn:active { background: color-mix(in oklch, var(--solid), var(--mix-active)); }
+.btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.btn.soft { background: var(--soft); color: var(--on-soft); border-color: var(--line); }
+.btn.soft:hover { background: color-mix(in oklch, var(--soft), var(--line) 35%); }
+.btn.soft[aria-pressed="true"], .btn.soft[aria-pressed="true"]:hover { background: var(--neutral-solid); color: var(--neutral-on-solid); border-color: transparent; }
+.btn.ghost { background: transparent; color: var(--text); border-color: var(--border-strong); }
+.btn.ghost:hover { background: var(--surface-lowered); }
+.btn[disabled] { background: var(--surface-sunken); color: var(--text-disabled); cursor: not-allowed; border-color: transparent; }
+.badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 700; border-radius: var(--radius-l); padding: 2px 10px;
+  background: var(--soft); color: var(--on-soft); border: 1px solid var(--line); }
+.badge.solid { background: var(--solid); color: var(--on-solid); border-color: transparent; }
+.alert { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; padding: 12px 14px; border-radius: var(--radius-m); font-size: 14px;
+  background: var(--soft); color: var(--on-soft); border: 1px solid var(--line); }
+.alert .ic { grid-row: span 2; width: 22px; height: 22px; border-radius: 50%; background: var(--solid); color: var(--on-solid); display: grid; place-items: center; font-size: 13px; font-weight: 800; }
+.alert b { color: var(--on-soft); }
+
+/* preview panes */
+.pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 860px) { .pair { grid-template-columns: 1fr; } }
+.pane { background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: var(--radius-l); padding: var(--space-m); display: grid; gap: var(--space-s); align-content: start; min-width: 0; font-family: var(--font-body); font-size: var(--size-0); }
+.pane .btn { font: 650 var(--size--1) var(--font-body); padding: var(--space-2xs) var(--space-s); border-radius: var(--radius-s); }
+.pane .row { gap: var(--space-2xs); }
+.pane .badge { font-size: var(--size--2); }
+.pane .alert { padding: var(--space-xs) var(--space-s); border-radius: var(--radius-m); font-size: var(--size--1); }
+.pane .field { font-size: var(--size--1); }
+.pane .field input { font: var(--size-0) var(--font-body); border-radius: var(--radius-s); padding: var(--space-2xs) var(--space-xs); }
+.pane .well { border-radius: var(--radius-m); font-size: var(--size--1); padding: var(--space-xs) var(--space-s); }
+.pane .cap { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-quiet); }
+.card { background: var(--surface-raised); border: 1px solid var(--border); border-radius: var(--radius-l); padding: var(--space-s-m); display: grid; gap: var(--space-2xs); box-shadow: 0 4px 14px var(--shadow-color); }
+.card h4 { margin: 0; font: 600 var(--size-2)/1.2 var(--font-heading); color: var(--text-strong); }
+.card p { font-size: var(--size-0); }
+.t-muted { color: var(--text-muted); } .t-quiet { color: var(--text-quiet); font-size: 13px; } .t-dis { color: var(--text-disabled); font-size: 13px; }
+.pane .t-quiet, .pane .t-dis { font-size: var(--size--1); }
+.field { display: grid; gap: 4px; font-size: 13.5px; font-weight: 600; color: var(--text-strong); }
+.field input { font: 15px var(--page-body); color: var(--text); background: var(--surface-raised); border: 1px solid var(--border-strong); border-radius: var(--radius-s); padding: 8px 10px; }
+.field input:focus { outline: 3px solid var(--focus); outline-offset: 1px; border-color: var(--focus); }
+.field.err input { border-color: var(--danger-line); background: var(--danger-soft); }
+.field .hint { font-weight: 400; color: var(--danger-on-soft); font-size: 12.5px; }
+.well { background: var(--surface-lowered); border: 1px solid var(--border-quiet); border-radius: var(--radius-m); padding: 10px 12px; font-size: 13.5px; color: var(--text-muted); }
+.stack { display: grid; gap: 8px; }
+.modal-demo { position: relative; height: 92px; border-radius: var(--radius-m); overflow: hidden; background: var(--surface-sunken); }
+.modal-demo::before { content: ""; position: absolute; inset: 0; background: var(--surface-overlay); }
+.modal-demo div { position: absolute; inset: 16px 22%; background: var(--surface-raised); border-radius: var(--radius-s); display: grid; place-items: center; font-size: 13px; color: var(--text-muted); box-shadow: 0 8px 24px var(--shadow-color); }
+
+/* token table */
+.tablewrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-l); background: var(--surface-raised); }
+table { border-collapse: collapse; width: 100%; min-width: 760px; font-size: 13.5px; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--border-quiet); vertical-align: middle; }
+thead th { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--text-quiet); }
+.gh th { background: var(--surface-lowered); font: 560 15px var(--page-display); color: var(--text-strong); text-transform: none; letter-spacing: 0; }
+td code.name { font-weight: 700; color: var(--text-strong); }
+#tokens td:first-child { white-space: nowrap; }
+td code.f { font-size: 12px; color: var(--text-muted); overflow-wrap: anywhere; }
+.sw { display: flex; width: 70px; height: 26px; border-radius: var(--radius-s); overflow: hidden; box-shadow: inset 0 0 0 1px var(--border); }
+.sw i { flex: 1; } .sw .l, .sw .d { background-color: var(--surface); }
+.cr { font-variant-numeric: tabular-nums; font-size: 12.5px; font-weight: 700; padding: 1px 8px; border-radius: var(--radius-l); white-space: nowrap; }
+.cr.pass { background: var(--success-soft); color: var(--success-on-soft); }
+.cr.large { background: var(--warning-soft); color: var(--warning-on-soft); }
+.cr.fail { background: var(--danger-soft); color: var(--danger-on-soft); }
+.summary { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-mono); background: var(--surface-lowered); border: 1px solid var(--border); border-radius: var(--radius-l); padding: 14px 16px; color: var(--text); }
+.rules { margin: 0; padding-left: 20px; display: grid; gap: 6px; max-width: 72ch; }
+.copied { font-size: 13px; color: var(--success-on-soft); font-weight: 700; }
+@media (prefers-reduced-motion: no-preference) { .btn, .badge, .pane, .card { transition: background-color .15s, color .15s, border-color .15s; } }
+/* the plain-HTML demo: dials-base.css's rules, scoped to .base-demo by build.py, plus this frame */
+.base-demo { padding: var(--space-m); border-radius: var(--radius-l); border: 1px solid var(--border); min-width: 0; }
+.base-demo > :first-child { margin-top: 0; }
+.base-demo table { min-width: 0; font-size: inherit; }
+.base-demo th, .base-demo td { text-transform: none; letter-spacing: 0; font-size: inherit; vertical-align: top; }
+.base-demo th { color: var(--text-strong); }
+.article code { font-family: var(--font-mono); font-size: 0.9em; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<header style="display:grid;gap:12px">
+  <div class="top"><span class="brandmark"><svg viewBox="0 0 64 64" role="img" aria-label="Dials"><circle fill="var(--logo-track, #d8d3ca)" cx="32" cy="32" r="28.5"/><circle fill="var(--logo-knob, #1d1b18)" cx="32" cy="32" r="23"/><path stroke="var(--logo-level, #0e8f88)" d="M12.57 48.89 A25.75 25.75 0 0 1 51.32 14.97" fill="none" stroke-width="5.5" stroke-linecap="round"/><line stroke="var(--logo-pointer, #fbfaf7)" x1="32" y1="32" x2="41.00" y2="24.06" stroke-width="4.5" stroke-linecap="round"/></svg><span class="bm-word">dials<sup class="bm-tag">CSS</sup></span></span>
+    <a class="gh-link" href="https://github.com/joops/dials"><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>GitHub<span class="gh-stars" hidden></span></a>
+    <div class="floatbar">
+      <div class="fb-group">
+        <label class="combo"><span class="sr-only">Theme</span><select id="combo" aria-label="Theme"></select></label>
+        <span class="tipwrap"><button class="btn soft is-neutral" type="button" id="shuffle" aria-describedby="shuffle-tip"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-15.4 6.4L3 16"/><path d="M3 21v-5h5"/><path d="M3 12a9 9 0 0 1 15.4-6.4L21 8"/><path d="M21 3v5h-5"/></svg><span class="lbl">Randomise</span></button><span class="tip" role="tooltip" id="shuffle-tip">Mixes a random colour, type and space preset into a new combination. It doesn't choose one of the themes: press it again for another.</span></span>
+      </div>
+      <span class="fb-sep" aria-hidden="true"></span>
+      <div class="seg fb-scheme" role="group" aria-label="Colour scheme">
+        <button class="btn soft is-neutral icon" type="button" data-scheme="system" aria-label="Follow the system setting" title="System"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></button>
+        <button class="btn soft is-neutral icon" type="button" data-scheme="light" aria-label="Light" title="Light"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+        <button class="btn soft is-neutral icon" type="button" data-scheme="dark" aria-label="Dark" title="Dark"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.2A8.5 8.5 0 1 1 9.8 3.5a6.8 6.8 0 0 0 10.7 10.7z"/></svg></button>
+      </div>
+    </div>
+  </div>
+  <h1>Dial in kick-ass sites and web apps</h1>
+  <p class="lede">Dials is an AI-first CSS framework, a token-based system designed to produce a huge diversity of looks from only a few dials: seven colours in HSL, a handful of type and space settings, three fonts and a corner radius. Everything else is derived from these values using plain CSS, live in the browser: every surface, text level, border, gradient and colour group, in light and dark, with contrast checked as you go; and every text and space size, fluid from phone to desktop with no breakpoints.</p>
+  <p class="lede">Other calculators and systems generate colours, type and space once, as fixed values, which limits what a theme can change on a live site. Dials derives all three dynamically from the values you define, so a theme can change the whole look of a page or app: its colours, type scale, spacing, faces and corners.</p>
+  <p class="lede">AI-first means an agent gets a short set of rules and a small set of tokens, so it can build a theme quickly and stay within the guidelines, and you can riff on it in real time to dial in the perfect look for your new project.</p>
+</header>
+
+<section>
+  <div class="layers">
+    <div class="layer"><b>1 · Dials</b><p>Seven colours in HSL. One switch evens out their lightness so they carry equal weight; two of them make the gradient.</p></div>
+    <div class="layer"><b>2 · Derived</b><p>Surfaces, text, lines, focus and shadows, blended from paper and ink with <code>color-mix()</code> or relative colour.</p></div>
+    <div class="layer"><b>3 · Groups</b><p>Brand, accent, neutral and four status colours each get the same five roles. <code>.is-danger</code> points a component at one.</p></div>
+    <div class="layer"><b>4 · Type and space</b><p>Body size and ratio at narrow and wide screens give fluid type and space, with no breakpoints. Three fonts, a density, a radius.</p></div>
+    <div class="layer"><b>5 · Base (optional)</b><p>Plain HTML styled from the tokens at zero specificity: text, tables, forms and real buttons, no classes needed.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Tune it</h2>
+  <div class="controls">
+    <div class="tabs" role="tablist" aria-label="What to tune">
+      <button role="tab" id="t-colour" aria-selected="true" aria-controls="tab-colour" type="button">Colour</button>
+      <button role="tab" id="t-type" aria-selected="false" aria-controls="tab-type" type="button" tabindex="-1">Type</button>
+      <button role="tab" id="t-space" aria-selected="false" aria-controls="tab-space" type="button" tabindex="-1">Space</button>
+    </div>
+    <div class="tabpanel" id="tab-colour" role="tabpanel" aria-labelledby="t-colour">
+    <div class="row"><span class="label">Presets</span><span id="presets" class="row"></span></div>
+    <p class="ctl-note">Colour dials are preferably written in HSL, the easiest format to reason about and to tell an agent "the same blue, a bit darker". Click a swatch to choose a colour; the pop-up can switch the format to hex, RGB or OKLCH for the text boxes and the CSS below.</p>
+    <div class="cdials" id="colour-dials"></div>
+    <div class="balance">
+      <label class="hex"><input type="checkbox" id="k_balance"> Even out lightness</label>
+      <label class="dial"><span>Fill lightness</span><input type="range" id="k_lfill" min="0.3" max="0.75" step="0.01"><output id="k_lfill_out"></output></label>
+      <p class="ctl-note">On: every button and badge gets the same lightness, so no colour shouts louder than another. Off: each colour exactly as set, for a brand that must match. Either way, button text flips between white and black to keep its contrast.</p>
+    </div>
+    <div class="grad-ctl">
+      <span>Gradient</span>
+      <label>from <select id="k_gfrom"></select></label>
+      <label>to <select id="k_gto"></select></label>
+      <label class="dial"><span>Angle</span><input type="range" id="k_gangle" min="0" max="360" step="5"><output id="k_gangle_out"></output></label>
+      <span class="grad-sample" aria-hidden="true"></span>
+    </div>
+    <details class="more"><summary>More: exact paper and ink, dark lift, tints, text contrast, button text</summary>
+      <div class="more-body">
+        <p class="ctl-note">The grey dial tints paper (near-white) and ink (near-black) for you. Tick one to set it exactly instead.</p>
+        <div class="hexrow" id="neutral-hex"></div>
+        <label class="dial"><span>Dark lift</span><input type="range" id="k_lift" min="0" max="0.3" step="0.01"><output id="k_lift_out"></output></label>
+        <label class="dial"><span>Tint strength</span><input type="range" id="k_softmix" min="4" max="20" step="1"><output id="k_softmix_out"></output></label>
+        <label class="dial"><span>Tint vividness</span><input type="range" id="k_softviv" min="1" max="3" step="0.1"><output id="k_softviv_out"></output></label>
+        <p class="ctl-note">Soft tints are the colour blended into the paper. Strength sets how much; vividness makes them more saturated, for crisp pastels rather than greyed washes.</p>
+        <label class="dial"><span>Text contrast</span><input type="range" id="k_boost" min="0" max="30" step="1"><output id="k_boost_out"></output></label>
+        <p class="ctl-note">Strengthens body, muted and quiet text. Raise it when paper and ink sit close together, as many editor themes do, until the contrast table passes.</p>
+        <label class="dial"><span>White text up to</span><input type="range" id="k_white" min="0.175" max="0.183" step="0.001"><output id="k_white_out"></output></label>
+        <p class="ctl-note">Button text is white or black, whichever contrasts more with the fill: the switch is at luminance 0.179, where the two are equal. Raise it a little to keep white text on a fill just over the line. Dials holds it between 0.175 and 0.183, where both white and black still pass.</p>
+      </div>
+    </details>
+    </div>
+    <div class="tabpanel" id="tab-type" role="tabpanel" aria-labelledby="t-type" hidden>
+      <div class="row"><span class="label">Presets</span><span id="tpresets" class="row"></span></div>
+      <div class="type-ctl" id="type-ctl"></div>
+      <p class="ctl-note">Body size and ratio are set at the narrowest and widest screens, and every size runs in a straight line between them; the screen range is shared with space. A bigger ratio gives more drama between headings and body text: 1.2 is a minor third, 1.333 a perfect fourth, 1.618 the golden ratio. Faces load from Google Fonts: choose one, or type any family name. The mono face is for code; its list holds every monospace family on Google Fonts.</p>
+    </div>
+    <div class="tabpanel" id="tab-space" role="tabpanel" aria-labelledby="t-space" hidden>
+      <div class="row"><span class="label">Presets</span><span id="spresets" class="row"></span></div>
+      <label class="hex"><input type="checkbox" id="k_spfollow" checked> Space follows body text size</label>
+      <div class="type-ctl" id="space-ctl"></div>
+      <p class="ctl-note">By default <code>--space-s</code> equals body text size, so spacing keeps its rhythm with the text: Utopia's approach. Untick it to set the space base on its own, for tight text in a roomy layout or the reverse. Density scales every space size and pair together; radius sets the corners.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Light and dark, opposite sides working in harmony</h2>
+  <p class="lede">The same markup twice. The right-hand copy sits inside <code>color-scheme: dark</code>; nothing else is different.</p>
+  <div class="pair" id="pair"></div>
+</section>
+
+<section>
+  <h2>Type and space</h2>
+  <p class="lede">Every size is fluid: it scales smoothly with the screen between its two ends, with no breakpoints. Resize this window and watch them move. Each row shows the size now, then at the narrowest and widest screens.</p>
+  <div class="specimen">
+    <article class="article">
+      <span class="kicker">Studio notes</span>
+      <h3>Get a better mix in a small room</h3>
+      <p class="lead">Treat the corners, sit in the sweet spot and turn it down. That's most of it.</p>
+      <p>Body text sits at <code>--size-0</code>. The gap between paragraphs is <code>--space-s</code>, headings get <code>--space-l</code> above them and this card's padding is <code>--space-l</code>, so the rhythm tightens on a phone and opens up on a desktop.</p>
+      <h4>What you need</h4>
+      <p>A pair of near-field monitors, a decent interface and one set of headphones you know well enough to check against.</p>
+      <h5>How loud to mix</h5>
+      <p>About 79 dB at your chair. Quieter than you think.</p>
+      <small>Updated 30 October 2026 · caption at --size--1</small>
+      <div class="stat"><span><b>79</b><small>dB SPL at the desk</small></span><span><b>−14</b><small>LUFS for streaming</small></span></div>
+    </article>
+    <div style="display:grid;gap:18px;align-content:start;min-width:0">
+      <div class="ladder" id="ladder"></div>
+      <div class="spaces" id="spaces"></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Plain HTML with dials-base.css</h2>
+  <p class="lede">An optional third file. It styles ordinary elements from the Dials tokens, so a page with no classes already looks right: text, links, lists, tables, form fields and real buttons. Every rule has zero specificity, so anything your site writes wins. It has no component classes; a link that should look like a button is your own component, built from <code>--solid</code> and <code>--on-solid</code>.</p>
+  <div class="pair">
+    <div class="base-demo is-light"><h3>Plain HTML, no classes</h3>
+<p>This box is ordinary markup: a heading, a paragraph with a <a href="#base">link</a>, some <strong>strong text</strong>, <code>inline code</code> and a <mark>highlight</mark>. Nothing here has a class.</p>
+<blockquote>“Mix with your ears, not your eyes.” A blockquote takes the brand line and muted text.</blockquote>
+<ul><li>Gain stage before you reach for a compressor</li><li>Check the mix in mono</li><li>Take a break every hour</li></ul>
+<table><caption>Mix levels</caption><thead><tr><th>Channel</th><th>Level</th><th>Pan</th></tr></thead><tbody><tr><td>Kick</td><td>−6 dB</td><td>C</td></tr><tr><td>Bass</td><td>−8 dB</td><td>C</td></tr><tr><td>Rhodes</td><td>−12 dB</td><td>L 20</td></tr></tbody></table>
+<form onsubmit="return false"><fieldset><legend>Track settings</legend>
+<p><label for="bln">Track name</label><br><input id="bln" placeholder="Night Drive"></p>
+<p><label for="ble">Tempo</label><br><input id="ble" value="12O bpm" aria-invalid="true"></p>
+<p><label for="bls">Key</label><br><select id="bls"><option>A minor</option><option>C major</option><option>F♯ minor</option></select></p>
+<p><label><input type="checkbox" checked> Print effects when bouncing</label></p>
+<p><input type="range" aria-label="Master volume" value="60"></p>
+<p><button type="submit">Bounce</button> <button type="button" class="is-danger">Delete take</button> <button type="button" disabled>Disabled</button></p>
+</fieldset></form></div>
+    <div class="base-demo is-dark"><h3>Plain HTML, no classes</h3>
+<p>This box is ordinary markup: a heading, a paragraph with a <a href="#base">link</a>, some <strong>strong text</strong>, <code>inline code</code> and a <mark>highlight</mark>. Nothing here has a class.</p>
+<blockquote>“Mix with your ears, not your eyes.” A blockquote takes the brand line and muted text.</blockquote>
+<ul><li>Gain stage before you reach for a compressor</li><li>Check the mix in mono</li><li>Take a break every hour</li></ul>
+<table><caption>Mix levels</caption><thead><tr><th>Channel</th><th>Level</th><th>Pan</th></tr></thead><tbody><tr><td>Kick</td><td>−6 dB</td><td>C</td></tr><tr><td>Bass</td><td>−8 dB</td><td>C</td></tr><tr><td>Rhodes</td><td>−12 dB</td><td>L 20</td></tr></tbody></table>
+<form onsubmit="return false"><fieldset><legend>Track settings</legend>
+<p><label for="bdn">Track name</label><br><input id="bdn" placeholder="Night Drive"></p>
+<p><label for="bde">Tempo</label><br><input id="bde" value="12O bpm" aria-invalid="true"></p>
+<p><label for="bds">Key</label><br><select id="bds"><option>A minor</option><option>C major</option><option>F♯ minor</option></select></p>
+<p><label><input type="checkbox" checked> Print effects when bouncing</label></p>
+<p><input type="range" aria-label="Master volume" value="60"></p>
+<p><button type="submit">Bounce</button> <button type="button" class="is-danger">Delete take</button> <button type="button" disabled>Disabled</button></p>
+</fieldset></form></div>
+  </div>
+</section>
+
+<section>
+  <h2>Contrast</h2>
+  <p class="lede">Worked out live from the colours above, for every pairing the system promises. Text needs 4.5:1 (WCAG AA); focus rings and control borders need 3:1. The same pairings are checked in CI against the shipped files, every theme and 40 sets of extreme random dials.</p>
+  <div class="summary" id="summary"></div>
+  <div class="tablewrap"><table id="contrast"><thead><tr><th>Text</th><th>On</th><th>Light</th><th>Dark</th></tr></thead><tbody></tbody></table></div>
+</section>
+
+<section>
+  <h2>Every token</h2>
+  <p class="lede"><svg class="dial-ico" viewBox="0 0 64 64" aria-hidden="true"></svg>marks a dial: a value you set. Every other token is worked out from the dials, so use it but never set it. Swatch halves: light, then dark. Every group follows the same pattern, so a yellow warning and a deep blue info both pass without special cases.</p>
+  <div class="tablewrap"><table id="tokens"><thead><tr><th>Token</th><th>Worked out as</th><th>Light · dark</th></tr></thead></table></div>
+</section>
+
+<section>
+  <h2>The CSS</h2>
+  <div class="row">
+    <div class="seg" role="group" aria-label="Export as"><button class="btn soft is-neutral" type="button" data-export="theme" aria-pressed="true">Theme file</button><button class="btn soft is-neutral" type="button" data-export="full" aria-pressed="false">Full CSS</button></div>
+    <button class="btn is-brand" type="button" id="copy">Copy CSS</button>
+    <span class="copied" id="copied" hidden>Copied</span>
+  </div>
+  <p class="lede" id="export-note"></p>
+  <pre id="css"></pre>
+</section>
+
+<section>
+  <h2>Use it</h2>
+  <ol class="rules">
+    <li><b>Load Dials</b>: <code>dials.css</code>, then the Google Fonts link for your faces (each theme file names its own). No build step, no dependencies.</li>
+    <li><b>Set your dials</b> in your own stylesheet, loaded after <code>dials.css</code>: copy the theme file above, or start from one in <code>themes/</code>. Colour dials are preferably HSL (<code>--brand: hsl(37 90% 51%);</code>); any CSS colour works, so a brand hex can go straight in. Leave <code>--balance</code> at 0 if the brand colours must match exactly.</li>
+    <li><b>Choose the scheme</b>: <code>dials.css</code> sets <code>color-scheme: light dark</code>, so pages follow the visitor's setting. Force one with <code>:root { color-scheme: light; }</code> (or <code>dark</code>) in your own file, and mark any dark band with <code>class="is-dark"</code>.</li>
+    <li><b>Build components</b> from the tokens, and point them at a colour group with a class: <code>&lt;button class="btn is-danger"&gt;</code> with <code>.btn { background: var(--solid); color: var(--on-solid); }</code>.</li>
+    <li><b>Re-theme part of a page</b> with a scope: dials set on a <code>[data-dials]</code> element re-derive every token inside it, as in <code>&lt;aside data-dials style="--brand: hsl(270 60% 50%); --space-density: .8"&gt;</code>.</li>
+    <li><b>Optionally add <code>dials-base.css</code></b> so plain HTML elements, form fields and real buttons are styled from the tokens with no classes. It has zero specificity, so your own rules always win.</li>
+    <li><b>Size everything from the scale</b>: <code>--size-*</code> for every text size, <code>--space-*</code> for every gap, a pair such as <code>--space-s-l</code> where a gap should grow more than the text does, <code>--radius-*</code> for corners and <code>--border-width-*</code> for borders. It's Utopia's method, so Utopia's guides apply; there's just no calculator step.</li>
+    <li><b>Give your agents the rules below</b> and run the contrast check in CI.</li>
+  </ol>
+  <p class="lede">Needs <code>color-mix()</code>, <code>light-dark()</code> and relative colour: Chrome and Edge 123+, Safari 18+, Firefox 128+. Older browsers get a built-in fallback: the Hi-Fi theme as flat colours, light only. Don't register these properties with <code>@property</code>: they must work out their colour where they're used, which is what makes dark bands work.</p>
+</section>
+
+<section>
+  <h2>Rules for agents and builders</h2>
+  <p class="lede">Paste this into the project's <code>CLAUDE.md</code>, <code>AGENTS.md</code> or contributor guide. It's the rules section of Dials' own <code>AGENTS.md</code>; the full token list is in <code>docs/tokens.md</code>. The contrast check keeps the colour promises honest.</p>
+  <div class="row"><button class="btn is-brand" type="button" id="copy-rules">Copy the rules</button><span class="copied" id="copied-rules" hidden>Copied</span></div>
+  <pre id="rules-md"></pre>
+</section>
+
+<footer class="credits-foot">
+  <h2>Thanks</h2>
+  <p>Inspired by <a href="https://utopia.fyi">Utopia</a> for type and space, and by <a href="https://web.dev/articles/baseline-in-action-color-theme">web.dev's Baseline colour themes</a>, <a href="https://webawesome.com/docs/tokens/color">Web Awesome</a> and <a href="https://www.radix-ui.com/themes">Radix Themes</a> for colour.</p>
+  <p>Colour ideas also come from web.dev (globals in <code>light-dark()</code>) and Web Awesome (the fill, border and "on" roles, which Dials calls solid, soft and line, and the hover fragment). Two tricks keep contrast without per-colour tuning: button text is white or black, whichever contrasts more, worked out from the fill's luminance with <code>color(from … srgb-linear r g b)</code>, and coloured text has its lightness capped in light and floored in dark.</p>
+</footer>
+</div>
+
+<script>
+/* The playground. Its CSS is the real thing: dials.css (linked above) does all the colour, type and
+   space maths, presets.js (generated by build.py) holds the presets and themes, and the text shown in
+   the token table and the export is fetched from this folder's copies of the dist files. */
+(function () {
+  var root = document.documentElement, D = window.DIALS;
+  var GROUP_NAMES = ['brand', 'accent', 'neutral', 'success', 'warning', 'danger', 'info'];
+  var COLOUR_DIALS = [['brand', 'Brand'], ['accent', 'Accent'], ['success', 'Success'], ['warning', 'Warning'], ['danger', 'Danger'], ['info', 'Info'], ['grey', 'Grey tint']];
+  var NEUTRAL_HEX = [['--paper-light', 'Paper (light)'], ['--paper-dark', 'Paper (dark)'], ['--ink-light', 'Ink (light)'], ['--ink-dark', 'Ink (dark)']];
+  var NUMBER_DIALS = ['--balance', '--fill-lightness', '--dark-lift', '--tint-strength', '--tint-vividness', '--text-contrast', '--white-text-until',
+    '--paper-lightness', '--paper-dark-lightness', '--ink-lightness', '--ink-dark-lightness', '--gradient-from', '--gradient-to', '--gradient-angle'];
+  var TYPE_DIALS = ['--screen-min', '--screen-max', '--size-min', '--size-max', '--ratio-min', '--ratio-max', '--font-heading', '--font-body', '--font-mono'];
+  var SPACE_DIALS = ['--space-min', '--space-max', '--space-density', '--radius-base'];
+  var SRC = { colour: '', scale: '', base: '' };   /* the dist files' text, fetched below */
+
+  function get(v) {   /* the value as written: set by a control or preset, else the stylesheet's default */
+    var inline = root.style.getPropertyValue(v).trim(); if (inline) return inline;
+    var m = (SRC.colour + SRC.scale).match(new RegExp('\\n\\s*' + v.replace(/-/g, '\\-') + ':\\s*([^;]+);'));
+    return m ? m[1].trim() : getComputedStyle(root).getPropertyValue(v).trim();
+  }
+  function set(v, x) { root.style.setProperty(v, x); }
+  function idOf(v) { return 'k' + v.replace(/-/g, '_'); }
+  function hexToHsl(hex) {
+    var r = parseInt(hex.substr(1, 2), 16) / 255, g = parseInt(hex.substr(3, 2), 16) / 255, b = parseInt(hex.substr(5, 2), 16) / 255;
+    var mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, h = 0, s = 0, d = mx - mn;
+    if (d) { s = d / (1 - Math.abs(2 * l - 1)); h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; h = (h * 60 + 360) % 360; }
+    return 'hsl(' + Math.round(h) + ' ' + Math.round(s * 100) + '% ' + Math.round(l * 100) + '%)';
+  }
+  var FORMAT = 'hsl';
+  function hexToRgbArr(hex) { return [1, 3, 5].map(function (i) { return parseInt(hex.substr(i, 2), 16); }); }
+  function hexToOklch(hex) {
+    var c = hexToRgbArr(hex).map(function (x) { x /= 255; return x <= 0.04045 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4); });
+    var l = Math.cbrt(0.4122214708 * c[0] + 0.5363325363 * c[1] + 0.0514459929 * c[2]), m = Math.cbrt(0.2119034982 * c[0] + 0.6806995451 * c[1] + 0.1073969566 * c[2]), q = Math.cbrt(0.0883024619 * c[0] + 0.2817188376 * c[1] + 0.6299787005 * c[2]);
+    var L = 0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * q, a = 1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * q, b = 0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * q;
+    var C = Math.hypot(a, b), H = (Math.atan2(b, a) * 180 / Math.PI + 360) % 360;
+    return 'oklch(' + (L * 100).toFixed(1) + '% ' + C.toFixed(3) + ' ' + (C < 0.002 ? 0 : H).toFixed(1) + ')';
+  }
+  function inFormat(hex) {
+    if (FORMAT === 'hex') return hex;
+    if (FORMAT === 'rgb') return 'rgb(' + hexToRgbArr(hex).join(' ') + ')';
+    if (FORMAT === 'oklch') return hexToOklch(hex);
+    return hexToHsl(hex);
+  }
+  var srcHex = {};   /* each colour dial's exact colour, so switching formats never drifts */
+  function convertDial(v) { if (!srcHex[v]) srcHex[v] = currentHex(v); var x = inFormat(srcHex[v]); set(v, x); if (dialEls[v]) { dialEls[v][1].value = x; dialEls[v][1].removeAttribute('aria-invalid'); } }
+  var dialEls = {}, hexInputs = {};
+  var pw = document.getElementById('colour-dials');
+  var pop = document.createElement('div'); pop.className = 'pop'; pop.hidden = true;
+  pop.innerHTML = '<hsl-string-color-picker></hsl-string-color-picker><span class="pop-val"></span>' +
+    '<div class="seg pop-fmt" role="group" aria-label="Write colours as">' + ['hsl', 'hex', 'rgb', 'oklch'].map(function (f) { return '<button class="btn soft is-neutral" type="button" data-format="' + f + '">' + (f === 'hex' ? 'Hex' : f.toUpperCase()) + '</button>'; }).join('') + '</div>';
+  var chooser = pop.querySelector('hsl-string-color-picker'), popVal = pop.querySelector('.pop-val'), popFor = null;
+  function spaceHsl(c) { var m = c.match(/hsla?\(\s*([\d.]+)[,\s]+([\d.]+)%[,\s]+([\d.]+)%/); return m ? 'hsl(' + Math.round(+m[1]) + ' ' + Math.round(+m[2]) + '% ' + Math.round(+m[3]) + '%)' : c; }
+  chooser.addEventListener('color-changed', function (e) {
+    if (!popFor) return; var h = spaceHsl(e.detail.value);
+    if (hexInputs[popFor]) { set(popFor, h); var x = FORMAT === 'hsl' ? h : inFormat(currentHex(popFor)); set(popFor, x); hexInputs[popFor][1].value = x; popVal.textContent = x; refresh(); return; }
+    set(popFor, h); delete srcHex[popFor]; if (FORMAT !== 'hsl') convertDial(popFor); else { dialEls[popFor][1].value = h; dialEls[popFor][1].removeAttribute('aria-invalid'); }
+    popVal.textContent = get(popFor); refresh();
+  });
+  function closePop() { pop.hidden = true; popFor = null; }
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closePop(); });
+  document.addEventListener('pointerdown', function (e) { if (!pop.hidden && !pop.contains(e.target) && !e.target.classList.contains('swatch')) closePop(); });
+  COLOUR_DIALS.forEach(function (p) {
+    var v = '--' + p[0], d = document.createElement('div'); d.className = 'cdial';
+    d.innerHTML = '<b>' + p[1] + '</b><button type="button" class="swatch" id="' + idOf(v) + '" aria-label="Choose the ' + p[1].toLowerCase() + ' colour" style="background:var(' + v + ')"></button><input type="text" id="' + idOf(v) + '_txt" aria-label="' + p[1] + ' as text" spellcheck="false">';
+    pw.appendChild(d);
+    var sw = d.querySelector('.swatch'), txt = d.querySelector('[type=text]');
+    sw.addEventListener('click', function () {
+      if (popFor === v) { closePop(); return; }
+      d.appendChild(pop); popFor = v; pop.hidden = false;
+      var h = /^hsl/i.test(txt.value) ? spaceHsl(txt.value) : hexToHsl(currentHex(v));
+      chooser.color = h; popVal.textContent = h;
+    });
+    txt.addEventListener('change', function () {
+      if (CSS.supports('color', txt.value)) { txt.removeAttribute('aria-invalid'); set(v, txt.value); delete srcHex[v]; srcHex[v] = currentHex(v); refresh(); } else txt.setAttribute('aria-invalid', 'true');
+    });
+    dialEls[v] = [sw, txt];
+  });
+  var gf = document.getElementById('k_gfrom'), gt = document.getElementById('k_gto'), ga = document.getElementById('k_gangle'), gao = document.getElementById('k_gangle_out');
+  [gf, gt].forEach(function (sel) {
+    GROUP_NAMES.forEach(function (o) { var op = document.createElement('option'); op.value = 'var(--' + o + '-solid)'; op.textContent = o[0].toUpperCase() + o.slice(1); sel.appendChild(op); });
+    var c = document.createElement('option'); c.value = ''; c.textContent = 'Preset colour'; c.disabled = true; sel.appendChild(c);
+    sel.addEventListener('change', function () { set(sel === gf ? '--gradient-from' : '--gradient-to', sel.value); refresh(); });
+  });
+  ga.addEventListener('input', function () { set('--gradient-angle', ga.value + 'deg'); gao.textContent = ga.value + '°'; refresh(); });
+  function syncSel(sel, val) { var hit = [].some.call(sel.options, function (o) { return o.value === val; }); sel.value = hit ? val : ''; }
+  var bal = document.getElementById('k_balance'), lf = document.getElementById('k_lfill'), lfo = document.getElementById('k_lfill_out'), lift = document.getElementById('k_lift'), lifto = document.getElementById('k_lift_out');
+  bal.addEventListener('change', function () { set('--balance', bal.checked ? '1' : '0'); lf.disabled = !bal.checked; refresh(); });
+  lf.addEventListener('input', function () { set('--fill-lightness', lf.value); lfo.textContent = lf.value; refresh(); });
+  lift.addEventListener('input', function () { set('--dark-lift', lift.value); lifto.textContent = lift.value; refresh(); });
+  var sm = document.getElementById('k_softmix'), smo = document.getElementById('k_softmix_out'), sv = document.getElementById('k_softviv'), svo = document.getElementById('k_softviv_out');
+  sm.addEventListener('input', function () { set('--tint-strength', sm.value + '%'); smo.textContent = sm.value + '%'; refresh(); });
+  sv.addEventListener('input', function () { set('--tint-vividness', sv.value); svo.textContent = sv.value + '×'; refresh(); });
+  var bo = document.getElementById('k_boost'), boo = document.getElementById('k_boost_out');
+  bo.addEventListener('input', function () { set('--text-contrast', bo.value); boo.textContent = bo.value; refresh(); });
+  var wt = document.getElementById('k_white'), wto = document.getElementById('k_white_out');
+  wt.addEventListener('input', function () { set('--white-text-until', wt.value); wto.textContent = wt.value; refresh(); });
+  var nh = document.getElementById('neutral-hex');
+  NEUTRAL_HEX.forEach(function (d) {
+    /* the swatch shows the paper or ink in use: the exact colour once ticked, else the one derived from --grey */
+    var v = d[0], w = document.createElement('div'); w.className = 'hex';
+    w.innerHTML = '<input type="checkbox" id="' + idOf(v) + '_on"><button type="button" class="swatch mini" id="' + idOf(v) + '_hex" aria-label="Choose ' + d[1].toLowerCase() + '" style="background:var(' + v + ', var(--dl-' + v.slice(2) + '))" disabled></button><label for="' + idOf(v) + '_on">' + d[1] + '</label>';
+    nh.appendChild(w);
+    var on = w.querySelector('[type=checkbox]'), col = w.querySelector('.swatch');
+    on.addEventListener('change', function () { if (on.checked) { col.value = currentHex(v); col.disabled = false; set(v, col.value); } else { col.disabled = true; root.style.removeProperty(v); if (popFor === v) closePop(); } refresh(); });
+    col.addEventListener('click', function () {   /* the same HSL picker as the colour dials */
+      if (popFor === v) { closePop(); return; }
+      w.appendChild(pop); popFor = v; pop.hidden = false;
+      var h = hexToHsl(currentHex(v)); chooser.color = h; popVal.textContent = col.value;
+    });
+    hexInputs[v] = [on, col];
+  });
+  function syncControls() {
+    Object.keys(dialEls).forEach(function (v) { var t = get(v); dialEls[v][1].value = t; dialEls[v][1].removeAttribute('aria-invalid'); });
+    syncSel(gf, get('--gradient-from')); syncSel(gt, get('--gradient-to')); ga.value = parseInt(get('--gradient-angle'), 10); gao.textContent = ga.value + '°'; closePop();
+    bal.checked = get('--balance') === '1'; lf.disabled = !bal.checked; lf.value = get('--fill-lightness'); lfo.textContent = lf.value;
+    lift.value = get('--dark-lift'); lifto.textContent = lift.value;
+    wt.value = get('--white-text-until'); wto.textContent = wt.value;
+    bo.value = get('--text-contrast'); boo.textContent = bo.value;
+    sm.value = parseFloat(get('--tint-strength')); smo.textContent = get('--tint-strength'); sv.value = get('--tint-vividness'); svo.textContent = get('--tint-vividness') + '×';
+  }
+  function applyPreset(slug) {
+    var p = D.colour[slug];
+    Object.keys(p.dials).forEach(function (k) { if (!hexInputs[k]) set(k, p.dials[k]); });
+    Object.keys(hexInputs).forEach(function (k) { hexInputs[k][0].checked = false; hexInputs[k][1].disabled = true; root.style.removeProperty(k); });
+    Object.keys(hexInputs).forEach(function (k) { if (p.dials[k]) { hexInputs[k][0].checked = true; hexInputs[k][1].disabled = false; hexInputs[k][1].value = p.dials[k]; set(k, p.dials[k]); } });
+    document.querySelectorAll('[data-preset]').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.preset === slug); });
+    document.getElementById('preset-note').textContent = p.note;
+    srcHex = {}; Object.keys(dialEls).forEach(convertDial);
+    syncControls(); refresh();
+  }
+  var pr = document.getElementById('presets');
+  Object.keys(D.colour).forEach(function (n) {
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'btn soft is-neutral'; b.dataset.preset = n; b.textContent = D.colour[n].name;
+    b.addEventListener('click', function () { applyPreset(n); }); pr.appendChild(b);
+  });
+  var note = document.createElement('span'); note.id = 'preset-note'; note.className = 't-quiet'; pr.appendChild(note);
+
+  /* preview panes */
+  var PANE = '<span class="cap">{cap}</span>' +
+    '<div class="card"><h4>Finish the mix</h4><p>Body text is ink blended into paper.</p><p class="t-muted">Muted text, a step quieter.</p><p class="t-quiet">Quiet text · captions and dates</p><p class="t-dis">Disabled text</p><p><a href="#css">A link in the brand colour</a></p></div>' +
+    '<div class="hero"><h4>In the booth</h4><p>Text on the solid gradient is white or black, whichever passes at both ends.</p></div>' +
+    '<div class="wash"><b>A soft gradient wash</b><span>For section backgrounds: body text sits on it.</span></div>' +
+    '<div class="row">' + GROUP_NAMES.map(function (g) { return '<button class="btn is-' + g + '" type="button">' + g[0].toUpperCase() + g.slice(1) + '</button>'; }).join('') + '</div>' +
+    '<div class="row">' + GROUP_NAMES.map(function (g) { return '<button class="btn soft is-' + g + '" type="button">' + g[0].toUpperCase() + g.slice(1) + '</button>'; }).join('') + '<button class="btn ghost" type="button">Ghost</button><button class="btn" type="button" disabled>Disabled</button></div>' +
+    '<div class="row">' + GROUP_NAMES.map(function (g) { return '<span class="badge is-' + g + '">' + g + '</span>'; }).join('') + '<span class="badge solid is-success">Live</span><span class="badge solid is-warning">Armed</span></div>' +
+    '<div class="stack">' +
+      '<div class="alert is-success"><span class="ic">✓</span><b>Bounced</b><span>Your mix is exported at 24-bit.</span></div>' +
+      '<div class="alert is-warning"><span class="ic">!</span><b>Check levels</b><span>The master peaks at −0.3 dBFS.</span></div>' +
+      '<div class="alert is-danger"><span class="ic">×</span><b>Clipping</b><span>Track 4 is going over 0 dBFS.</span></div>' +
+      '<div class="alert is-info"><span class="ic">i</span><b>New</b><span>Tape saturation is on every bus.</span></div>' +
+    '</div>' +
+    '<div class="field"><label for="{id}a">Session</label><input id="{id}a" value="Night Drive v3"></div>' +
+    '<div class="field err"><label for="{id}b">Tempo</label><input id="{id}b" value="12O bpm"><span class="hint">Use numbers only</span></div>' +
+    '<div class="well">A lowered well, for code or quoted text, with a quiet border.</div>' +
+    '<div class="modal-demo"><div>Overlay and raised dialog</div></div>';
+  var pair = document.getElementById('pair');
+  [['is-light', 'Light', 'pl'], ['is-dark', 'Dark', 'pd']].forEach(function (p) {
+    var d = document.createElement('div'); d.className = 'pane ' + p[0];
+    d.innerHTML = PANE.replace('{cap}', p[1]).replace(/\{id\}/g, p[2]);
+    pair.appendChild(d);
+  });
+
+  /* colour maths: any computed colour -> linear sRGB -> contrast */
+  var probeL = document.createElement('i'), probeD = document.createElement('i');
+  probeL.className = 'is-light'; probeD.className = 'is-dark';
+  [probeL, probeD].forEach(function (p) { p.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden'; document.body.appendChild(p); });
+  function computed(probe, v) { probe.style.color = 'var(' + v + ')'; return getComputedStyle(probe).color; }
+  function toLinear(c) {
+    var m;
+    if ((m = c.match(/^rgba?\(([\d.]+),?\s*([\d.]+),?\s*([\d.]+)/))) return [+m[1], +m[2], +m[3]].map(function (x) { x /= 255; return x <= 0.04045 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4); });
+    if ((m = c.match(/^color\(srgb-linear ([\d.e-]+) ([\d.e-]+) ([\d.e-]+)/))) return [+m[1], +m[2], +m[3]].map(function (x) { return Math.min(1, Math.max(0, x)); });
+    if ((m = c.match(/^color\(srgb ([\d.e-]+) ([\d.e-]+) ([\d.e-]+)/))) return [+m[1], +m[2], +m[3]].map(function (x) { x = Math.min(1, Math.max(0, x)); return x <= 0.04045 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4); });
+    var lab = null;
+    if ((m = c.match(/^oklch\(([\d.e-]+)%?\s+([\d.e-]+)\s+([\d.e-]+|none)/))) { var h = m[3] === 'none' ? 0 : +m[3] * Math.PI / 180; lab = [+m[1], +m[2] * Math.cos(h), +m[2] * Math.sin(h)]; }
+    else if ((m = c.match(/^oklab\(([\d.e-]+)%?\s+([\d.e-]+)\s+([\d.e-]+)/))) lab = [+m[1], +m[2], +m[3]];
+    if (lab) {
+      var L = lab[0], a = lab[1], b = lab[2];
+      var l = Math.pow(L + 0.3963377774 * a + 0.2158037573 * b, 3), mm = Math.pow(L - 0.1055613458 * a - 0.0638541728 * b, 3), s = Math.pow(L - 0.0894841775 * a - 1.2914855480 * b, 3);
+      return [4.0767416621 * l - 3.3077115913 * mm + 0.2309699292 * s, -1.2684380046 * l + 2.6097574011 * mm - 0.3413193965 * s, -0.0041960863 * l - 0.7034186147 * mm + 1.7076147010 * s].map(function (x) { return Math.min(1, Math.max(0, x)); });
+    }
+    return null;
+  }
+  function currentHex(v) {
+    var probe = document.createElement('i'); probe.className = 'is-light'; document.body.appendChild(probe);
+    /* paper and ink are unset until set exactly: read the colour in use */
+    var src = /^--(paper|ink)-(light|dark)$/.test(v) && !root.style.getPropertyValue(v) ? '--dl-' + v.slice(2) : v;
+    probe.style.color = 'var(' + src + ')'; var lin = toLinear(getComputedStyle(probe).color); probe.remove();
+    if (!lin) return '#888888';
+    return '#' + lin.map(function (x) { var g = x <= 0.0031308 ? 12.92 * x : 1.055 * Math.pow(x, 1 / 2.4) - 0.055; return ('0' + Math.round(Math.max(0, Math.min(1, g)) * 255).toString(16)).slice(-2); }).join('');
+  }
+  function lum(c) { var r = toLinear(c); return r ? 0.2126 * r[0] + 0.7152 * r[1] + 0.0722 * r[2] : null; }
+  function ratio(a, b) { var x = lum(a), y = lum(b); if (x == null || y == null) return null; var hi = Math.max(x, y), lo = Math.min(x, y); return (hi + 0.05) / (lo + 0.05); }
+
+  /* the pairings the contrast check tests: [text, background, minimum] */
+  var PAIRS = [];
+  ['--text-strong', '--text', '--text-muted', '--text-quiet', '--link', '--link-hover'].forEach(function (t) { ['--surface', '--surface-raised', '--surface-lowered'].forEach(function (s) { PAIRS.push([t, s, 4.5]); }); });
+  PAIRS.push(['--on-gradient', '--gradient-from', 4.5], ['--on-gradient', '--gradient-to', 4.5], ['--text', '--gradient-soft-from', 4.5], ['--text', '--gradient-soft-to', 4.5]);
+  GROUP_NAMES.forEach(function (g) {
+    PAIRS.push(['--' + g + '-on-solid', '--' + g + '-solid', 4.5]);
+    PAIRS.push(['--' + g + '-on-soft', '--' + g + '-soft', 4.5]);
+    if (g !== 'neutral') PAIRS.push(['--' + g + '-on-soft', '--surface', 4.5]);
+  });
+  ['--surface', '--surface-raised'].forEach(function (s) { PAIRS.push(['--focus', s, 3]); PAIRS.push(['--border-strong', s, 3]); });
+  function chip(r, min) {
+    if (r == null) return '<span class="cr">n/a</span>';
+    var cls = r >= min ? 'pass' : r >= 3 ? 'large' : 'fail';
+    return '<span class="cr ' + cls + '">' + r.toFixed(1) + ':1</span>';
+  }
+  var ctb = document.querySelector('#contrast tbody'), sum = document.getElementById('summary');
+  function contrast() {
+    var rows = [], pass = 0, large = 0, fail = 0;
+    PAIRS.forEach(function (p) {
+      var rl = ratio(computed(probeL, p[0]), computed(probeL, p[1])), rd = ratio(computed(probeD, p[0]), computed(probeD, p[1]));
+      [rl, rd].forEach(function (r) { if (r == null) return; if (r >= p[2]) pass++; else if (r >= 3) large++; else fail++; });
+      rows.push('<tr><td><code>' + p[0] + '</code></td><td><code>' + p[1] + '</code>' + (p[2] < 4.5 ? ' <small class="t-quiet">(3:1)</small>' : '') + '</td><td>' + chip(rl, p[2]) + '</td><td>' + chip(rd, p[2]) + '</td></tr>');
+    });
+    ctb.innerHTML = rows.join('');
+    sum.innerHTML = '<span class="cr pass">' + pass + ' pass</span><span class="cr large">' + large + ' large text only</span><span class="cr fail">' + fail + ' fail</span>';
+  }
+
+  /* the star count beside the GitHub link: left out quietly if the API doesn't answer (it allows 60 requests an hour per visitor) */
+  fetch('https://api.github.com/repos/joops/dials').then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+    if (!j || typeof j.stargazers_count !== 'number') return;
+    var el = document.querySelector('.gh-stars'); el.textContent = '\u2605 ' + j.stargazers_count.toLocaleString('en-AU'); el.hidden = false;
+    el.parentNode.setAttribute('aria-label', 'Dials on GitHub, ' + j.stargazers_count + ' stars');
+  }).catch(function () {});
+
+  /* token table: the public tokens, read from dials-colour.css itself */
+  function tokenTable() {
+    var GROUPS = [['Colour dials', /^--(brand|accent|success|warning|danger|info|grey)$/], ['Surfaces', /^--surface/], ['Text', /^--(text|link)/],
+      ['Lines and effects', /^--(border|focus|selection|shadow-color)/], ['Gradients', /^--(gradient-(from|to|solid|soft)|on-gradient)/], ['Hover and pressed', /^--mix-/]];
+    var decl = [], seen = {};
+    SRC.colour.replace(/^\s*(--[\w-]+):\s*([^;]+);/gm, function (_, n, v) { if (!seen[n] && n.indexOf('--dl-') !== 0) { seen[n] = 1; decl.push([n, v.trim()]); } });
+    function swatch(n) { return '<span class="sw"><i class="l is-light"><i style="display:block;height:100%;background:var(' + n + ')"></i></i><i class="d is-dark"><i style="display:block;height:100%;background:var(' + n + ')"></i></i></span>'; }
+    var DIALSET = {}; (window.DIALS.dialNames || []).forEach(function (n) { DIALSET[n] = 1; });
+    function row(d, sw) { return '<tr><td>' + (DIALSET[d[0]] ? '<svg class="dial-ico" viewBox="0 0 64 64" role="img" aria-label="Dial"></svg>' : '') + '<code class="name">' + d[0] + '</code></td><td><code class="f">' + d[1].replace(/</g, '&lt;') + '</code></td><td>' + (sw ? swatch(d[0]) : '') + '</td></tr>'; }
+    var html = '';
+    GROUPS.forEach(function (g) {
+      html += '<tbody><tr class="gh"><th colspan="3">' + g[0] + '</th></tr>';
+      decl.filter(function (d) { return g[1].test(d[0]); }).forEach(function (d) { html += row(d, !/^--mix-|^--gradient-angle$|^--text-contrast$/.test(d[0])); });
+      html += '</tbody>';
+    });
+    GROUP_NAMES.forEach(function (g) {
+      html += '<tbody><tr class="gh"><th colspan="3">' + g[0].toUpperCase() + g.slice(1) + '</th></tr>';
+      decl.filter(function (d) { return d[0].indexOf('--' + g + '-') === 0; }).forEach(function (d) { html += row(d, true); });
+      html += '</tbody>';
+    });
+    document.getElementById('tokens').insertAdjacentHTML('beforeend', html);
+    var mark = document.querySelector('.brandmark svg').innerHTML;   /* the logo's knob, reused as the dial icon */
+    document.querySelectorAll('.dial-ico').forEach(function (el) { el.innerHTML = mark; });
+  }
+
+  /* the export: a theme file of the current dials, or the whole CSS with them as its defaults */
+  var pre = document.getElementById('css'), exportMode = 'theme';
+  function exactDials() { return NEUTRAL_HEX.map(function (d) { return d[0]; }).filter(function (v) { return root.style.getPropertyValue(v); }); }
+  function fontsLink() {
+    var fams = [fontName(get('--font-heading')), fontName(get('--font-body')), fontName(get('--font-mono'))].filter(function (x, i, a) { return x && a.indexOf(x) === i; });
+    return fams.length ? '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?' + fams.map(gfParam).join('&') + '&display=swap">' : '(system fonts only)';
+  }
+  function themeText() {
+    var lines = ['/* My Dials theme. Load it after dials.css.', '   Faces: ' + fontsLink() + ' */', ':root {'];
+    [['Colour', COLOUR_DIALS.map(function (p) { return '--' + p[0]; }).concat(NUMBER_DIALS, exactDials())], ['Type', TYPE_DIALS], ['Space', SPACE_DIALS]].forEach(function (g) {
+      lines.push('  /* ' + g[0] + ' */');
+      g[1].forEach(function (v) { lines.push('  ' + v + ': ' + get(v) + ';'); });
+    });
+    return lines.join('\n') + '\n}\n';
+  }
+  function withDefaults(text, names) {
+    names.forEach(function (v) { text = text.replace(new RegExp('(\\n\\s*' + v.replace(/-/g, '\\-') + ':\\s*)[^;]+;'), '$1' + get(v) + ';'); });
+    return text;
+  }
+  function fullText() {
+    var colour = withDefaults(SRC.colour, COLOUR_DIALS.map(function (p) { return '--' + p[0]; }).concat(NUMBER_DIALS));
+    var exact = exactDials().map(function (v) { return '\n  ' + v + ': ' + get(v) + ';'; }).join('');
+    if (exact) colour = colour.replace(':root, :host {', ':root, :host {\n  /* exact paper and ink */' + exact);
+    return '/* Dials with your dials as its defaults: dials-colour.css, dials-scale.css and dials-base.css (optional).\n   Faces: ' + fontsLink() + ' */\n' +
+      colour + '\n' + withDefaults(SRC.scale, TYPE_DIALS.concat(SPACE_DIALS)) + '\n' + SRC.base;
+  }
+  function cssText() { return exportMode === 'theme' ? themeText() : fullText(); }
+  var NOTES = { theme: 'Your dials as a theme: save it as your own stylesheet and load it after dials.css. This is the way to use Dials.',
+    full: 'The whole of Dials with your dials built in as its defaults, for a project that wants one file. It leaves out the fallback for older browsers, which only knows the Hi-Fi theme.' };
+  document.querySelectorAll('[data-export]').forEach(function (b) { b.addEventListener('click', function () {
+    exportMode = b.dataset.export;
+    document.querySelectorAll('[data-export]').forEach(function (x) { x.setAttribute('aria-pressed', x === b); });
+    document.getElementById('export-note').textContent = NOTES[exportMode]; pre.textContent = cssText();
+  }); });
+  document.getElementById('export-note').textContent = NOTES.theme;
+  function refresh() { contrast(); pre.textContent = cssText(); if (typeof renderScale === 'function') renderScale(); }
+  document.getElementById('copy').addEventListener('click', function () {
+    var t = cssText(), ok = document.getElementById('copied');
+    function done() { ok.hidden = false; setTimeout(function () { ok.hidden = true; }, 1800); }
+    function fallback() { var r = document.createRange(); r.selectNodeContents(pre); var s = getSelection(); s.removeAllRanges(); s.addRange(r); ok.textContent = 'Selected: press copy'; done(); }
+    try { navigator.clipboard.writeText(t).then(function () { ok.textContent = 'Copied'; done(); }, fallback); } catch (e) { fallback(); }
+  });
+  document.getElementById('rules-md').textContent = D.rules;
+  document.getElementById('copy-rules').addEventListener('click', function () {
+    var t = document.getElementById('rules-md').textContent, ok = document.getElementById('copied-rules');
+    function done(msg) { ok.textContent = msg; ok.hidden = false; setTimeout(function () { ok.hidden = true; }, 1800); }
+    function fallback() { var r = document.createRange(); r.selectNodeContents(document.getElementById('rules-md')); var sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); done('Selected: press copy'); }
+    try { navigator.clipboard.writeText(t).then(function () { done('Copied'); }, fallback); } catch (e) { fallback(); }
+  });
+  /* ---------- tabs ---------- */
+  var tabs = [].slice.call(document.querySelectorAll('[role=tab]'));
+  function selectTab(t) {
+    tabs.forEach(function (x) { var on = x === t; x.setAttribute('aria-selected', on); x.tabIndex = on ? 0 : -1; document.getElementById(x.getAttribute('aria-controls')).hidden = !on; });
+  }
+  tabs.forEach(function (t, i) {
+    t.addEventListener('click', function () { selectTab(t); });
+    t.addEventListener('keydown', function (e) { if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { var n = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length]; selectTab(n); n.focus(); } });
+  });
+
+  /* ---------- type and space ---------- */
+  var RATIOS = [[1.067, 'Minor second'], [1.125, 'Major second'], [1.2, 'Minor third'], [1.25, 'Major third'], [1.333, 'Perfect fourth'], [1.414, 'Augmented fourth'], [1.5, 'Perfect fifth'], [1.618, 'Golden ratio']];
+  /* the 500 most popular Google Fonts, plus every monospace family: [family, category, weights] */
+  var GF = [["Poppins","sans",[100,200,300,400,500,600,700,800,900]],["Roboto","sans",[100,200,300,400,500,600,700,800,900]],["Inter","sans",[100,200,300,400,500,600,700,800,900]],["Jost","sans",[100,200,300,400,500,600,700,800,900]],["Open Sans","sans",[300,400,500,600,700,800]],["Playfair Display","serif",[400,500,600,700,800,900]],["Fjalla One","sans",[400]],["Google Sans","sans",[400,500,600,700]],["Montserrat","sans",[100,200,300,400,500,600,700,800,900]],["Archivo Black","sans",[400]],["Google Sans Flex","sans",[1,100,200,300,400,500,600,700,800,900,1000]],["Lato","sans",[100,300,400,700,900]],["Mulish","sans",[200,300,400,500,600,700,800,900,1000]],["Arimo","sans",[400,500,600,700]],["Bungee","display",[400]],["Fira Sans","sans",[100,200,300,400,500,600,700,800,900]],["Cormorant","serif",[300,400,500,600,700]],["Faustina","serif",[300,400,500,600,700,800]],["Lobster Two","display",[400,700]],["Roboto Mono","mono",[100,200,300,400,500,600,700]],["Prata","serif",[400]],["Noto Sans","sans",[100,200,300,400,500,600,700,800,900]],["Oswald","sans",[200,300,400,500,600,700]],["Plus Jakarta Sans","sans",[200,300,400,500,600,700,800]],["Saira Condensed","sans",[100,200,300,400,500,600,700,800,900]],["DM Sans","sans",[100,200,300,400,500,600,700,800,900,1000]],["Nanum Myeongjo","serif",[400,700,800]],["Nunito","sans",[200,300,400,500,600,700,800,900,1000]],["Yantramanav","sans",[100,300,400,500,700,900]],["Amaranth","sans",[400,700]],["Nunito Sans","sans",[200,300,400,500,600,700,800,900,1000]],["Roboto Condensed","sans",[100,200,300,400,500,600,700,800,900]],["Archivo","sans",[100,200,300,400,500,600,700,800,900]],["Encode Sans","sans",[100,200,300,400,500,600,700,800,900]],["Raleway","sans",[100,200,300,400,500,600,700,800,900]],["Roboto Slab","serif",[100,200,300,400,500,600,700,800,900]],["Yeseva One","display",[400]],["Black Han Sans","sans",[400]],["IBM Plex Sans","sans",[100,200,300,400,500,600,700]],["Manrope","sans",[200,300,400,500,600,700,800]],["Vazirmatn","sans",[100,200,300,400,500,600,700,800,900]],["Crete Round","serif",[400]],["Monda","sans",[400,500,600,700]],["Ubuntu","sans",[300,400,500,700]],["Kanit","sans",[100,200,300,400,500,600,700,800,900]],["Mrs Saint Delafield","hand",[400]],["Prompt","sans",[100,200,300,400,500,600,700,800,900]],["Rubik","sans",[300,400,500,600,700,800,900]],["Black Ops One","display",[400]],["Julius Sans One","sans",[400]],["Sofia Sans Condensed","sans",[1,100,200,300,400,500,600,700,800,900,1000]],["Hachi Maru Pop","hand",[400]],["Kosugi Maru","sans",[400]],["Outfit","sans",[100,200,300,400,500,600,700,800,900]],["Saira","sans",[100,200,300,400,500,600,700,800,900]],["Work Sans","sans",[100,200,300,400,500,600,700,800,900]],["Actor","sans",[400]],["Bebas Neue","sans",[400]],["Inconsolata","mono",[200,300,400,500,600,700,800,900]],["Marcellus SC","serif",[400]],["Merriweather","serif",[300,400,500,600,700,800,900]],["Allerta Stencil","sans",[400]],["Arsenal","sans",[400,700]],["Barlow","sans",[100,200,300,400,500,600,700,800,900]],["Figtree","sans",[300,400,500,600,700,800,900]],["Karla","sans",[200,300,400,500,600,700,800]],["Lora","serif",[400,500,600,700]],["Merienda","hand",[300,400,500,600,700,800,900]],["Quicksand","sans",[300,400,500,600,700]],["Sedgwick Ave Display","hand",[400]],["JetBrains Mono","mono",[100,200,300,400,500,600,700,800]],["Metamorphous","display",[400]],["Mona Sans","sans",[200,300,400,500,600,700,800,900]],["Bad Script","hand",[400]],["PT Serif","serif",[400,700]],["Source Sans 3","sans",[200,300,400,500,600,700,800,900]],["Averia Serif Libre","display",[300,400,700]],["Sniglet","display",[400,800]],["Space Grotesk","sans",[300,400,500,600,700]],["Faster One","display",[400]],["Wix Madefor Display","sans",[400,500,600,700,800]],["Cousine","mono",[400,700]],["Ysabeau Office","sans",[1,100,200,300,400,500,600,700,800,900,1000]],["Bricolage Grotesque","sans",[200,300,400,500,600,700,800]],["Instrument Serif","serif",[400]],["Spectral SC","serif",[200,300,400,500,600,700,800]],["Germania One","display",[400]],["Goudy Bookletter 1911","serif",[400]],["Smooch Sans","sans",[100,200,300,400,500,600,700,800,900]],["Noto Serif","serif",[100,200,300,400,500,600,700,800,900]],["PT Sans","sans",[400,700]],["Ropa Sans","sans",[400]],["Sora","sans",[100,200,300,400,500,600,700,800]],["Cabin","sans",[400,500,600,700]],["Libre Baskerville","serif",[400,500,600,700]],["Niramit","sans",[200,300,400,500,600,700]],["Qwigley","hand",[400]],["Borel","hand",[400]],["Cormorant Garamond","serif",[300,400,500,600,700]],["Pridi","serif",[200,300,400,500,600,700]],["Source Code Pro","mono",[200,300,400,500,600,700,800,900]],["Instrument Sans","sans",[400,500,600,700]],["Inter Tight","sans",[100,200,300,400,500,600,700,800,900]],["Tomorrow","sans",[100,200,300,400,500,600,700,800,900]],["Aclonica","sans",[400]],["Anton","sans",[400]],["IBM Plex Mono","mono",[100,200,300,400,500,600,700]],["Sour Gummy","sans",[100,200,300,400,500,600,700,800,900]],["Libre Franklin","sans",[100,200,300,400,500,600,700,800,900]],["Shadows Into Light Two","hand",[400]],["Stick No Bills","sans",[200,300,400,500,600,700,800]],["Titillium Web","sans",[200,300,400,600,700,900]],["Fraunces","serif",[100,200,300,400,500,600,700,800,900]],["Honk","display",[400]],["Kameron","serif",[400,500,600,700]],["Mukta","sans",[200,300,400,500,600,700,800]],["IM Fell English SC","serif",[400]],["Tenali Ramakrishna","sans",[400]],["Changa One","display",[400]],["Heebo","sans",[100,200,300,400,500,600,700,800,900]],["Herr Von Muellerhoff","hand",[400]],["Lexend","sans",[100,200,300,400,500,600,700,800,900]],["Short Stack","hand",[400]],["Aref Ruqaa","serif",[400,700]],["Cairo","sans",[200,300,400,500,600,700,800,900,1000]],["Medula One","display",[400]],["Montagu Slab","serif",[100,200,300,400,500,600,700]],["NTR","sans",[400]],["Red Hat Display","sans",[300,400,500,600,700,800,900]],["Urbanist","sans",[100,200,300,400,500,600,700,800,900]],["Gaegu","hand",[300,400,700]],["Mochiy Pop P One","sans",[400]],["Public Sans","sans",[100,200,300,400,500,600,700,800,900]],["Alan Sans","sans",[300,400,500,600,700,800,900]],["Amarante","display",[400]],["Caveat","hand",[400,500,600,700]],["DM Serif Display","serif",[400]],["Joan","serif",[400]],["Overpass","sans",[100,200,300,400,500,600,700,800,900]],["Assistant","sans",[200,300,400,500,600,700,800]],["Bayon","sans",[400]],["Dancing Script","hand",[400,500,600,700]],["Oxygen","sans",[300,400,700]],["Share Tech","sans",[400]],["Varta","sans",[300,400,500,600,700]],["Coming Soon","hand",[400]],["M PLUS Rounded 1c","sans",[100,300,400,500,700,800,900]],["Bitter","serif",[100,200,300,400,500,600,700,800,900]],["Geist Mono","mono",[100,200,300,400,500,600,700,800,900]],["Irish Grover","display",[400]],["Josefin Sans","sans",[100,200,300,400,500,600,700]],["Mako","sans",[400]],["New Rocker","display",[400]],["Alfa Slab One","display",[400]],["Barlow Condensed","sans",[100,200,300,400,500,600,700,800,900]],["Boldonse","display",[400]],["Slabo 27px","serif",[400]],["Roboto Flex","sans",[100,200,300,400,500,600,700,800,900,1000]],["Baloo Tamma 2","display",[400,500,600,700,800]],["Fredoka","sans",[300,400,500,600,700]],["Arvo","serif",[400,700]],["Newsreader","serif",[200,300,400,500,600,700,800]],["Zeyada","hand",[400]],["Hind Siliguri","sans",[300,400,500,600,700]],["Princess Sofia","hand",[400]],["Square Peg","hand",[400]],["IM Fell DW Pica","serif",[400]],["Inspiration","hand",[400]],["Lobster","display",[400]],["Dosis","sans",[200,300,400,500,600,700,800]],["Epilogue","sans",[100,200,300,400,500,600,700,800,900]],["Water Brush","hand",[400]],["Kavivanar","hand",[400]],["PT Sans Narrow","sans",[400,700]],["Yaldevi","sans",[200,300,400,500,600,700]],["Comfortaa","display",[300,400,500,600,700]],["Nanum Gothic","sans",[400,700,800]],["Oleo Script Swash Caps","display",[400,700]],["Tiny5 Duo","display",[100,200,300,400,500,600,700,800,900]],["Fleur De Leah","hand",[400]],["Mallanna","sans",[400]],["Source Serif 4","serif",[200,300,400,500,600,700,800,900]],["Bokor","display",[400]],["Nuosu SIL","sans",[400]],["Ramabhadra","sans",[400]],["EB Garamond","serif",[400,500,600,700,800]],["Estedad","sans",[100,200,300,400,500,600,700,800,900]],["Reggae One","display",[400]],["Geist","sans",[100,200,300,400,500,600,700,800,900]],["Geist Pixel","display",[400]],["Kaisei Tokumin","serif",[400,500,700,800]],["Tajawal","sans",[200,300,400,500,700,800,900]],["Astloch","display",[400,700]],["Charis SIL","serif",[400,700]],["Exo 2","sans",[100,200,300,400,500,600,700,800,900]],["Expletus Sans","display",[400,500,600,700]],["Albert Sans","sans",[100,200,300,400,500,600,700,800,900]],["Fontdiner Swanky","display",[400]],["Hind","sans",[300,400,500,600,700]],["Pacifico","hand",[400]],["Sekuya","display",[400]],["Snippet","sans",[400]],["Hanken Grotesk","sans",[100,200,300,400,500,600,700,800,900]],["Miss Fajardose","hand",[400]],["Zhi Mang Xing","hand",[400]],["BhuTuka Expanded One","serif",[400]],["Merriweather Sans","sans",[300,400,500,600,700,800]],["Orbitron","sans",[400,500,600,700,800,900]],["Varela Round","sans",[400]],["DM Mono","mono",[300,400,500]],["Idiqlat","serif",[200,300,400]],["Trispace","sans",[100,200,300,400,500,600,700,800]],["Bodoni Moda","serif",[400,500,600,700,800,900]],["Cinzel","serif",[400,500,600,700,800,900]],["Nova Round","display",[400]],["Schibsted Grotesk","sans",[400,500,600,700,800,900]],["Domine","serif",[400,500,600,700]],["Playwrite AR Guides","hand",[400]],["UoqMunThenKhung","serif",[400]],["Goblin One","display",[400]],["Sirivennela","sans",[400]],["Teko","sans",[300,400,500,600,700]],["Liter","sans",[400]],["Moirai One","display",[400]],["Redacted","display",[400]],["Space Mono","mono",[400,700]],["Jacques Francois","serif",[400]],["Playwrite HR Lijeva","hand",[100,200,300,400]],["Abel","sans",[400]],["Anek Telugu","sans",[100,200,300,400,500,600,700,800]],["Shanti","sans",[400]],["BJCree","serif",[400,500,600,700]],["Barlow Semi Condensed","sans",[100,200,300,400,500,600,700,800,900]],["Marhey","display",[300,400,500,600,700]],["Zen Kaku Gothic New","sans",[300,400,500,700,900]],["Montserrat Underline","sans",[100,200,300,400,500,600,700,800,900]],["Onest","sans",[100,200,300,400,500,600,700,800,900]],["Playwrite CL Guides","hand",[400]],["Beiruti","sans",[200,300,400,500,600,700,800,900]],["M PLUS 1p","sans",[100,300,400,500,700,800,900]],["Chakra Petch","sans",[300,400,500,600,700]],["IM Fell DW Pica SC","serif",[400]],["Questrial","sans",[400]],["Crimson Text","serif",[400,600,700]],["Playwrite AU NSW","hand",[100,200,300,400]],["Satisfy","hand",[400]],["Engagement","hand",[400]],["Lilita One","display",[400]],["Be Vietnam Pro","sans",[100,200,300,400,500,600,700,800,900]],["Chiron Hei HK","sans",[200,300,400,500,600,700,800,900]],["Playfair","serif",[300,400,500,600,700,800,900]],["Zilla Slab","serif",[300,400,500,600,700]],["Almarai","sans",[300,400,700,800]],["Uchen","serif",[400]],["Yanone Kaffeesatz","sans",[200,300,400,500,600,700]],["ABeeZee","sans",[400]],["Maven Pro","sans",[400,500,600,700,800,900]],["Trykker","serif",[400]],["Comic Neue","hand",[300,400,700]],["Lexend Deca","sans",[100,200,300,400,500,600,700,800,900]],["Arsenal SC","sans",[400,700]],["Exo","sans",[100,200,300,400,500,600,700,800,900]],["Rajdhani","sans",[300,400,500,600,700]],["Asap","sans",[100,200,300,400,500,600,700,800,900]],["Nova Oval","display",[400]],["Permanent Marker","hand",[400]],["IBM Plex Serif","serif",[100,200,300,400,500,600,700]],["Sigmar","display",[400]],["Geologica","sans",[100,200,300,400,500,600,700,800,900]],["IBM Plex Sans Arabic","sans",[100,200,300,400,500,600,700]],["Jersey 15","display",[400]],["Miltonian","display",[400]],["Oleo Script","display",[400,700]],["Fugaz One","display",[400]],["Rhodium Libre","serif",[400]],["Amatic SC","hand",[400,700]],["Audiowide","display",[400]],["Iansui","hand",[400]],["Zen Maru Gothic","sans",[300,400,500,700,900]],["Courier Prime","mono",[400,700]],["Tuffy","sans",[400,700]],["Alegreya Sans","sans",[100,300,400,500,700,800,900]],["Cantarell","sans",[400,700]],["Tiro Kannada","serif",[400]],["Quantico","sans",[400,700]],["Sarabun","sans",[100,200,300,400,500,600,700,800]],["Spectral","serif",[200,300,400,500,600,700,800]],["Khand","sans",[300,400,500,600,700]],["Sofia Sans","sans",[1,100,200,300,400,500,600,700,800,900,1000]],["Syne","sans",[400,500,600,700,800]],["Gravitas One","display",[400]],["Iosevka Charon","mono",[300,400,500,700]],["Marcellus","serif",[400]],["Aleo","serif",[100,200,300,400,500,600,700,800,900]],["Amiri","serif",[400,700]],["Langar","display",[400]],["Play","sans",[400,700]],["Delius","hand",[400]],["Molle","hand",[]],["Andada Pro","serif",[400,500,600,700,800]],["Nanum Gothic Coding","hand",[400,700]],["Kalam","hand",[300,400,700]],["Kumbh Sans","sans",[100,200,300,400,500,600,700,800,900]],["Courgette","hand",[400]],["Fira Sans Condensed","sans",[100,200,300,400,500,600,700,800,900]],["Frank Ruhl Libre","serif",[300,400,500,600,700,800,900]],["Redaction 70","display",[400,700]],["Oxanium","display",[200,300,400,500,600,700,800]],["Tapestry","hand",[400]],["Vollkorn","serif",[400,500,600,700,800,900]],["Alexandria","sans",[100,200,300,400,500,600,700,800,900]],["Fira Code","mono",[300,400,500,600,700]],["Rubik Marker Hatch","display",[400]],["Catamaran","sans",[100,200,300,400,500,600,700,800,900]],["Jacquarda Bastarda 9","display",[400]],["Yellowtail","hand",[400]],["DM Serif Text","serif",[400]],["WDXL Lubrifont TC","sans",[400]],["Montserrat Alternates","sans",[100,200,300,400,500,600,700,800,900]],["Playwrite ZA","hand",[100,200,300,400]],["Eczar","serif",[400,500,600,700,800]],["Libertinus Serif Display","display",[400]],["Press Start 2P","display",[400]],["Gruppo","sans",[400]],["LINE Seed JP","sans",[100,400,700,800]],["M PLUS Code Latin","sans",[100,200,300,400,500,600,700]],["News Cycle","sans",[400,700]],["Playwrite DE SAS","hand",[100,200,300,400]],["Readex Pro","sans",[200,300,400,500,600,700]],["Playwrite MX","hand",[100,200,300,400]],["Red Hat Text","sans",[300,400,500,600,700]],["Shippori Mincho","serif",[400,500,600,700,800]],["Chivo","sans",[100,200,300,400,500,600,700,800,900]],["Signika","sans",[300,400,500,600,700]],["Betania Patmos","hand",[400]],["Libre Caslon Text","serif",[400,700]],["Google Sans Code","mono",[300,400,500,600,700,800]],["Playball","display",[400]],["Playwrite CO","hand",[100,200,300,400]],["Archivo Narrow","sans",[400,500,600,700]],["IBM Plex Sans Condensed","sans",[100,200,300,400,500,600,700]],["Righteous","display",[400]],["Sarala","sans",[400,700]],["Tenor Sans","sans",[400]],["Unbounded","sans",[200,300,400,500,600,700,800,900]],["Literata","serif",[200,300,400,500,600,700,800,900]],["Special Elite","display",[400]],["Creepster","display",[400]],["Playwrite CL","hand",[100,200,300,400]],["Tinos","serif",[400,700]],["Luckiest Guy","display",[400]],["Rowdies","display",[300,400,700]],["Shadows Into Light","hand",[400]],["Alegreya","serif",[400,500,600,700,800,900]],["Great Vibes","hand",[400]],["Playwrite RO Guides","hand",[400]],["Rethink Sans","sans",[400,500,600,700,800]],["Signika Negative","sans",[300,400,500,600,700]],["Baloo 2","display",[400,500,600,700,800]],["Carlito","sans",[400,700]],["Russo One","sans",[400]],["Bree Serif","serif",[400]],["Playwrite DE VA Guides","hand",[400]],["Alata","sans",[400]],["Pathway Gothic One","sans",[400]],["Abril Fatface","display",[400]],["Cardo","serif",[400,700]],["Changa","sans",[200,300,400,500,600,700,800]],["Golos Text","sans",[400,500,600,700,800,900]],["Antic Slab","serif",[400]],["Nanum Pen Script","hand",[400]],["Baskervville","serif",[400,500,600,700]],["Michroma","sans",[400]],["Passion One","display",[400,700,900]],["Shrikhand","display",[400]],["Share Tech Mono","mono",[400]],["Commissioner","sans",[100,200,300,400,500,600,700,800,900]],["Atkinson Hyperlegible","sans",[400,700]],["Old Standard TT","serif",[400,700]],["Volkhov","serif",[400,700]],["Atkinson Hyperlegible Next","sans",[200,300,400,500,600,700,800]],["League Spartan","sans",[100,200,300,400,500,600,700,800,900]],["Petrona","serif",[100,200,300,400,500,600,700,800,900]],["Rubik Mono One","sans",[400]],["Sanchez","serif",[400]],["Noticia Text","serif",[400,700]],["Zen Old Mincho","serif",[400,500,600,700,900]],["Besley","serif",[400,500,600,700,800,900]],["Pinyon Script","hand",[400]],["Roboto Serif","serif",[100,200,300,400,500,600,700,800,900]],["Philosopher","sans",[400,700]],["Anonymous Pro","mono",[400,700]],["Paytone One","sans",[400]],["Gabarito","display",[400,500,600,700,800,900]],["Gothic A1","sans",[100,200,300,400,500,600,700,800,900]],["Martel","serif",[200,300,400,600,700,800,900]],["Acme","sans",[400]],["Amita","hand",[400,700]],["Hind Madurai","sans",[300,400,500,600,700]],["VT323","mono",[400]],["Saira Extra Condensed","sans",[100,200,300,400,500,600,700,800,900]],["Indie Flower","hand",[400]],["Unna","serif",[400,700]],["Allura","hand",[400]],["Asap Condensed","sans",[200,300,400,500,600,700,800,900]],["Didact Gothic","sans",[400]],["Varela","sans",[400]],["Lexend Giga","sans",[100,200,300,400,500,600,700,800,900]],["PT Sans Caption","sans",[400,700]],["Homemade Apple","hand",[400]],["Tiro Devanagari Hindi","serif",[400]],["BIZ UDPGothic","sans",[400,700]],["Crimson Pro","serif",[200,300,400,500,600,700,800,900]],["Racing Sans One","display",[400]],["Eater","display",[400]],["M PLUS 1","sans",[100,200,300,400,500,600,700,800,900]],["Encode Sans Condensed","sans",[100,200,300,400,500,600,700,800,900]],["Kaushan Script","hand",[400]],["Zen Kaku Gothic Antique","sans",[300,400,500,700,900]],["Funnel Display","display",[300,400,500,600,700,800]],["Antonio","sans",[100,200,300,400,500,600,700]],["Playfair Display SC","serif",[400,700,900]],["Architects Daughter","hand",[400]],["Bowlby One","display",[400]],["Bai Jamjuree","sans",[200,300,400,500,600,700]],["Rokkitt","serif",[100,200,300,400,500,600,700,800,900]],["Seaweed Script","display",[400]],["Ultra","serif",[400]],["El Messiri","sans",[400,500,600,700]],["Quattrocento Sans","sans",[400,700]],["Gloria Hallelujah","hand",[400]],["Hammersmith One","sans",[400]],["Quattrocento","serif",[400,700]],["Chelsea Market","display",[400]],["Poiret One","display",[400]],["Kablammo","display",[400]],["Pragati Narrow","sans",[400,700]],["IBM Plex Sans Thai","sans",[100,200,300,400,500,600,700]],["Damion","hand",[400]],["Leckerli One","hand",[400]],["Ubuntu Mono","mono",[400,700]],["Dela Gothic One","display",[400]],["Krub","sans",[200,300,400,500,600,700]],["Economica","sans",[400,700]],["Libre Barcode 39","display",[400]],["Francois One","sans",[400]],["Host Grotesk","sans",[300,400,500,600,700,800]],["Baloo Bhai 2","display",[400,500,600,700,800]],["Sen","sans",[400,500,600,700,800]],["Bowlby One SC","display",[400]],["League Gothic","sans",[400]],["Radio Canada","sans",[300,400,500,600,700]],["Hind Vadodara","sans",[300,400,500,600,700]],["Do Hyeon","sans",[400]],["Goldman","display",[400,700]],["Knewave","display",[400]],["Neuton","serif",[200,300,400,700,800]],["Vidaloka","serif",[400]],["Anek Bangla","sans",[100,200,300,400,500,600,700,800]],["Ubuntu Condensed","sans",[400]],["Gilda Display","serif",[400]],["Libre Bodoni","serif",[400,500,600,700]],["Andika","sans",[400,700]],["Fahkwang","sans",[200,300,400,500,600,700]],["Rammetto One","display",[400]],["Istok Web","sans",[400,700]],["Radio Canada Big","sans",[400,500,600,700]],["Angkor","display",[400]],["Bangers","display",[400]],["Mr Dafoe","hand",[400]],["Viga","sans",[400]],["Belanosima","sans",[400,600,700]],["Belleza","sans",[400]],["Patua One","display",[400]],["Titan One","display",[400]],["Cedarville Cursive","hand",[400]],["Familjen Grotesk","sans",[400,500,600,700]],["Josefin Slab","serif",[100,200,300,400,500,600,700]],["K2D","sans",[100,200,300,400,500,600,700,800]],["Akshar","sans",[300,400,500,600,700]],["Cinzel Decorative","display",[400,700,900]],["Rock Salt","hand",[400]],["PT Mono","mono",[400]],["Proza Libre","sans",[400,500,600,700,800]],["Gelasio","serif",[400,500,600,700]],["Original Surfer","display",[400]],["Patrick Hand","hand",[400]],["Anuphan","sans",[100,200,300,400,500,600,700]],["Handlee","hand",[400]],["STIX Two Text","serif",[400,500,600,700]],["Electrolize","sans",[400]],["Pirata One","display",[400]],["Cutive Mono","mono",[400]],["Alice","serif",[400]],["Abhaya Libre","serif",[400,500,600,700,800]],["Caveat Brush","hand",[400]],["Rye","display",[400]],["Sacramento","hand",[400]],["Whisper","hand",[400]],["Tangerine","hand",[400,700]],["Fira Mono","mono",[400,500,700]],["Fragment Mono","mono",[400]],["Overpass Mono","mono",[300,400,500,600,700]],["Nova Mono","mono",[400]],["Martian Mono","mono",[100,200,300,400,500,600,700,800]],["Azeret Mono","mono",[100,200,300,400,500,600,700,800,900]],["Red Hat Mono","mono",[300,400,500,600,700]],["Sometype Mono","mono",[400,500,600,700]],["Spline Sans Mono","mono",[300,400,500,600,700]],["B612 Mono","mono",[400,700]],["Reddit Mono","mono",[200,300,400,500,600,700,800,900]],["Chivo Mono","mono",[100,200,300,400,500,600,700,800,900]],["Syne Mono","mono",[400]],["Major Mono Display","mono",[400]],["Oxygen Mono","mono",[400]],["Hibur Mono","mono",[400]],["Lekton","mono",[400,700]],["Ubuntu Sans Mono","mono",[400,500,600,700]],["Kode Mono","mono",[400,500,600,700]],["Iosevka Charon Mono","mono",[300,400,500,700]],["Workbench","mono",[400]],["Xanh Mono","mono",[400]],["Lilex","mono",[100,200,300,400,500,600,700]],["M PLUS 1 Code","mono",[100,200,300,400,500,600,700]],["LXGW WenKai Mono TC","mono",[300,400,700]],["Sixtyfour","mono",[400]],["Sixtyfour Convergence","mono",[400]],["Victor Mono","mono",[100,200,300,400,500,600,700]],["Monofett","mono",[400]],["Intel One Mono","mono",[300,400,500,600,700]],["Datatype","mono",[100,200,300,400,500,600,700,800,900]],["Libertinus Mono","mono",[400]]];
+  /* every monospace family on Google Fonts, by popularity: the mono picker searches only these */
+  var GF_MONO = ["Roboto Mono","Inconsolata","JetBrains Mono","Cousine","Source Code Pro","IBM Plex Mono","Geist Mono","DM Mono","Space Mono","Courier Prime","Iosevka Charon","Fira Code","Google Sans Code","Share Tech Mono","Anonymous Pro","VT323","Ubuntu Mono","PT Mono","Cutive Mono","Fira Mono","Fragment Mono","Overpass Mono","Nova Mono","Martian Mono","Azeret Mono","Red Hat Mono","Sometype Mono","Spline Sans Mono","B612 Mono","Reddit Mono","Chivo Mono","Syne Mono","Major Mono Display","Oxygen Mono","Hibur Mono","Lekton","Ubuntu Sans Mono","Kode Mono","Iosevka Charon Mono","Workbench","Xanh Mono","Lilex","M PLUS 1 Code","LXGW WenKai Mono TC","Sixtyfour","Sixtyfour Convergence","Victor Mono","Monofett","Intel One Mono","Datatype","Libertinus Mono"];
+  var GFMAP = {}; GF.forEach(function (f) { GFMAP[f[0].toLowerCase()] = f; });
+  var MONO = GF_MONO.map(function (n) { return GFMAP[n.toLowerCase()]; }).filter(Boolean);
+  var FALLBACK = { serif: 'ui-serif, Georgia, serif', sans: 'ui-sans-serif, system-ui, sans-serif', mono: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace', display: 'ui-sans-serif, system-ui, sans-serif', hand: 'cursive' };
+  function gfInfo(name) { return GFMAP[(name || '').toLowerCase()]; }
+  function weightsFor(name) {   /* 400 and 700 where the family has them, else the nearest it does have */
+    var f = gfInfo(name); if (!f || !f[2].length) return null; var w = f[2];
+    if (w.length === 1) return [];
+    var near = function (t) { return w.reduce(function (a, b) { return Math.abs(b - t) < Math.abs(a - t) ? b : a; }); };
+    var out = [near(400), near(700)].filter(function (x, i, a) { return a.indexOf(x) === i; }).sort(function (a, b) { return a - b; });
+    return out.length > 1 ? out : [];
+  }
+  function gfParam(name) { var w = weightsFor(name); return 'family=' + name.trim().replace(/ /g, '+') + (w && w.length ? ':wght@' + w.join(';') : ''); }
+  var loaded = {};
+  function loadFont(name) {
+    if (!name || loaded[name]) return; loaded[name] = 1;
+    var l = document.createElement('link'); l.rel = 'stylesheet';
+    l.href = 'https://fonts.googleapis.com/css2?' + gfParam(name) + '&display=swap';
+    l.onerror = function () { l.href = 'https://fonts.googleapis.com/css2?family=' + name.trim().replace(/ /g, '+') + '&display=swap'; l.onerror = null; };
+    document.head.appendChild(l);
+  }
+  function fontStack(name, kind) { var f = gfInfo(name); return '"' + (f ? f[0] : name) + '", ' + FALLBACK[kind || (f ? f[1] : 'sans')]; }
+  function fontName(stack) { var m = (stack || '').match(/^\s*"([^"]+)"/); return m ? m[1] : ''; }   /* a web font comes first, quoted; a bare system stack has none */
+  var tc = document.getElementById('type-ctl'), tIn = {};
+  function info(label, tip) { return tip ? '<button type="button" class="info" aria-label="About ' + label + ': ' + tip.replace(/"/g, '&quot;') + '" data-tip="' + tip.replace(/"/g, '&quot;') + '">?</button>' : ''; }
+  function tdial(v, label, min, max, step, unit, box, tip) {
+    var l = document.createElement('label'); l.className = 'dial';
+    l.innerHTML = '<span>' + label + info(label, tip) + '</span><input type="range" id="' + idOf(v) + '" min="' + min + '" max="' + max + '" step="' + step + '"><output></output>';
+    (box || tc).appendChild(l); var inp = l.querySelector('input'), out = l.querySelector('output');
+    inp.addEventListener('input', function () { set(v, inp.value); out.textContent = inp.value + (unit || ''); markTPreset(box ? 'space' : 'type', null); refresh(); });
+    tIn[v] = function () { var x = spaceVal(v); inp.value = x; out.textContent = x + (unit || ''); inp.disabled = /^--space-(min|max)$/.test(v) && follow.checked; };
+  }
+  function tratio(v, label, tip) {
+    var l = document.createElement('label'); l.className = 'fontrow';
+    l.innerHTML = '<span>' + label + info(label, tip) + '</span><select id="' + idOf(v) + '">' + RATIOS.map(function (r) { return '<option value="' + r[0] + '">' + r[0] + ' · ' + r[1] + '</option>'; }).join('') + '</select>';
+    tc.appendChild(l); var sel = l.querySelector('select');
+    sel.addEventListener('change', function () { set(v, sel.value); markTPreset('type', null); refresh(); });
+    tIn[v] = function () { sel.value = String(+get(v)); };
+  }
+  function tfont(v, key, label, tip, mono) {
+    var wrap = document.createElement('div'); wrap.className = 'fontrow';
+    var lb = 'fonts-' + key, list0 = mono ? MONO : GF;
+    wrap.innerHTML = '<span class="lbl"><label for="' + idOf(v) + '">' + label + '</label>' + info(label, tip) + '</span>' +
+      '<div class="fontbox"><input type="text" id="' + idOf(v) + '" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="' + lb + '" spellcheck="false" autocomplete="off" placeholder="' + (mono ? 'Search monospace fonts' : 'Search Google Fonts') + '"><ul role="listbox" id="' + lb + '" class="fontlist" hidden></ul></div>';
+    tc.appendChild(wrap);
+    var inp = wrap.querySelector('input'), list = wrap.querySelector('ul'), items = [], active = -1;
+    function render(q) {
+      q = (q || '').trim().toLowerCase();
+      items = list0.filter(function (f) { return !q || f[0].toLowerCase().indexOf(q) >= 0; }).slice(0, 80);
+      if (q && !list0.some(function (f) { return f[0].toLowerCase() === q; })) items.push([inp.value.trim(), 'custom', []]);
+      active = items.length ? 0 : -1;
+      list.innerHTML = items.map(function (f, i) { return '<li role="option" id="' + lb + '-' + i + '"' + (i === active ? ' aria-selected="true"' : '') + ' data-i="' + i + '"><span>' + f[0] + '</span><small>' + (f[1] === 'custom' ? 'load this name' : f[1] === 'hand' ? 'handwriting' : f[1]) + '</small></li>'; }).join('');
+      open(true);
+    }
+    function open(on) { list.hidden = !on; inp.setAttribute('aria-expanded', on); if (on && active >= 0) inp.setAttribute('aria-activedescendant', lb + '-' + active); else inp.removeAttribute('aria-activedescendant'); }
+    function move(d) {
+      if (!items.length) return; active = (active + d + items.length) % items.length;
+      [].forEach.call(list.children, function (li, i) { li.toggleAttribute('aria-selected', i === active); if (i === active) li.scrollIntoView({ block: 'nearest' }); });
+      inp.setAttribute('aria-activedescendant', lb + '-' + active);
+    }
+    function choose(name) {
+      name = (name || '').trim(); if (!name) return;
+      var f = gfInfo(name); if (f) name = f[0];
+      inp.value = name; open(false); loadFont(name); set(v, fontStack(name, mono ? 'mono' : null)); markTPreset('type', null); refresh();
+    }
+    inp.addEventListener('focus', function () { inp.select(); render(''); });
+    inp.addEventListener('input', function () { render(inp.value); });
+    inp.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowDown') { e.preventDefault(); if (list.hidden) render(inp.value); else move(1); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); move(-1); }
+      else if (e.key === 'Enter') { e.preventDefault(); choose(active >= 0 ? items[active][0] : inp.value); }
+      else if (e.key === 'Escape') { open(false); inp.value = fontName(get(v)); }
+    });
+    list.addEventListener('mousedown', function (e) { var li = e.target.closest('li'); if (li) { e.preventDefault(); choose(items[+li.dataset.i][0]); } });
+    inp.addEventListener('blur', function () { setTimeout(function () { open(false); inp.value = fontName(get(v)); }, 120); });
+    tIn[v] = function () { inp.value = fontName(get(v)); };
+  }
+  tdial('--size-min', 'Body size · narrow', 12, 22, 0.5, 'px', null, 'Body text size on the narrowest screen. Every other text size is worked out from this and the narrow ratio.');
+  tdial('--size-max', 'Body size · wide', 14, 28, 0.5, 'px', null, 'Body text size on the widest screen. In between, every size scales smoothly from its narrow value to its wide one.');
+  tratio('--ratio-min', 'Ratio · narrow', 'How much bigger each text size is than the one below it, on the narrowest screen. Phones usually want a small ratio, like 1.2.');
+  tratio('--ratio-max', 'Ratio · wide', 'How much bigger each text size is than the one below it, on the widest screen. A bigger ratio gives bigger, more dramatic headings.');
+  tdial('--screen-min', 'Narrow screen', 320, 480, 10, 'px', null, 'The screen width where the narrow sizes apply. Below it, sizes stay at their narrow values.');
+  tdial('--screen-max', 'Wide screen', 960, 1600, 20, 'px', null, 'The screen width where the wide sizes apply. Above it, sizes stay at their wide values. Space uses the same widths.');
+  tfont('--font-heading', 'h', 'Heading face', 'Any Google Font for headings. Type to search the 500 most popular and every monospace family, or type any family name to load it.');
+  tfont('--font-body', 'b', 'Body face', 'Any Google Font for body text and controls.');
+  tfont('--font-mono', 'm', 'Mono face', 'A monospace face for code, kbd, samp and pre. The list holds every monospace family on Google Fonts; clear it in your CSS to use the system monospace.', true);
+  var sc = document.getElementById('space-ctl'), follow = document.getElementById('k_spfollow');
+  function spaceVal(v) { var x = get(v); if (/^var\(/.test(x)) x = get(x.slice(4, -1)); return x; }
+  tdial('--space-min', 'Space · narrow', 8, 32, 0.5, 'px', sc, 'The base space (--space-s) on the narrowest screen. Every space size and pair is a multiple of it. Follows body size unless you untick the box above.');
+  tdial('--space-max', 'Space · wide', 8, 40, 0.5, 'px', sc, 'The base space (--space-s) on the widest screen. In between it scales smoothly.');
+  tdial('--space-density', 'Density', 0.6, 1.6, 0.05, '×', sc, 'Multiplies every space size and pair at once: below 1 is tighter, above 1 is roomier.');
+  tdial('--radius-base', 'Corner radius', 0, 28, 1, 'px', sc, 'Corner rounding for cards, fields and buttons. Small, medium and large radii are worked out from it.');
+  function setFollow(on) {
+    follow.checked = on;
+    if (on) { set('--space-min', 'var(--size-min)'); set('--space-max', 'var(--size-max)'); }
+    else { set('--space-min', spaceVal('--space-min')); set('--space-max', spaceVal('--space-max')); }
+    Object.keys(tIn).forEach(function (k) { tIn[k](); });
+  }
+  follow.addEventListener('change', function () { setFollow(follow.checked); markTPreset('space', null); refresh(); });
+  function markTPreset(kind, n) {
+    document.querySelectorAll('[data-' + kind + 'preset]').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-' + kind + 'preset') === n); });
+    document.getElementById(kind + 'preset-note').textContent = n ? D[kind][n].note : 'Custom.';
+  }
+  function applyTPreset(n) {
+    var p = D.type[n].dials;
+    Object.keys(p).forEach(function (k) { set(k, p[k]); });
+    ['--font-heading', '--font-body', '--font-mono'].forEach(function (k) { loadFont(fontName(p[k])); });
+    Object.keys(tIn).forEach(function (k) { tIn[k](); }); markTPreset('type', n); refresh();
+  }
+  function applySPreset(n) {
+    var p = D.space[n].dials;
+    Object.keys(p).forEach(function (k) { set(k, p[k]); });
+    follow.checked = /^var\(/.test(p['--space-min']);
+    Object.keys(tIn).forEach(function (k) { tIn[k](); }); markTPreset('space', n); refresh();
+  }
+  [['tpresets', D.type, 'type', applyTPreset], ['spresets', D.space, 'space', applySPreset]].forEach(function (g) {
+    var w = document.getElementById(g[0]);
+    Object.keys(g[1]).forEach(function (n) { var b = document.createElement('button'); b.type = 'button'; b.className = 'btn soft is-neutral'; b.setAttribute('data-' + g[2] + 'preset', n); b.textContent = g[1][n].name; b.addEventListener('click', function () { g[3](n); }); w.appendChild(b); });
+    var note = document.createElement('span'); note.id = g[2] + 'preset-note'; note.className = 't-quiet'; w.appendChild(note);
+  });
+
+  /* the live ladder: sizes now, and at each end */
+  var ladder = document.getElementById('ladder'), spaces = document.getElementById('spaces');
+  var meter = document.createElement('i'); meter.style.cssText = 'position:absolute;visibility:hidden;height:0'; document.body.appendChild(meter);
+  function nowPx(v) { meter.style.width = 'var(' + v + ')'; return parseFloat(getComputedStyle(meter).width); }
+  function num(v) { return parseFloat(get(v)); }
+  var SIZES = [['3xs', 0.25], ['2xs', 0.5], ['xs', 0.75], ['s', 1], ['m', 1.5], ['l', 2], ['xl', 3], ['2xl', 4], ['3xl', 6], ['4xl', 8]];
+  function renderScale() {
+    var f0 = num('--size-min'), f1 = num('--size-max'), r0 = num('--ratio-min'), r1 = num('--ratio-max'), d = num('--space-density');
+    var s0 = parseFloat(spaceVal('--space-min')), s1 = parseFloat(spaceVal('--space-max'));
+    var h = '';
+    for (var n = 6; n >= -2; n--) {
+      var a = f0 * Math.pow(r0, n), b = f1 * Math.pow(r1, n);
+      h += '<div class="r"><code>--size-' + n + '</code><span class="aa" style="font-size:var(--size-' + n + ')">Aa Sample</span><span class="px">' + nowPx('--size-' + n).toFixed(1) + 'px · ' + a.toFixed(1) + '→' + b.toFixed(1) + '</span></div>';
+    }
+    ladder.innerHTML = h; h = '';
+    SIZES.forEach(function (sz) { h += row('--space-' + sz[0], sz[1] * s0 * d, sz[1] * s1 * d, false); });
+    for (var i = 0; i < SIZES.length - 1; i++) h += row('--space-' + SIZES[i][0] + '-' + SIZES[i + 1][0], SIZES[i][1] * s0 * d, SIZES[i + 1][1] * s1 * d, true);
+    h += row('--space-s-l', s0 * d, 2 * s1 * d, true) + row('--space-m-xl', 1.5 * s0 * d, 3 * s1 * d, true) + row('--space-l-2xl', 2 * s0 * d, 4 * s1 * d, true);
+    spaces.innerHTML = h;
+    function row(v, a, b, pair) { return '<div class="r"><code>' + v + '</code><span class="bar' + (pair ? ' pair' : '') + '" style="width:var(' + v + ')"></span><span class="px">' + nowPx(v).toFixed(0) + 'px · ' + a.toFixed(0) + '→' + b.toFixed(0) + '</span></div>'; }
+  }
+  window.addEventListener('resize', function () { renderScale(); });
+
+  function setFormat(f) {
+    FORMAT = f; Object.keys(dialEls).forEach(convertDial);
+    document.querySelectorAll('button[data-format]').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.format === f); });
+    refresh();
+  }
+  pop.addEventListener('click', function (e) { var b = e.target.closest('button[data-format]'); if (b) { setFormat(b.dataset.format); if (popFor && hexInputs[popFor]) { var x = inFormat(currentHex(popFor)); set(popFor, x); hexInputs[popFor][1].value = x; refresh(); } popVal.textContent = get(popFor); } });
+  function setScheme(m) {
+    if (m === 'system') root.removeAttribute('data-scheme'); else root.setAttribute('data-scheme', m);
+    document.querySelectorAll('[data-scheme]').forEach(function (b) { if (b.tagName === 'BUTTON') b.setAttribute('aria-pressed', b.dataset.scheme === m); });
+    try { localStorage.setItem('starter-scheme', m); } catch (e) {}
+  }
+  document.querySelectorAll('button[data-scheme]').forEach(function (b) { b.addEventListener('click', function () { setScheme(b.dataset.scheme); }); });
+  var saved = 'system'; try { saved = localStorage.getItem('starter-scheme') || 'system'; } catch (e) {}
+  setScheme(saved);
+
+  /* ---------- whole themes: a colour, a type and a space preset together (themes.json) ---------- */
+  var combo = document.getElementById('combo');
+  combo.innerHTML = '<option value="" disabled>Custom</option><option value="_shuffle" disabled hidden></option>' + Object.keys(D.themes).map(function (n) { var c = D.themes[n]; return '<option value="' + n + '" title="' + D.colour[c.colour].name + ' colours, ' + D.type[c.type].name + ' type, ' + D.space[c.space].name + ' space">' + c.name + '</option>'; }).join('');
+  function applyAll(c, t, sp, scheme) {
+    applyPreset(c); applyTPreset(t); applySPreset(sp); if (scheme) setScheme(scheme);
+  }
+  combo.addEventListener('change', function () { var c = D.themes[combo.value]; if (c) applyAll(c.colour, c.type, c.space, c.preview); });
+  function randomKey(o) { var k = Object.keys(o); return k[Math.floor(Math.random() * k.length)]; }
+  document.getElementById('shuffle').addEventListener('click', function () {
+    var c = randomKey(D.colour), t = randomKey(D.type), sp = randomKey(D.space);
+    applyAll(c, t, sp);
+    var o = combo.querySelector('option[value="_shuffle"]'); o.textContent = D.colour[c].name + ' · ' + D.type[t].name + ' · ' + D.space[sp].name; o.hidden = false; combo.value = '_shuffle';
+  });
+  /* touching any control by hand makes it a custom theme */
+  document.querySelector('.controls').addEventListener('input', function () { combo.value = ''; });
+  document.querySelector('.controls').addEventListener('click', function (e) { if (e.target.closest('[data-preset],[data-typepreset],[data-spacepreset]')) combo.value = ''; });
+
+  /* the text of the dist files, for the token table and the export; then start in the house theme */
+  Promise.all(['dials-colour.css', 'dials-scale.css', 'dials-base.css'].map(function (f) {
+    return fetch(f).then(function (r) { if (!r.ok) throw new Error(f + ': ' + r.status); return r.text(); });
+  })).then(function (t) {
+    SRC.colour = t[0]; SRC.scale = t[1]; SRC.base = t[2];
+    tokenTable();
+    setFormat('hsl');
+    applyTPreset('hi-fi');
+    applySPreset('machined');
+    applyPreset('hi-fi');
+    combo.value = 'hi-fi';
+    root.setAttribute('data-ready', '');
+  }).catch(function (e) {
+    pre.textContent = 'Could not load the CSS files (' + e.message + '). Serve this folder over HTTP, e.g. python3 -m http.server, rather than opening the file directly.';
+    throw e;
+  });
+})();
+</script>
+</body>
+</html>

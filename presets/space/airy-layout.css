@@ -1,0 +1,8 @@
+/* Dials space preset: Airy layout
+   Its own base: spacing grows much more than the text does on wide screens. */
+:root, :host {
+  --space-min: 18;
+  --space-max: 28;
+  --space-density: 1;
+  --radius-base: 12;
+}

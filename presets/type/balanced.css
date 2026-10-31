@@ -1,0 +1,13 @@
+/* Dials type preset: Balanced
+   Body 16 to 19px, minor third to major third, serif headings. */
+:root, :host {
+  --screen-min: 360;
+  --screen-max: 1240;
+  --size-min: 16;
+  --size-max: 19;
+  --ratio-min: 1.2;
+  --ratio-max: 1.25;
+  --font-heading: "Fraunces", ui-serif, Georgia, serif;
+  --font-body: "Figtree", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}

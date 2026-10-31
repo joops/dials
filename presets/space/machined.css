@@ -1,0 +1,8 @@
+/* Dials space preset: Machined
+   Part of the Dials house style: standard spacing with small, machined 3px corners, like the edges of an amplifier faceplate. */
+:root, :host {
+  --space-min: var(--size-min);
+  --space-max: var(--size-max);
+  --space-density: 1;
+  --radius-base: 3;
+}

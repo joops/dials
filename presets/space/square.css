@@ -1,0 +1,8 @@
+/* Dials space preset: Square
+   No rounded corners. */
+:root, :host {
+  --space-min: var(--size-min);
+  --space-max: var(--size-max);
+  --space-density: 1;
+  --radius-base: 0;
+}

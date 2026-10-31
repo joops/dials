@@ -1,0 +1,50 @@
+/*! Dials v0.1.0 | MIT | https://github.com/joops/dials */
+/* Dials theme: Terminal
+   Presets: Tokyo Night colour, Terminal type, Compact space (presets/colour/tokyo-night.css, presets/type/terminal.css,
+   presets/space/compact.css). Load after dials.css. This file doesn't set
+   color-scheme: the theme works in light and dark, and follows the page's setting.
+   Faces: <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&family=IBM+Plex+Sans:wght@400;700&display=swap">
+*/
+:root, :host {
+  /* colour: Tokyo Night */
+  --brand: #7aa2f7;
+  --accent: #bb9af7;
+  --success: #9ece6a;
+  --warning: #e0af68;
+  --danger: #f7768e;
+  --info: #7dcfff;
+  --grey: #565f89;
+  --balance: 0;
+  --fill-lightness: 0.52;
+  --dark-lift: 0;
+  --tint-strength: 11%;
+  --tint-vividness: 1;
+  --text-contrast: 18;
+  --white-text-until: 0.179;
+  --paper-lightness: 0.985;
+  --paper-dark-lightness: 0.16;
+  --ink-lightness: 0.2;
+  --ink-dark-lightness: 0.94;
+  --gradient-from: var(--brand-solid);
+  --gradient-to: var(--accent-solid);
+  --gradient-angle: 135deg;
+  --paper-light: #e1e2e7;
+  --paper-dark: #1a1b26;
+  --ink-light: #343b58;
+  --ink-dark: #c0caf5;
+  /* type: Terminal */
+  --screen-min: 360;
+  --screen-max: 1240;
+  --size-min: 14;
+  --size-max: 16;
+  --ratio-min: 1.125;
+  --ratio-max: 1.2;
+  --font-heading: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-body: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  /* space: Compact */
+  --space-min: var(--size-min);
+  --space-max: var(--size-max);
+  --space-density: 0.75;
+  --radius-base: 6;
+}

@@ -1,0 +1,50 @@
+/*! Dials v0.1.0 | MIT | https://github.com/joops/dials */
+/* Dials theme: Editorial
+   Presets: Nord colour, Editorial type, Roomy space (presets/colour/nord.css, presets/type/editorial.css,
+   presets/space/roomy.css). Load after dials.css. This file doesn't set
+   color-scheme: the theme works in light and dark, and follows the page's setting.
+   Faces: <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700&family=Source+Serif+4:wght@400;700&display=swap">
+*/
+:root, :host {
+  /* colour: Nord */
+  --brand: #5e81ac;
+  --accent: #b48ead;
+  --success: #a3be8c;
+  --warning: #ebcb8b;
+  --danger: #bf616a;
+  --info: #88c0d0;
+  --grey: #4c566a;
+  --balance: 0;
+  --fill-lightness: 0.52;
+  --dark-lift: 0.08;
+  --tint-strength: 11%;
+  --tint-vividness: 1;
+  --text-contrast: 8;
+  --white-text-until: 0.179;
+  --paper-lightness: 0.985;
+  --paper-dark-lightness: 0.16;
+  --ink-lightness: 0.2;
+  --ink-dark-lightness: 0.94;
+  --gradient-from: var(--brand-solid);
+  --gradient-to: var(--info-solid);
+  --gradient-angle: 135deg;
+  --paper-light: #eceff4;
+  --paper-dark: #2e3440;
+  --ink-light: #2e3440;
+  --ink-dark: #eceff4;
+  /* type: Editorial */
+  --screen-min: 360;
+  --screen-max: 1240;
+  --size-min: 18;
+  --size-max: 21;
+  --ratio-min: 1.2;
+  --ratio-max: 1.333;
+  --font-heading: "Fraunces", ui-serif, Georgia, serif;
+  --font-body: "Source Serif 4", ui-serif, Georgia, serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  /* space: Roomy */
+  --space-min: var(--size-min);
+  --space-max: var(--size-max);
+  --space-density: 1.3;
+  --radius-base: 16;
+}

@@ -1,0 +1,13 @@
+/* Dials type preset: Hi-Fi
+   Part of the Dials house style: Michroma, a wide Eurostile-style face off an amplifier panel, over Barlow, an industrial grotesk. */
+:root, :host {
+  --screen-min: 360;
+  --screen-max: 1240;
+  --size-min: 16;
+  --size-max: 18;
+  --ratio-min: 1.2;
+  --ratio-max: 1.25;
+  --font-heading: "Michroma", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Barlow", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Share Tech Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}

@@ -1,0 +1,4 @@
+{
+  "$comment": "Known contrast failures the check tolerates. Each entry: browser (chromium, firefox or *), input (dials.css, theme:<name>, random:<n>:<kind>, a prefix ending in *, or *), scheme (light, dark, band or *), pair ('--fg on --bg') and a reason. Keep this short: fix the derivation rather than adding to it.",
+  "exceptions": []
+}
