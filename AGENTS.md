@@ -29,9 +29,9 @@ Copy the rules block below into your project's own `AGENTS.md` or `CLAUDE.md` as
 - To change the look, change a dial. Never retune one shade, size or step by hand.
 - Colours are typed only as colour dials, preferably in HSL (`hsl(37 90% 51%)`), though any CSS colour works. Never write a hex, `rgb()`, `hsl()` or named colour anywhere else.
 - Components use only the public tokens in the reference. Anything prefixed `--dl-` is internal plumbing: never use or set it.
-- A solid or soft background always sets its matching on- colour in the same rule.
+- A solid or soft background sets its text colour in the same rule. Its matching on- colour is the default, and Dials guarantees its contrast; any other colour is yours to choose if it passes the contrast rule below.
 - Components read the ungrouped roles (solid, on-solid, soft, on-soft, line). A group class only switches which group those roles point at; never style a component per group class.
-- Coloured text uses an on- colour; coloured borders, icons and large text use a line. Never put a solid or soft colour on text.
+- Coloured text defaults to an on- colour, and coloured borders, icons and large text to a line: Dials guarantees their contrast. Any other colour, a solid or soft one included, is yours to choose if it passes the contrast rule below.
 - Set the colour scheme on purpose. Dials follows the visitor's light or dark setting; to force one, set `color-scheme` on `:root` in your own file. A dark section is the dark band class on that section, never a second set of colours.
 - A new shade is derived from a token with `color-mix(in oklab, …)` or relative colour (`oklch(from … )`), declared once as a custom property in your own file with a comment, never inline.
 - Every font size, gap and padding, corner, border and outline width and face comes from its scale in the reference. Never write a length in px, rem or em except through those tokens.
