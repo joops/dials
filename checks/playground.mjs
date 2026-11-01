@@ -95,7 +95,7 @@ try {
     await p.click('[data-export="theme"]');
     expect(name, /\n  --leading-display: 1\.4;/.test(themeOut) && !/--leading-body/.test(themeOut) && !/:\s*;/.test(themeOut), 'the theme export lists the set type dial, and no unset one');
     expect(name, /\n  --leading-display: 1\.4;/.test(fullOut) && /\/\* --leading-body: 1\.6;/.test(fullOut), 'the full export declares the set type dial and leaves unset ones as comments');
-    await p.click('#k__leading_display ~ .unset-btn');
+    if (dial) await p.click('#k__leading_display ~ .unset-btn');   // hidden while the dial is unset
     expect(name, !(await p.evaluate(() => document.documentElement.style.getPropertyValue('--leading-display'))) && Math.abs(await h3() - 1.15) < 0.002, 'the unset button removes the dial, and the h3 is back to 1.15');
     await p.keyboard.press('Escape');
     // the mono picker lists monospace families only

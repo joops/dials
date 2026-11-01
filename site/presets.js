@@ -344,7 +344,7 @@ window.DIALS = {
     "--leading-body": "1.45",
     "--leading-display": "1.15",
     "--tracking-small": "0.015",
-    "--tracking-display": "-0.02"
+    "--tracking-display": "-0.015"
    },
    "fonts": "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;700&family=IBM+Plex+Mono:wght@400;700&display=swap\">"
   },
@@ -425,8 +425,8 @@ window.DIALS = {
     "--font-body": "\"Figtree\", ui-sans-serif, system-ui, sans-serif",
     "--font-mono": "ui-monospace, \"SF Mono\", Menlo, Consolas, monospace",
     "--leading-body": "1.55",
-    "--leading-display": "0.95",
-    "--tracking-display": "-0.04",
+    "--leading-display": "1",
+    "--tracking-display": "-0.035",
     "--tracking-caps": "0.1",
     "--weight-heading": "800"
    },

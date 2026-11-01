@@ -372,7 +372,7 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
       <div class="type-ctl" id="type-ctl"></div>
       <h3 class="ctl-sub">Leading, tracking and weight</h3>
       <div class="type-ctl" id="type-ctl2"></div>
-      <p class="ctl-note">These start unset, so <code>dials-base.css</code> keeps the type it has always had. Move one to set it; × unsets it. Leading and tracking are set at two ends, body text and the top of the scale (<code>--size-8</code>), and every size in between slides along a curve: watch the scale beside the article. Tracking dials are in em, and any you leave unset count as shown.</p>
+      <p class="ctl-note">These start unset, so <code>dials-base.css</code> keeps the type it has always had. Move one to set it; × unsets it. Leading and tracking are set at two ends, body text and the h1 step (<code>--size-5</code>), and every size in between slides along a curve; the display sizes above h1 keep the display values: watch the scale beside the article. Tracking dials are in em, and any you leave unset count as shown.</p>
       <p class="ctl-note">Body size and ratio are set at the narrowest and widest screens, and every size runs in a straight line between them; the screen range is shared with space. A bigger ratio gives more drama between headings and body text: 1.2 is a minor third, 1.333 a perfect fourth, 1.618 the golden ratio. Faces load from Google Fonts: choose one, or type any family name. The mono face is for code; its list holds every monospace family on Google Fonts.</p>
     </div>
     <div class="tabpanel" id="tab-space" role="tabpanel" aria-labelledby="t-space" hidden>
@@ -914,9 +914,9 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
   tfont('--font-heading', 'h', 'Heading face', 'Any Google Font for headings. Type to search the 500 most popular and every monospace family, or type any family name to load it.');
   tfont('--font-body', 'b', 'Body face', 'Any Google Font for body text and controls.');
   topt('--leading-body', 'Leading · body', 1, 2.2, 0.01, '', 1.6, 'Line height at body size, unitless. Unset, body text keeps 1.6.');
-  topt('--leading-display', 'Leading · display', 0.8, 1.6, 0.01, '', 1.15, 'Line height at the top of the scale (--size-8). Sizes between body and display slide in a straight line, so headings get proportionally tighter as they grow. Unset, headings keep 1.15.');
+  topt('--leading-display', 'Leading · display', 0.8, 1.6, 0.01, '', 1.15, 'Line height for the h1 step (--size-5) and the display sizes above it. Sizes between body and h1 slide in a straight line, so headings get proportionally tighter as they grow. Unset, headings keep 1.15.');
   topt('--tracking-small', 'Tracking · small', -0.05, 0.15, 0.005, '', 0, 'Letter spacing at the smallest size (--size--2), in em. Positive opens up captions and small print. Body text stays at 0.');
-  topt('--tracking-display', 'Tracking · display', -0.1, 0.05, 0.005, '', 0, 'Letter spacing at the top of the scale (--size-8), in em. Negative tightens display type. Sizes in between slide evenly per step.');
+  topt('--tracking-display', 'Tracking · display', -0.1, 0.05, 0.005, '', 0, 'Letter spacing for the h1 step (--size-5) and the display sizes above it, in em. Negative tightens display type. Sizes in between slide evenly per step.');
   topt('--tracking-caps', 'Tracking · capitals', 0, 0.2, 0.005, '', 0, 'Extra letter spacing for text in capitals, in em, added to the tracking for its size. The kicker above the article shows it.');
   topt('--weight-body', 'Weight · body', 100, 900, 10, '', 400, 'Body text weight. Bold text, buttons and labels take this plus 200 (--weight-strong).');
   topt('--weight-heading', 'Weight · headings', 100, 900, 10, '', 600, 'Heading weight. The face needs that weight: the playground loads every weight a Google Font has.');

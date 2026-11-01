@@ -263,9 +263,9 @@
   /* While none is set, dials-base.css keeps v0.2's type. Set them in your own file; the value
      shown is what Dials uses for any you leave unset once you've set another. */
   /* --leading-body: 1.6;      line height at body size (--size-0), unitless */
-  /* --leading-display: 1.15;  line height at the top of the scale (--size-8), unitless; sizes in between slide in a straight line */
+  /* --leading-display: 1.15;  line height at the h1 step (--size-5) and above, unitless; sizes in between slide in a straight line */
   /* --tracking-small: 0;      letter spacing at the smallest size (--size--2), in em without the unit: positive loosens captions */
-  /* --tracking-display: 0;    letter spacing at --size-8, in em without the unit: negative tightens display type */
+  /* --tracking-display: 0;    letter spacing at the h1 step (--size-5) and above, in em without the unit: negative tightens display type */
   /* --tracking-caps: 0;       extra letter spacing for all caps and small caps, in em without the unit (0.05 to 0.12 is usual) */
   /* --weight-body: 400;       body text weight */
   /* --weight-heading: 600;    heading weight */
@@ -321,17 +321,17 @@
   --dl-leading-display: var(--leading-display, 1.15);
   --dl-tracking-small: var(--tracking-small, 0);
   --dl-tracking-display: var(--tracking-display, 0);
-  /* body size over the top of the scale, as a number: tan(atan2(a, b)) is a / b for two lengths
+  /* body size over the h1 step, as a number: tan(atan2(a, b)) is a / b for two lengths
      (Firefox has no typed division) */
-  --dl-type-q: tan(atan2(var(--size-0), var(--size-8)));
-  /* leading runs in a straight line in size, m * size + g, through leading-body at --size-0 and leading-display at --size-8 */
+  --dl-type-q: tan(atan2(var(--size-0), var(--size-5)));
+  /* leading runs in a straight line in size, m * size + g, through leading-body at --size-0 and leading-display at --size-5, the h1 step */
   --dl-leading-m: calc((var(--dl-leading-display) - var(--dl-leading-body) * var(--dl-type-q)) / max(1 - var(--dl-type-q), 0.000001));
   --dl-leading-g: calc(var(--size-0) * (var(--dl-leading-body) - var(--dl-leading-m)));
-  /* how far up the scale this size is, from --size-0 (0) to --size-8 (1), and down it to --size--2, evenly per step */
+  /* how far up the scale this size is, from --size-0 (0) to --size-5 (1), and down it to --size--2, evenly per step */
   --dl-type-up: clamp(0, log(tan(atan2(var(--size-0), 1em))) / min(log(var(--dl-type-q)), -0.000001), 1);
   --dl-type-down: clamp(0, log(tan(atan2(1em, var(--size-0)))) / min(log(tan(atan2(var(--size--2), var(--size-0)))), -0.000001), 1);
-  --leading: clamp(min(var(--dl-leading-body), var(--dl-leading-display)) * 1em, var(--dl-leading-m) * 1em + var(--dl-leading-g), max(var(--dl-leading-body), var(--dl-leading-display)) * 1em);  /* line height for the size it's on, from --leading-body at body size to --leading-display at --size-8 */
-  --tracking: calc(1em * (var(--dl-tracking-display) * var(--dl-type-up) + var(--dl-tracking-small) * var(--dl-type-down)));  /* letter spacing for the size it's on: 0 at body size, --tracking-small at --size--2, --tracking-display at --size-8 */
+  --leading: clamp(min(var(--dl-leading-body), var(--dl-leading-display)) * 1em, var(--dl-leading-m) * 1em + var(--dl-leading-g), max(var(--dl-leading-body), var(--dl-leading-display)) * 1em);  /* line height for the size it's on, from --leading-body at body size to --leading-display at --size-5 (h1) and above */
+  --tracking: calc(1em * (var(--dl-tracking-display) * var(--dl-type-up) + var(--dl-tracking-small) * var(--dl-type-down)));  /* letter spacing for the size it's on: 0 at body size, --tracking-small at --size--2 and below, --tracking-display at --size-5 (h1) and above */
   --tracking-caps-total: calc(var(--tracking) + 1em * var(--tracking-caps, 0));  /* letter spacing for text in capitals: --tracking plus --tracking-caps */
   --weight-strong: min(900, var(--weight-body, 400) + 200);  /* bold within body text, buttons and labels: the body weight plus 200 */
   /* dials-base.css reads these, so an untouched site keeps v0.2's type: each is valid only once one of its dials is set */

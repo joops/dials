@@ -43,7 +43,7 @@ Each group's line is strong on purpose: it holds 3:1, for borders that must be s
 
 ### Type
 
-Dials works out leading, tracking and the strong weight for you, from a few type dials, all unset by default. `--leading` and `--tracking` work out a value for the size of the element they're on: the leading slides from `--leading-body` at body size to `--leading-display` at `--size-8`, so bigger text gets proportionally tighter lines, and the tracking slides from `--tracking-small` at `--size--2` through 0 at body size to `--tracking-display` at `--size-8`. Both are lengths, so an element that inherits them gets its parent's value, not its own: **set them on every element that sets its own font size**, and never on a wrapper or on `body`.
+Dials works out leading, tracking and the strong weight for you, from a few type dials, all unset by default. `--leading` and `--tracking` work out a value for the size of the element they're on: the leading slides from `--leading-body` at body size to `--leading-display` at the h1 step (`--size-5`), so bigger text gets proportionally tighter lines, and the tracking slides from `--tracking-small` at `--size--2` through 0 at body size to `--tracking-display` at `--size-5`. The display sizes above h1 keep the display values, so `--leading-display` and `--tracking-display` are what your main heading gets. Both are lengths, so an element that inherits them gets its parent's value, not its own: **set them on every element that sets its own font size**, and never on a wrapper or on `body`.
 
 ```css
 .card-title {
@@ -74,7 +74,7 @@ The same goes for small caps (`font-variant-caps: all-small-caps`).
 .lede { font-size: var(--size-1); line-height: var(--leading); letter-spacing: var(--tracking); color: var(--text-muted); }
 ```
 
-**Display type**, such as a hero title, uses the top steps, `--size-6` to `--size-8`, which `--leading-display` and `--tracking-display` are set at.
+**Display type**, such as a hero title or a big numeral, uses the top steps, `--size-6` to `--size-8`. They keep `--leading-display` and `--tracking-display`, the values set for h1.
 
 **Line length.** `--line-length` caps running text in `dials-base.css` (paragraphs, list items, quotes, captions). A component that holds running text reads it with no cap as the fallback: `max-inline-size: var(--line-length, none)`.
 

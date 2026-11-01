@@ -3,7 +3,7 @@
 //    dials-base.css renders it (checks/fixtures/dials-base-v0.2.0.css), at a phone and a desktop
 //    width, and dials.css alone sets no type on any element, even with every type dial set.
 // 2. --leading, --tracking and --tracking-caps-total, across seeded random dial sets and three
-//    widths: exact at their end points (--size--2, --size-0, --size-8), monotonic between them,
+//    widths: exact at their end points (--size--2, --size-0 and --size-5, the h1 step), monotonic between them,
 //    held at the end values beyond them, and on the formula in between. --weight-strong follows
 //    --weight-body, and --size-7 and --size-8 continue the scale.
 // 3. dials-base.css with dials set: each family of dials engages only its own rules, a
@@ -99,7 +99,7 @@ const num = (v) => v === 'normal' ? 0 : parseFloat(v);
 // ---- seeded random dial sets ----
 function mulberry32(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 function randomSets(n, seed) {
-  const r = mulberry32(seed), between = (a, b, d = 3) => +(a + (b - a) * r()).toFixed(d), sets = [{}];   // the first: no dials, Dials' own values
+  const r = mulberry32(seed), between = (a, b, d = 3) => +(a + (b - a) * r()).toFixed(d), sets = [{}, { '--weight-body': 800 }];   // no dials (Dials' own values), and a body weight that --weight-strong caps at 900
   for (let i = 0; i < n; i++) {
     const d = { '--size-min': between(12, 22, 1), '--size-max': between(14, 26, 1), '--ratio-min': between(1.05, 1.5), '--ratio-max': between(1.05, 1.618) };
     // each type dial is left unset now and then, so the values Dials uses for unset dials are tested too
@@ -162,22 +162,26 @@ try {
       const tag = `set ${si}${si ? '' : ' (no dials)'} ${JSON.stringify(d)} at ${width}px`;
       const lb = +(d['--leading-body'] ?? 1.6), ld = +(d['--leading-display'] ?? 1.15);
       const ts = +(d['--tracking-small'] ?? 0), td = +(d['--tracking-display'] ?? 0), tc = +(d['--tracking-caps'] ?? 0);
-      const B = m.s0.size, S = m['s-2'].size, D = m.s8.size;
+      const B = m.s0.size, S = m['s-2'].size, D = m.s5.size;   // the display end is the h1 step
       // the reference formula, from the sizes the browser actually gave
       const leadRatio = (s) => { const k = D / B, mm = (ld * k - lb) / Math.max(k - 1, 1e-6), g = B * (lb - mm); return Math.min(Math.max(lb, ld), Math.max(Math.min(lb, ld), mm + g / s)); };
       const trackEm = (s) => { const c = (x) => Math.min(1, Math.max(0, x)); return td * c(Math.log(s / B) / Math.max(Math.log(D / B), 1e-6)) + ts * c(Math.log(B / s) / Math.max(Math.log(B / S), 1e-6)); };
       const ids = PROBES.map(x => x[0]);
       const ratio = (id) => num(m[id].lh) / m[id].size, em = (id) => num(m[id].ls) / m[id].size;
-      // Firefox keeps lengths in 1/60px, so a font size and the line height worked out from it can each be up to 1/120px off
-      const tolPx = name === 'firefox' ? 0.03 : 0.02;
-      const at = (id, want, got, what) => { const err = Math.abs(got - want); expect(name, err <= tolPx, `${tag}: ${what} at ${id} (${m[id].size}px) is ${got.toFixed(4)}px, want ${want.toFixed(4)}px`); return err; };
+      // Firefox keeps lengths in 1/60px, and rounds an element's font size (up to 1/64px) while calc() works
+      // with the exact --size-0. The reference uses the rounded size, so on a steep leading line (a big gap g)
+      // it can differ from the true value by g / B times that rounding: the tolerance includes that bound.
+      const k = D / B, mm = (ld * k - lb) / Math.max(k - 1, 1e-6);
+      const tolPx = name === 'firefox' ? 0.03 + Math.abs(lb - mm) / 64 : 0.02;
+      const at = (id, want, got, what) => { const err = Math.abs(got - want); expect(name, err <= tolPx, `${tag}: ${what} at ${id} (${m[id].size}px) is ${got.toFixed(4)}px, want ${want.toFixed(4)}px (tolerance ${tolPx.toFixed(4)}px)`); return err; };
       // end points, exactly
       at('s0', lb * B, num(m.s0.lh), 'line height');
-      at('s8', ld * D, num(m.s8.lh), 'line height');
+      at('s5', ld * D, num(m.s5.lh), 'line height');
       at('s0', 0, num(m.s0.ls), 'letter spacing');
       at('s-2', ts * S, num(m['s-2'].ls), 'letter spacing');
-      at('s8', td * D, num(m.s8.ls), 'letter spacing');
-      // held at the end values beyond the ends
+      at('s5', td * D, num(m.s5.ls), 'letter spacing');
+      // held at the end values beyond the ends: the display steps above h1 keep the display values
+      for (const id of ['s6', 's7', 's8']) { at(id, ld * m[id].size, num(m[id].lh), 'line height (above the h1 step)'); at(id, td * m[id].size, num(m[id].ls), 'letter spacing (above the h1 step)'); }
       at('below', ts * m.below.size, num(m.below.ls), 'letter spacing (past the small end)');
       at('above', td * m.above.size, num(m.above.ls), 'letter spacing (past the display end)');
       at('above', ld * m.above.size, num(m.above.lh), 'line height (past the display end)');

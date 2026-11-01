@@ -67,9 +67,9 @@ This is the reference for Dials v0.3.0. Names can change between versions: for a
 | Name | Default | What it is |
 |---|---|---|
 | `--leading-body` | `(unset: 1.6)` | line height at body size (--size-0), unitless |
-| `--leading-display` | `(unset: 1.15)` | line height at the top of the scale (--size-8), unitless; sizes in between slide in a straight line |
+| `--leading-display` | `(unset: 1.15)` | line height at the h1 step (--size-5) and above, unitless; sizes in between slide in a straight line |
 | `--tracking-small` | `(unset: 0)` | letter spacing at the smallest size (--size--2), in em without the unit: positive loosens captions |
-| `--tracking-display` | `(unset: 0)` | letter spacing at --size-8, in em without the unit: negative tightens display type |
+| `--tracking-display` | `(unset: 0)` | letter spacing at the h1 step (--size-5) and above, in em without the unit: negative tightens display type |
 | `--tracking-caps` | `(unset: 0)` | extra letter spacing for all caps and small caps, in em without the unit (0.05 to 0.12 is usual) |
 | `--weight-body` | `(unset: 400)` | body text weight |
 | `--weight-heading` | `(unset: 600)` | heading weight |
@@ -224,8 +224,8 @@ Old names that still work in this release. Rename them: they'll be removed in a 
 
 | Name | Default | What it is |
 |---|---|---|
-| `--leading` | `derived: see tokens.json` | line height for the size it's on, from --leading-body at body size to --leading-display at --size-8 |
-| `--tracking` | `derived: see tokens.json` | letter spacing for the size it's on: 0 at body size, --tracking-small at --size--2, --tracking-display at --size-8 |
+| `--leading` | `derived: see tokens.json` | line height for the size it's on, from --leading-body at body size to --leading-display at --size-5 (h1) and above |
+| `--tracking` | `derived: see tokens.json` | letter spacing for the size it's on: 0 at body size, --tracking-small at --size--2 and below, --tracking-display at --size-5 (h1) and above |
 | `--tracking-caps-total` | `derived: see tokens.json` | letter spacing for text in capitals: --tracking plus --tracking-caps |
 | `--weight-strong` | `min(900, var(--weight-body, 400) + 200)` | bold within body text, buttons and labels: the body weight plus 200 |
 
@@ -327,7 +327,7 @@ Each group's line is strong on purpose: it holds 3:1, for borders that must be s
 
 ### Type
 
-Dials works out leading, tracking and the strong weight for you, from a few type dials, all unset by default. `--leading` and `--tracking` work out a value for the size of the element they're on: the leading slides from `--leading-body` at body size to `--leading-display` at `--size-8`, so bigger text gets proportionally tighter lines, and the tracking slides from `--tracking-small` at `--size--2` through 0 at body size to `--tracking-display` at `--size-8`. Both are lengths, so an element that inherits them gets its parent's value, not its own: **set them on every element that sets its own font size**, and never on a wrapper or on `body`.
+Dials works out leading, tracking and the strong weight for you, from a few type dials, all unset by default. `--leading` and `--tracking` work out a value for the size of the element they're on: the leading slides from `--leading-body` at body size to `--leading-display` at the h1 step (`--size-5`), so bigger text gets proportionally tighter lines, and the tracking slides from `--tracking-small` at `--size--2` through 0 at body size to `--tracking-display` at `--size-5`. The display sizes above h1 keep the display values, so `--leading-display` and `--tracking-display` are what your main heading gets. Both are lengths, so an element that inherits them gets its parent's value, not its own: **set them on every element that sets its own font size**, and never on a wrapper or on `body`.
 
 ```css
 .card-title {
@@ -358,7 +358,7 @@ The same goes for small caps (`font-variant-caps: all-small-caps`).
 .lede { font-size: var(--size-1); line-height: var(--leading); letter-spacing: var(--tracking); color: var(--text-muted); }
 ```
 
-**Display type**, such as a hero title, uses the top steps, `--size-6` to `--size-8`, which `--leading-display` and `--tracking-display` are set at.
+**Display type**, such as a hero title or a big numeral, uses the top steps, `--size-6` to `--size-8`. They keep `--leading-display` and `--tracking-display`, the values set for h1.
 
 **Line length.** `--line-length` caps running text in `dials-base.css` (paragraphs, list items, quotes, captions). A component that holds running text reads it with no cap as the fallback: `max-inline-size: var(--line-length, none)`.
 

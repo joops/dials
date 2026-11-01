@@ -40,7 +40,7 @@
   --leading-body: 1.45;
   --leading-display: 1.15;
   --tracking-small: 0.015;
-  --tracking-display: -0.02;
+  --tracking-display: -0.015;
   /* space: Compact */
   --space-min: var(--size-min);
   --space-max: var(--size-max);
