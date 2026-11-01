@@ -1,7 +1,9 @@
 // Type checks for the shipped files, in Chromium and Firefox:
-// 1. With no type dials set, every element dials-base.css styles renders exactly as v0.2.0's
-//    dials-base.css renders it (checks/fixtures/dials-base-v0.2.0.css), at a phone and a desktop
-//    width, and dials.css alone sets no type on any element, even with every type dial set.
+// 1. With no type dials set, every element dials-base.css styles renders exactly as it did with
+//    v0.2.0's files (checks/fixtures/v0.2.0/): every computed property and every box, at a phone and
+//    a desktop width. Alone, with each shipped theme against v0.2.0's copy of it, after a site reset
+//    loaded before dials-base.css, and in the playground's scoped demo under the page's own rules.
+//    And dials.css alone sets no type on any element, even with every type dial set.
 // 2. --leading, --tracking and --tracking-caps-total, across seeded random dial sets and three
 //    widths: exact at their end points (--size--2, --size-0 and --size-5, the h1 step), monotonic between them,
 //    held at the end values beyond them, and on the formula in between. --weight-strong follows
@@ -12,7 +14,7 @@
 // Exits 1 on failure.
 //
 //   node checks/type.mjs [--browser=chromium|firefox] [--random=30] [--seed=1] [--verbose]
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { serve, launch, ROOT } from './lib.mjs';
 
@@ -53,6 +55,12 @@ const ELEMENTS = `
   <table><caption>Caption</caption><tr><th>Head</th><td>1</td></tr></table><button>Button</button><label>Label</label><summary>Summary</summary><legend>Legend</legend>
 </div>`;
 
+// A site's reset loaded before dials-base.css, at zero specificity like base: v0.2.0 left these
+// properties to it, so base must still step aside for it.
+const RESET = `<style>* { letter-spacing: 0.01em; } :where(p, li, figcaption) { max-inline-size: 30em; } :where(strong, b) { font-weight: 800; } :where(pre, figcaption, caption) { line-height: 1.9; }</style>`;
+// The playground's own page rules, which its scoped demo (.base-demo …, specificity 0,1,0) outranks.
+const PAGE_RULES = `<style>p { margin: 0; max-width: 68ch; } h3 { letter-spacing: 0.02em; } small { letter-spacing: 0.03em; } strong { font-weight: 500; }</style>`;
+const THEMES = readdirSync(join(ROOT, 'checks/fixtures/v0.2.0/themes')).filter(f => f.endsWith('.css')).map(f => f.slice(0, -4)).sort();
 const page = (head, body) => `<!doctype html><html lang="en"><head><meta charset="utf-8">${head}</head><body>${body}</body></html>`;
 const sheet = (href) => `<link rel="stylesheet" href="${href}">`;
 const dialStyle = (dials, sel = ':root') => `<style>${sel} { ${Object.entries(dials).map(([k, v]) => `${k}: ${v};`).join(' ')} }</style>`;
@@ -75,8 +83,13 @@ const BASE_DIALS = `<p id="p">Body text with <strong id="st">strong</strong> and
 <h1 id="tok-lead">x</h1><h1 id="tok-trk">x</h1>`;
 
 const pages = {
-  '/__v02': () => page(sheet('/dials.css') + sheet('/checks/fixtures/dials-base-v0.2.0.css'), ELEMENTS),
-  '/__now': () => page(sheet('/dials.css') + sheet('/dials-base.css'), ELEMENTS),
+  // the defaults cases: ?v=old uses v0.2.0's files, ?v=new this release's
+  '/__defaults': (url) => {
+    const old = url.searchParams.get('v') === 'old', theme = url.searchParams.get('theme'), kind = url.searchParams.get('kind');
+    const F = (f) => old ? `/checks/fixtures/v0.2.0/${f}` : `/${f}`;
+    if (kind === 'demo') return page(sheet('/dials.css') + PAGE_RULES + sheet(old ? F('dials-base-demo.css') : '/site/dials-base-demo.css'), `<div class="base-demo">${ELEMENTS}</div>`);
+    return page(sheet('/dials.css') + (kind === 'reset' ? RESET : '') + sheet(F('dials-base.css')) + (theme ? sheet(F(`themes/${theme}.css`)) : ''), ELEMENTS);
+  },
   '/__bare': () => page('', ELEMENTS),
   '/__dials-only': () => page(sheet('/dials.css') + dialStyle(ALL_DIALS), ELEMENTS),
   '/__formula': (url) => page(sheet('/dials.css') + dialStyle(JSON.parse(url.searchParams.get('d') || '{}')), FORMULA_BODY),
@@ -84,6 +97,17 @@ const pages = {
   '/__notrig': (url) => page(`<style>${noTrig}</style>` + sheet('/dials-base.css') + dialStyle(JSON.parse(url.searchParams.get('d') || '{}')), BASE_DIALS),
 };
 
+// Reads every computed property (custom properties aside) and the box of every element, keyed by
+// position, so two pages with the same markup can be compared element by element.
+const READ_FULL = () => {
+  const els = [document.documentElement, document.body, ...document.body.querySelectorAll('*')].filter(el => el.tagName !== 'STYLE' && el.tagName !== 'LINK');
+  return els.map((el, i) => {
+    const cs = getComputedStyle(el), r = el.getBoundingClientRect(), props = {};
+    for (let j = 0; j < cs.length; j++) if (!cs[j].startsWith('--')) props[cs[j]] = cs.getPropertyValue(cs[j]);
+    return { el: `${i}:${el.tagName.toLowerCase()}${el.type && el.tagName === 'INPUT' ? `[${el.type}]` : ''}${el.parentElement?.hasAttribute('style') ? ' (in a styled parent)' : ''}`,
+      box: [r.x + scrollX, r.y + scrollY, r.width, r.height], props };
+  });
+};
 // Reads the type of every element in the page, keyed by its position, so two pages with the same
 // markup can be compared element by element.
 const READ_ALL = (props) => {
@@ -127,17 +151,30 @@ try {
     const errors = []; p.on('pageerror', e => errors.push(String(e)));
     const read = async (path, width) => { await p.setViewportSize({ width, height: 800 }); await p.goto(`${server.url}${path}`, { waitUntil: 'load' }); return p.evaluate(READ_ALL, TYPE_PROPS); };
 
-    // ---- 1. no type dials set: v0.2.0's type, element by element ----
+    // ---- 1. no type dials set: v0.2.0's computed values and boxes, element by element ----
+    const CASES = [['no theme', ''], ...THEMES.map(t => [`theme ${t}`, `&theme=${t}`]), ['a site reset before dials-base.css', '&kind=reset'], ["the playground's scoped demo", '&kind=demo']];
+    const full = async (q, width) => { await p.setViewportSize({ width, height: 800 }); await p.goto(`${server.url}/__defaults?${q}`, { waitUntil: 'load' }); return p.evaluate(READ_FULL); };
     for (const width of WIDTHS) {
-      const old = await read('/__v02', width), now = await read('/__now', width);
-      expect(name, old.length === now.length && old.length > 60, `${width}px: the two pages have the same elements (${old.length} vs ${now.length})`);
-      let diffs = 0;
-      for (let i = 0; i < Math.min(old.length, now.length); i++) for (const prop of TYPE_PROPS) {
-        if (old[i][prop] !== now[i][prop]) { diffs++; failures.push(`[${name}] ${width}px, no type dials: ${now[i].el} ${prop} is ${now[i][prop]}, v0.2.0 gives ${old[i][prop]}`); }
-        else passes++;
+      const tally = [];
+      for (const [label, q] of CASES) {
+        const old = await full('v=old' + q, width), now = await full('v=new' + q, width);
+        expect(name, old.length === now.length && old.length > 60, `${width}px, ${label}: the two pages have the same elements (${old.length} vs ${now.length})`);
+        let props = 0, boxes = 0;
+        const msgs = [], report = (msg) => msgs.push(msg);
+        for (let i = 0; i < Math.min(old.length, now.length); i++) {
+          const o = old[i], n = now[i];
+          for (const k of new Set([...Object.keys(o.props), ...Object.keys(n.props)])) if (o.props[k] !== n.props[k]) { props++; report(`${n.el} ${k} is ${n.props[k]}, v0.2.0 gives ${o.props[k]}`); }
+          if (o.box.some((v, j) => Math.abs(v - n.box[j]) > 0.01)) { boxes++; report(`${n.el} box is ${n.box.map(v => +v.toFixed(3)).join(', ')}, v0.2.0 gives ${o.box.map(v => +v.toFixed(3)).join(', ')} (x, y, width, height)`); }
+        }
+        // html and body grow with whatever changed inside them: list the elements that changed first
+        msgs.sort((a, b) => /^[01]:(html|body)/.test(a) - /^[01]:(html|body)/.test(b));
+        for (const m of msgs.slice(0, 12)) failures.push(`[${name}] ${width}px, ${label}, no type dials: ${m}`);
+        if (msgs.length > 12) failures.push(`[${name}] ${width}px, ${label}: … ${msgs.length - 12} more differences`);
+        expect(name, !props && !boxes, `${width}px, ${label}: every computed property and box matches v0.2.0 (${props} properties and ${boxes} boxes differ)`);
+        tally.push(props + boxes ? `${label}: ${props} properties, ${boxes} boxes differ` : null);
+        if (label === 'no theme') { const h1 = now.find(e => /:h1$/.test(e.el)); summary[`${name} ${width}px no theme`] = `${now.length} elements, ${Object.keys(now[1].props).length} computed properties each, plus boxes (body ${now[1].props['font-size']}/${now[1].props['line-height']}, h1 ${h1.props['font-size']}/${h1.props['line-height']} weight ${h1.props['font-weight']})`; }
       }
-      const h1 = now.find(e => /:h1$/.test(e.el)), body = now[1];
-      summary[`${name} ${width}px`] = `${old.length} elements × ${TYPE_PROPS.length} properties, ${diffs} differ from v0.2.0 (body ${body['font-size']}/${body['line-height']}, h1 ${h1['font-size']}/${h1['line-height']} weight ${h1['font-weight']})`;
+      summary[`${name} ${width}px`] = `${CASES.length} cases (no theme, ${THEMES.length} themes, a reset, the playground demo): ` + (tally.filter(Boolean).join('; ') || 'all match v0.2.0');
       // dials.css alone, with every type dial set, sets no type on any element
       const bare = await read('/__bare', width), only = await read('/__dials-only', width);
       let set = 0;

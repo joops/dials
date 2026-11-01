@@ -940,10 +940,10 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
     document.querySelectorAll('[data-' + kind + 'preset]').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-' + kind + 'preset') === n); });
     document.getElementById(kind + 'preset-note').textContent = n ? D[kind][n].note : 'Custom.';
   }
-  function applyTPreset(n) {
+  function applyTPreset(n, asTheme) {   /* asTheme: as themes/*.css apply it, without the type dials that are unset by default */
     var p = D.type[n].dials;
-    TYPE_OPTIONAL.forEach(function (k) { if (!(k in p)) root.style.removeProperty(k); });
-    Object.keys(p).forEach(function (k) { set(k, p[k]); });
+    TYPE_OPTIONAL.forEach(function (k) { if (asTheme || !(k in p)) root.style.removeProperty(k); });
+    Object.keys(p).forEach(function (k) { if (!asTheme || TYPE_OPTIONAL.indexOf(k) < 0) set(k, p[k]); });
     ['--font-heading', '--font-body', '--font-mono', '--font-accent'].forEach(function (k) { loadFont(fontName(p[k])); });
     Object.keys(tIn).forEach(function (k) { tIn[k](); }); markTPreset('type', n); refresh();
   }
@@ -1005,7 +1005,7 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
   var combo = document.getElementById('combo');
   combo.innerHTML = '<option value="" disabled>Custom</option><option value="_shuffle" disabled hidden></option>' + Object.keys(D.themes).map(function (n) { var c = D.themes[n]; return '<option value="' + n + '" title="' + D.colour[c.colour].name + ' colours, ' + D.type[c.type].name + ' type, ' + D.space[c.space].name + ' space">' + c.name + '</option>'; }).join('');
   function applyAll(c, t, sp, scheme) {
-    applyPreset(c); applyTPreset(t); applySPreset(sp); if (scheme) setScheme(scheme);
+    applyPreset(c); applyTPreset(t, true); applySPreset(sp); if (scheme) setScheme(scheme);
   }
   combo.addEventListener('change', function () { var c = D.themes[combo.value]; if (c) applyAll(c.colour, c.type, c.space, c.preview); });
   function randomKey(o) { var k = Object.keys(o); return k[Math.floor(Math.random() * k.length)]; }

@@ -612,5 +612,16 @@ window.DIALS = {
   "--weight-heading",
   "--line-length",
   "--font-accent"
+ ],
+ "typeOptional": [
+  "--leading-body",
+  "--leading-display",
+  "--tracking-small",
+  "--tracking-display",
+  "--tracking-caps",
+  "--weight-body",
+  "--weight-heading",
+  "--line-length",
+  "--font-accent"
  ]
 };

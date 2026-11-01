@@ -45,8 +45,10 @@ try {
       const t = D.themes[key];
       const ok = await p.evaluate(({ t, D }) => {
         const s = document.documentElement.style;
-        const want = { ...D.colour[t.colour].dials, ...D.type[t.type].dials, ...D.space[t.space].dials };
-        return Object.entries(want).every(([k, v]) => /^--(brand|secondary|success|warning|danger|info|grey)$/.test(k) ? !!s.getPropertyValue(k) : s.getPropertyValue(k).trim() === String(v))
+        // a theme applies its type preset as themes/*.css do: without the type dials that are unset by default
+        const type = Object.fromEntries(Object.entries(D.type[t.type].dials).filter(([k]) => !D.typeOptional.includes(k)));
+        const want = { ...D.colour[t.colour].dials, ...type, ...D.space[t.space].dials };
+        return D.typeOptional.every(k => !s.getPropertyValue(k)) && Object.entries(want).every(([k, v]) => /^--(brand|secondary|success|warning|danger|info|grey)$/.test(k) ? !!s.getPropertyValue(k) : s.getPropertyValue(k).trim() === String(v))
           && document.querySelector(`[data-preset="${t.colour}"]`).getAttribute('aria-pressed') === 'true';
       }, { t, D });
       const fails = await p.$eval('#summary', el => el.textContent);

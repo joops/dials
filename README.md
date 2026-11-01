@@ -103,6 +103,8 @@ It works for any dial, from a class too (`.promo { --brand: … }` on an element
 
 Every theme works in light and dark. Some palettes were designed for one side (Dracula and One Dark for dark); their other side is derived from `--grey`.
 
+Themes set no leading, tracking, weight or line-length dial, so they look as they did in 0.2. Each theme's header comment carries its type preset's values for those, as a snippet to paste into your own file if you want them; the playground's Type tab shows them.
+
 ## Browser support
 
 Dials needs `color-mix()`, `light-dark()` and relative colour: Chrome and Edge 123+, Safari 18+, Firefox 128+.

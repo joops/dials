@@ -4,6 +4,10 @@
    presets/space/airy-layout.css). Load after dials.css. This file doesn't set
    color-scheme: the theme works in light and dark, and follows the page's setting.
    Faces: <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700&family=Figtree:wght@400;700&display=swap">
+   Type, opt-in: this theme sets none of the leading, tracking, weight or line-length dials,
+   so it renders as it did in v0.2. For the Balanced type preset's, add this to your own
+   file, loaded after this one:
+     :root { --leading-body: 1.6; --leading-display: 1.1; --tracking-display: -0.02; --line-length: 70ch; }
 */
 :root, :host {
   /* colour: Calm */
@@ -35,10 +39,6 @@
   --font-heading: "Fraunces", ui-serif, Georgia, serif;
   --font-body: "Figtree", ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  --leading-body: 1.6;
-  --leading-display: 1.1;
-  --tracking-display: -0.02;
-  --line-length: 70ch;
   /* space: Airy layout */
   --space-min: 18;
   --space-max: 28;

@@ -1,0 +1,43 @@
+/*! Dials v0.2.0 | MIT | https://github.com/joops/dials */
+/* Dials theme: Hi-Fi (the house theme, and dials.css's default)
+   Presets: Hi-Fi colour, Hi-Fi type, Machined space (presets/colour/hi-fi.css, presets/type/hi-fi.css,
+   presets/space/machined.css). Load after dials.css. This file doesn't set
+   color-scheme: the theme works in light and dark, and follows the page's setting.
+   Faces: <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Michroma&family=Barlow:wght@400;700&family=Share+Tech+Mono&display=swap">
+*/
+:root, :host {
+  /* colour: Hi-Fi */
+  --brand: #f39c12;
+  --secondary: #2ec4b6;
+  --success: #3fbf55;
+  --warning: #f2c230;
+  --danger: #e0322b;
+  --info: #3b82c4;
+  --grey: hsl(42 7% 50%);
+  --balance: 0;
+  --fill-lightness: 0.52;
+  --dark-lift: 0.04;
+  --tint-strength: 8%;
+  --tint-vividness: 1;
+  --text-contrast: 0;
+  --white-text-until: 0.179;
+  --paper-lightness: 0.922;
+  --paper-dark-lightness: 0.186;
+  --ink-lightness: 0.213;
+  --ink-dark-lightness: 0.934;
+  /* type: Hi-Fi */
+  --screen-min: 360;
+  --screen-max: 1240;
+  --size-min: 16;
+  --size-max: 18;
+  --ratio-min: 1.2;
+  --ratio-max: 1.25;
+  --font-heading: "Michroma", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Barlow", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Share Tech Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  /* space: Machined */
+  --space-min: var(--size-min);
+  --space-max: var(--size-max);
+  --space-density: 1;
+  --radius-base: 3;
+}

@@ -1,0 +1,43 @@
+/*! Dials v0.2.0 | MIT | https://github.com/joops/dials */
+/* Dials theme: Loud
+   Presets: Vivid colour, Dramatic type, Roomy space (presets/colour/vivid.css, presets/type/dramatic.css,
+   presets/space/roomy.css). Load after dials.css. This file doesn't set
+   color-scheme: the theme works in light and dark, and follows the page's setting.
+   Faces: <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700&family=Figtree:wght@400;700&display=swap">
+*/
+:root, :host {
+  /* colour: Vivid */
+  --brand: hsl(340 85% 50%);
+  --secondary: hsl(42 100% 50%);
+  --success: hsl(150 80% 35%);
+  --warning: hsl(35 100% 45%);
+  --danger: hsl(0 85% 50%);
+  --info: hsl(220 90% 55%);
+  --grey: hsl(330 30% 50%);
+  --balance: 1;
+  --fill-lightness: 0.56;
+  --dark-lift: 0.1;
+  --tint-strength: 11%;
+  --tint-vividness: 1;
+  --text-contrast: 0;
+  --white-text-until: 0.179;
+  --paper-lightness: 0.985;
+  --paper-dark-lightness: 0.16;
+  --ink-lightness: 0.2;
+  --ink-dark-lightness: 0.94;
+  /* type: Dramatic */
+  --screen-min: 360;
+  --screen-max: 1240;
+  --size-min: 16;
+  --size-max: 18;
+  --ratio-min: 1.2;
+  --ratio-max: 1.5;
+  --font-heading: "Fraunces", ui-serif, Georgia, serif;
+  --font-body: "Figtree", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  /* space: Roomy */
+  --space-min: var(--size-min);
+  --space-max: var(--size-max);
+  --space-density: 1.3;
+  --radius-base: 16;
+}
