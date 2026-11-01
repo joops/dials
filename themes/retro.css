@@ -1,9 +1,9 @@
-/*! Dials v0.2.0 | MIT | https://github.com/joops/dials */
+/*! Dials v0.3.0 | MIT | https://github.com/joops/dials */
 /* Dials theme: Retro
    Presets: Gruvbox colour, Dramatic type, Square space (presets/colour/gruvbox.css, presets/type/dramatic.css,
    presets/space/square.css). Load after dials.css. This file doesn't set
    color-scheme: the theme works in light and dark, and follows the page's setting.
-   Faces: <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700&family=Figtree:wght@400;700&display=swap">
+   Faces: <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700;800&family=Figtree:wght@400;700&display=swap">
 */
 :root, :host {
   /* colour: Gruvbox */
@@ -39,6 +39,11 @@
   --font-heading: "Fraunces", ui-serif, Georgia, serif;
   --font-body: "Figtree", ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --leading-body: 1.55;
+  --leading-display: 0.95;
+  --tracking-display: -0.04;
+  --tracking-caps: 0.1;
+  --weight-heading: 800;
   /* space: Square */
   --space-min: var(--size-min);
   --space-max: var(--size-max);

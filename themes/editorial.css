@@ -1,4 +1,4 @@
-/*! Dials v0.2.0 | MIT | https://github.com/joops/dials */
+/*! Dials v0.3.0 | MIT | https://github.com/joops/dials */
 /* Dials theme: Editorial
    Presets: Nord colour, Editorial type, Roomy space (presets/colour/nord.css, presets/type/editorial.css,
    presets/space/roomy.css). Load after dials.css. This file doesn't set
@@ -39,6 +39,13 @@
   --font-heading: "Fraunces", ui-serif, Georgia, serif;
   --font-body: "Source Serif 4", ui-serif, Georgia, serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --leading-body: 1.65;
+  --leading-display: 1.08;
+  --tracking-small: 0.01;
+  --tracking-display: -0.02;
+  --tracking-caps: 0.06;
+  --weight-heading: 400;
+  --line-length: 66ch;
   /* space: Roomy */
   --space-min: var(--size-min);
   --space-max: var(--size-max);

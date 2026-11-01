@@ -1,9 +1,12 @@
-/*! Dials v0.2.0 | MIT | https://github.com/joops/dials */
+/*! Dials v0.3.0 | MIT | https://github.com/joops/dials */
 /* ============================================================
    Dials: type and space (dials-scale.css)
    A few dials set every text size and every space size, the way
    Utopia (utopia.fyi) works them out, but the maths runs in the
-   browser: change a dial and the whole scale follows. Dials live on
+   browser: change a dial and the whole scale follows. Leading,
+   tracking and weight are worked out the same way, for whatever size
+   they're used at. This file sets no type on any element: only
+   dials-base.css does that. Dials live on
    :root (and :host); the derived scale is declared on :root,
    [data-dials] and :host, so a dial set on a [data-dials] element
    re-derives the sizes inside it.
@@ -30,6 +33,19 @@
   --border-width-s: 1px;   /* hairlines: cards, fields, tables */
   --border-width-m: 2px;   /* emphasis; outline offsets */
   --border-width-l: 3px;   /* focus rings, quote bars, active tabs */
+
+  /* ---- Leading, tracking, weight and line length: unset by default ---- */
+  /* While none is set, dials-base.css keeps v0.2's type. Set them in your own file; the value
+     shown is what Dials uses for any you leave unset once you've set another. */
+  /* --leading-body: 1.6;      line height at body size (--size-0), unitless */
+  /* --leading-display: 1.15;  line height at the top of the scale (--size-8), unitless; sizes in between slide in a straight line */
+  /* --tracking-small: 0;      letter spacing at the smallest size (--size--2), in em without the unit: positive loosens captions */
+  /* --tracking-display: 0;    letter spacing at --size-8, in em without the unit: negative tightens display type */
+  /* --tracking-caps: 0;       extra letter spacing for all caps and small caps, in em without the unit (0.05 to 0.12 is usual) */
+  /* --weight-body: 400;       body text weight */
+  /* --weight-heading: 600;    heading weight */
+  /* --line-length: none;      the longest line of running text, e.g. 65ch; unset, lines run the full width */
+  /* --font-accent: var(--font-body);  a third face, for ledes, pull quotes or buttons; read it as var(--font-accent, var(--font-body)) */
 }
 
 :root, [data-dials], :host {
@@ -54,6 +70,10 @@
   --dl-max-5: calc(var(--dl-max-4) * var(--ratio-max));
   --dl-min-6: calc(var(--dl-min-5) * var(--ratio-min));
   --dl-max-6: calc(var(--dl-max-5) * var(--ratio-max));
+  --dl-min-7: calc(var(--dl-min-6) * var(--ratio-min));
+  --dl-max-7: calc(var(--dl-max-6) * var(--ratio-max));
+  --dl-min-8: calc(var(--dl-min-7) * var(--ratio-min));
+  --dl-max-8: calc(var(--dl-max-7) * var(--ratio-max));
 
   /* ---- Font sizes: --size-0 is body text; each number up or down is one step of the ratio,
      running in a straight line between its two ends ---- */
@@ -66,6 +86,31 @@
   --size-4: clamp(min(var(--dl-min-4), var(--dl-max-4)) * 1rem, var(--dl-min-4) * 1rem + (var(--dl-max-4) - var(--dl-min-4)) * var(--dl-fluid), max(var(--dl-min-4), var(--dl-max-4)) * 1rem);
   --size-5: clamp(min(var(--dl-min-5), var(--dl-max-5)) * 1rem, var(--dl-min-5) * 1rem + (var(--dl-max-5) - var(--dl-min-5)) * var(--dl-fluid), max(var(--dl-min-5), var(--dl-max-5)) * 1rem);
   --size-6: clamp(min(var(--dl-min-6), var(--dl-max-6)) * 1rem, var(--dl-min-6) * 1rem + (var(--dl-max-6) - var(--dl-min-6)) * var(--dl-fluid), max(var(--dl-min-6), var(--dl-max-6)) * 1rem);
+  --size-7: clamp(min(var(--dl-min-7), var(--dl-max-7)) * 1rem, var(--dl-min-7) * 1rem + (var(--dl-max-7) - var(--dl-min-7)) * var(--dl-fluid), max(var(--dl-min-7), var(--dl-max-7)) * 1rem);  /* display type */
+  --size-8: clamp(min(var(--dl-min-8), var(--dl-max-8)) * 1rem, var(--dl-min-8) * 1rem + (var(--dl-max-8) - var(--dl-min-8)) * var(--dl-fluid), max(var(--dl-min-8), var(--dl-max-8)) * 1rem);  /* display type: the top of the scale */
+
+  /* ---- Leading, tracking and weight: worked out for the size of the element they're used on ---- */
+  /* --leading and --tracking are lengths: apply them on each element that sets a font size, never
+     on body, where they'd inherit as one fixed length. */
+  --dl-leading-body: var(--leading-body, 1.6);
+  --dl-leading-display: var(--leading-display, 1.15);
+  --dl-tracking-small: var(--tracking-small, 0);
+  --dl-tracking-display: var(--tracking-display, 0);
+  /* body size over the top of the scale, as a number: tan(atan2(a, b)) is a / b for two lengths
+     (Firefox has no typed division) */
+  --dl-type-q: tan(atan2(var(--size-0), var(--size-8)));
+  /* leading runs in a straight line in size, m * size + g, through leading-body at --size-0 and leading-display at --size-8 */
+  --dl-leading-m: calc((var(--dl-leading-display) - var(--dl-leading-body) * var(--dl-type-q)) / max(1 - var(--dl-type-q), 0.000001));
+  --dl-leading-g: calc(var(--size-0) * (var(--dl-leading-body) - var(--dl-leading-m)));
+  /* how far up the scale this size is, from --size-0 (0) to --size-8 (1), and down it to --size--2, evenly per step */
+  --dl-type-up: clamp(0, log(tan(atan2(var(--size-0), 1em))) / min(log(var(--dl-type-q)), -0.000001), 1);
+  --dl-type-down: clamp(0, log(tan(atan2(1em, var(--size-0)))) / min(log(tan(atan2(var(--size--2), var(--size-0)))), -0.000001), 1);
+  --leading: clamp(min(var(--dl-leading-body), var(--dl-leading-display)) * 1em, var(--dl-leading-m) * 1em + var(--dl-leading-g), max(var(--dl-leading-body), var(--dl-leading-display)) * 1em);  /* line height for the size it's on, from --leading-body at body size to --leading-display at --size-8 */
+  --tracking: calc(1em * (var(--dl-tracking-display) * var(--dl-type-up) + var(--dl-tracking-small) * var(--dl-type-down)));  /* letter spacing for the size it's on: 0 at body size, --tracking-small at --size--2, --tracking-display at --size-8 */
+  --tracking-caps-total: calc(var(--tracking) + 1em * var(--tracking-caps, 0));  /* letter spacing for text in capitals: --tracking plus --tracking-caps */
+  --weight-strong: min(900, var(--weight-body, 400) + 200);  /* bold within body text, buttons and labels: the body weight plus 200 */
+  /* dials-base.css reads these, so an untouched site keeps v0.2's type: each is valid only once one of its dials is set */
+  --dl-weight-strong-on: calc(var(--weight-strong) + 0 * var(--weight-body));
 
   /* ---- Space: multiples of the space base (Utopia's t-shirt sizes), times the density ---- */
   --dl-space-min: calc(var(--space-min) / 16 * var(--space-density));
@@ -100,4 +145,14 @@
   --radius-m: calc(var(--radius-base) * 1px);
   --radius-l: calc(var(--radius-base) * 1.6px);
   --radius-pill: 999px;
+}
+
+/* The leading and tracking gates need tan(), atan2() and log() (Chrome 120, Firefox 118, Safari 15.4).
+   Without them the gates stay undefined, so dials-base.css keeps headings at --leading-display (or 1.15)
+   and leaves letter spacing alone. */
+@supports (width: calc(1px * tan(atan2(1px, 1px)) * log(2))) {
+  :root, [data-dials], :host {
+    --dl-leading-on: calc(var(--leading) + 0px * var(--leading-body, var(--leading-display)));
+    --dl-tracking-on: calc(var(--tracking) + 0em * var(--tracking-small, var(--tracking-display)));
+  }
 }

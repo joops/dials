@@ -1,5 +1,5 @@
 /* Dials type preset: Dramatic
-   A perfect fifth on desktop: big display headings over modest body text. With a ratio this large, set page titles a step or two lower. The golden ratio (1.618) goes further still; try it in the ratio menu. */
+   A perfect fifth on desktop: big display headings over modest body text. With a ratio this large, set page titles a step or two lower. The golden ratio (1.618) goes further still; try it in the ratio menu. Display type is heavy, set solid and tight. */
 :root, :host {
   --screen-min: 360;
   --screen-max: 1240;
@@ -10,4 +10,9 @@
   --font-heading: "Fraunces", ui-serif, Georgia, serif;
   --font-body: "Figtree", ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --leading-body: 1.55;
+  --leading-display: 0.95;
+  --tracking-display: -0.04;
+  --tracking-caps: 0.1;
+  --weight-heading: 800;
 }

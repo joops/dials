@@ -9,14 +9,17 @@
    Logical properties throughout, so right-to-left pages work.
    No component classes: a link that should look like a button is
    your own component, built from --solid and --on-solid.
+   Type: until you set a leading, tracking, weight or line-length
+   dial, every element keeps v0.2's type. A rule whose dial is unset
+   falls back to `revert`, so it steps aside as if it weren't here.
    ============================================================ */
 :where(html) { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-:where(body) { margin: 0; background: var(--surface); color: var(--text); font: var(--size-0)/1.6 var(--font-body); }
+:where(body) { margin: 0; background: var(--surface); color: var(--text); font: var(--weight-body, 400) var(--size-0)/var(--leading-body, 1.6) var(--font-body); }
 ::selection { background: var(--selection); }
 :where(:focus-visible) { outline: var(--border-width-l) solid var(--focus); outline-offset: var(--border-width-m); }
 
 /* Text */
-:where(h1, h2, h3, h4, h5, h6) { font-family: var(--font-heading); font-weight: 600; color: var(--text-strong); line-height: 1.15; text-wrap: balance; margin-block: var(--space-l) var(--space-xs); margin-inline: 0; }
+:where(h1, h2, h3, h4, h5, h6) { font-family: var(--font-heading); font-weight: var(--weight-heading, 600); color: var(--text-strong); line-height: var(--dl-leading-on, var(--leading-display, 1.15)); letter-spacing: var(--dl-tracking-on, revert); text-wrap: balance; margin-block: var(--space-l) var(--space-xs); margin-inline: 0; }
 :where(h1) { font-size: var(--size-5); }
 :where(h2) { font-size: var(--size-3); }
 :where(h3) { font-size: var(--size-2); }
@@ -24,10 +27,12 @@
 :where(h5) { font-size: var(--size-0); }
 :where(h6) { font-size: var(--size--1); }
 :where(p, ul, ol, dl, blockquote, pre, table, figure, details) { margin-block: 0 var(--space-s); margin-inline: 0; }
+:where(p, li, dt, dd, blockquote, figcaption) { max-inline-size: var(--line-length, revert); }
 :where(ul, ol) { padding-inline-start: 1.4em; }
 :where(li + li) { margin-block-start: var(--space-3xs); }
-:where(strong, b) { color: var(--text-strong); }
-:where(small) { font-size: var(--size--1); color: var(--text-muted); }
+:where(strong, b) { color: var(--text-strong); font-weight: var(--dl-weight-strong-on, revert); }
+:where(h1, h2, h3, h4, h5, h6) :where(strong, b) { font-weight: revert; }
+:where(small) { font-size: var(--size--1); color: var(--text-muted); letter-spacing: var(--dl-tracking-on, revert); }
 :where(a) { color: var(--link); text-underline-offset: 0.15em; }
 :where(a:hover) { color: var(--link-hover); }
 :where(mark) { background: var(--warning-soft); color: var(--warning-on-soft); padding-inline: 0.15em; }
@@ -35,20 +40,20 @@
 :where(blockquote) { margin-inline-start: 0; padding-inline-start: var(--space-s); border-inline-start: var(--border-width-l) solid var(--brand-line); color: var(--text-muted); }
 :where(code, kbd, samp, pre) { font-family: var(--font-mono); font-size: 0.9em; }
 :where(code, kbd) { background: var(--surface-sunken); padding: 0.1em 0.35em; border-radius: var(--radius-s); }
-:where(pre) { background: var(--surface-sunken); padding: var(--space-s); border-radius: var(--radius-m); overflow-x: auto; }
+:where(pre) { background: var(--surface-sunken); padding: var(--space-s); border-radius: var(--radius-m); overflow-x: auto; line-height: var(--dl-leading-on, revert); }
 :where(pre code) { background: none; padding: 0; }
 :where(img, svg, video, canvas) { max-width: 100%; height: auto; }
-:where(figcaption) { font-size: var(--size--1); color: var(--text-muted); margin-block-start: var(--space-2xs); }
-:where(summary) { cursor: pointer; font-weight: 600; color: var(--text-strong); }
+:where(figcaption) { font-size: var(--size--1); color: var(--text-muted); margin-block-start: var(--space-2xs); line-height: var(--dl-leading-on, revert); letter-spacing: var(--dl-tracking-on, revert); }
+:where(summary) { cursor: pointer; font-weight: var(--weight-strong); color: var(--text-strong); }
 
 /* Tables */
 :where(table) { border-collapse: collapse; width: 100%; }
 :where(th, td) { text-align: start; padding-block: var(--space-2xs); padding-inline: var(--space-xs); border-block-end: var(--border-width-s) solid var(--border); }
-:where(th) { color: var(--text-strong); font-weight: 600; }
-:where(caption) { text-align: start; color: var(--text-muted); font-size: var(--size--1); padding-block-end: var(--space-2xs); }
+:where(th) { color: var(--text-strong); font-weight: var(--weight-strong); }
+:where(caption) { text-align: start; color: var(--text-muted); font-size: var(--size--1); padding-block-end: var(--space-2xs); line-height: var(--dl-leading-on, revert); letter-spacing: var(--dl-tracking-on, revert); }
 
 /* Forms: field borders use --border-strong, which keeps 3:1 against the surfaces */
-:where(label) { font-weight: 600; color: var(--text-strong); }
+:where(label) { font-weight: var(--weight-strong); color: var(--text-strong); }
 :where(input:not([type=checkbox], [type=radio], [type=range], [type=color], [type=submit], [type=button], [type=reset]), select, textarea) {
   font: inherit; color: var(--text); background: var(--surface-raised); border: var(--border-width-s) solid var(--border-strong);
   border-radius: var(--radius-s); padding-block: var(--space-2xs); padding-inline: var(--space-xs); max-width: 100%; box-sizing: border-box; }
@@ -57,12 +62,17 @@
 :where(input[type=checkbox], input[type=radio], input[type=range], progress) { accent-color: var(--brand-on-soft); }
 :where([aria-invalid="true"]) { border-color: var(--danger-on-soft); background: var(--danger-soft); }
 :where(fieldset) { border: var(--border-width-s) solid var(--border); border-radius: var(--radius-m); padding: var(--space-s); margin-block: 0 var(--space-s); margin-inline: 0; }
-:where(legend) { font-weight: 600; color: var(--text-strong); padding-inline: var(--space-3xs); }
+:where(legend) { font-weight: var(--weight-strong); color: var(--text-strong); padding-inline: var(--space-3xs); }
 
 /* Buttons: the real <button>, solid in the brand colour; .is-danger and friends switch the group */
 :where(button, input[type=submit], input[type=button], input[type=reset]) {
-  font: 600 var(--size--1)/1 var(--font-body); padding-block: var(--space-xs); padding-inline: var(--space-s); border-radius: var(--radius-s);
+  font: var(--size--1)/1 var(--font-body); font-weight: var(--weight-strong); letter-spacing: var(--dl-tracking-on, revert); padding-block: var(--space-xs); padding-inline: var(--space-s); border-radius: var(--radius-s);
   border: var(--border-width-s) solid transparent; background: var(--solid); color: var(--on-solid); cursor: pointer; }
 :where(button:hover, input[type=submit]:hover, input[type=button]:hover, input[type=reset]:hover) { background: color-mix(in oklch, var(--solid), var(--mix-hover)); }
 :where(button:active, input[type=submit]:active, input[type=button]:active, input[type=reset]:active) { background: color-mix(in oklch, var(--solid), var(--mix-active)); }
 :where(button:disabled, input[type=submit]:disabled, input[type=button]:disabled, input[type=reset]:disabled) { background: var(--surface-sunken); color: var(--text-disabled); cursor: not-allowed; }
+
+/* Opt-in: finer typesetting inside .is-typeset (on <html>, or any section). Off by default, so upgrading changes nothing */
+:where(.is-typeset) { font-kerning: normal; }
+:where(.is-typeset) :where(p, li, dd, blockquote, figcaption) { text-wrap: pretty; }
+:where(.is-typeset) :where(table) { font-variant-numeric: tabular-nums; }

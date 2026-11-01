@@ -1,4 +1,4 @@
-/*! Dials v0.2.0 | MIT | https://github.com/joops/dials */
+/*! Dials v0.3.0 | MIT | https://github.com/joops/dials */
 /* Dials theme: Ink
    Presets: Monochrome colour, Compact type, Square space (presets/colour/monochrome.css, presets/type/compact.css,
    presets/space/square.css). Load after dials.css. This file doesn't set
@@ -35,6 +35,10 @@
   --font-heading: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   --font-body: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --leading-body: 1.45;
+  --leading-display: 1.15;
+  --tracking-small: 0.015;
+  --tracking-display: -0.02;
   /* space: Square */
   --space-min: var(--size-min);
   --space-max: var(--size-max);
