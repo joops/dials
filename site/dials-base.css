@@ -1,4 +1,4 @@
-/*! Dials v0.2.0 | MIT | https://github.com/joops/dials */
+/*! Dials v0.3.0 | MIT | https://github.com/joops/dials */
 /* ============================================================
    Dials: base (dials-base.css, optional)
    Plain HTML elements styled from the Dials tokens, so a page with
@@ -10,14 +10,19 @@
    Logical properties throughout, so right-to-left pages work.
    No component classes: a link that should look like a button is
    your own component, built from --solid and --on-solid.
+   Type: until you set a leading, tracking, weight or line-length
+   dial, every element renders exactly as in v0.2. Rules for
+   properties v0.2 left alone sit in the dials-type cascade layer at
+   the end: any rule of your own wins over a layer, and while their
+   dial is unset they fall back to revert-layer, which removes them.
    ============================================================ */
 :where(html) { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-:where(body) { margin: 0; background: var(--surface); color: var(--text); font: var(--size-0)/1.6 var(--font-body); }
+:where(body) { margin: 0; background: var(--surface); color: var(--text); font: var(--weight-body, 400) var(--size-0)/var(--leading-body, 1.6) var(--font-body); }
 ::selection { background: var(--selection); }
 :where(:focus-visible) { outline: var(--border-width-l) solid var(--focus); outline-offset: var(--border-width-m); }
 
 /* Text */
-:where(h1, h2, h3, h4, h5, h6) { font-family: var(--font-heading); font-weight: 600; color: var(--text-strong); line-height: 1.15; text-wrap: balance; margin-block: var(--space-l) var(--space-xs); margin-inline: 0; }
+:where(h1, h2, h3, h4, h5, h6) { font-family: var(--font-heading); font-weight: var(--weight-heading, 600); color: var(--text-strong); line-height: var(--dl-leading-on, var(--leading-display, 1.15)); text-wrap: balance; margin-block: var(--space-l) var(--space-xs); margin-inline: 0; }
 :where(h1) { font-size: var(--size-5); }
 :where(h2) { font-size: var(--size-3); }
 :where(h3) { font-size: var(--size-2); }
@@ -40,16 +45,16 @@
 :where(pre code) { background: none; padding: 0; }
 :where(img, svg, video, canvas) { max-width: 100%; height: auto; }
 :where(figcaption) { font-size: var(--size--1); color: var(--text-muted); margin-block-start: var(--space-2xs); }
-:where(summary) { cursor: pointer; font-weight: 600; color: var(--text-strong); }
+:where(summary) { cursor: pointer; font-weight: var(--weight-strong); color: var(--text-strong); }
 
 /* Tables */
 :where(table) { border-collapse: collapse; width: 100%; }
 :where(th, td) { text-align: start; padding-block: var(--space-2xs); padding-inline: var(--space-xs); border-block-end: var(--border-width-s) solid var(--border); }
-:where(th) { color: var(--text-strong); font-weight: 600; }
+:where(th) { color: var(--text-strong); font-weight: var(--weight-strong); }
 :where(caption) { text-align: start; color: var(--text-muted); font-size: var(--size--1); padding-block-end: var(--space-2xs); }
 
 /* Forms: field borders use --border-strong, which keeps 3:1 against the surfaces */
-:where(label) { font-weight: 600; color: var(--text-strong); }
+:where(label) { font-weight: var(--weight-strong); color: var(--text-strong); }
 :where(input:not([type=checkbox], [type=radio], [type=range], [type=color], [type=submit], [type=button], [type=reset]), select, textarea) {
   font: inherit; color: var(--text); background: var(--surface-raised); border: var(--border-width-s) solid var(--border-strong);
   border-radius: var(--radius-s); padding-block: var(--space-2xs); padding-inline: var(--space-xs); max-width: 100%; box-sizing: border-box; }
@@ -58,12 +63,28 @@
 :where(input[type=checkbox], input[type=radio], input[type=range], progress) { accent-color: var(--brand-on-soft); }
 :where([aria-invalid="true"]) { border-color: var(--danger-on-soft); background: var(--danger-soft); }
 :where(fieldset) { border: var(--border-width-s) solid var(--border); border-radius: var(--radius-m); padding: var(--space-s); margin-block: 0 var(--space-s); margin-inline: 0; }
-:where(legend) { font-weight: 600; color: var(--text-strong); padding-inline: var(--space-3xs); }
+:where(legend) { font-weight: var(--weight-strong); color: var(--text-strong); padding-inline: var(--space-3xs); }
 
 /* Buttons: the real <button>, solid in the brand colour; .is-danger and friends switch the group */
 :where(button, input[type=submit], input[type=button], input[type=reset]) {
-  font: 600 var(--size--1)/1 var(--font-body); padding-block: var(--space-xs); padding-inline: var(--space-s); border-radius: var(--radius-s);
+  font: var(--size--1)/1 var(--font-body); font-weight: var(--weight-strong); padding-block: var(--space-xs); padding-inline: var(--space-s); border-radius: var(--radius-s);
   border: var(--border-width-s) solid transparent; background: var(--solid); color: var(--on-solid); cursor: pointer; }
 :where(button:hover, input[type=submit]:hover, input[type=button]:hover, input[type=reset]:hover) { background: color-mix(in oklch, var(--solid), var(--mix-hover)); }
 :where(button:active, input[type=submit]:active, input[type=button]:active, input[type=reset]:active) { background: color-mix(in oklch, var(--solid), var(--mix-active)); }
 :where(button:disabled, input[type=submit]:disabled, input[type=button]:disabled, input[type=reset]:disabled) { background: var(--surface-sunken); color: var(--text-disabled); cursor: not-allowed; }
+
+/* Opt-in: finer typesetting inside .is-typeset (on <html>, or any section). Off by default, so upgrading changes nothing */
+:where(.is-typeset) { font-kerning: normal; }
+:where(.is-typeset) :where(p, li, dd, blockquote, figcaption) { text-wrap: pretty; }
+:where(.is-typeset) :where(table) { font-variant-numeric: tabular-nums; }
+
+/* Type that only a set dial turns on. v0.2 had no rule for these properties, so they sit in a
+   cascade layer: any rule of your own wins over them, whatever its specificity or order, and while
+   their dial is unset revert-layer removes them, so the element gets what it would without them. */
+@layer dials-type {
+  :where(h1, h2, h3, h4, h5, h6, small, figcaption, caption, button, input[type=submit], input[type=button], input[type=reset]) { letter-spacing: var(--dl-tracking-on, revert-layer); }
+  :where(figcaption, caption, pre) { line-height: var(--dl-leading-on, revert-layer); }
+  :where(p, li, dt, dd, blockquote, figcaption) { max-inline-size: var(--line-length, revert-layer); }
+  :where(strong, b) { font-weight: var(--dl-weight-strong-on, revert-layer); }
+  :where(h1, h2, h3, h4, h5, h6) :where(strong, b) { font-weight: revert-layer; }   /* bold in a heading stays bolder than the heading */
+}

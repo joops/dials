@@ -45,8 +45,10 @@ try {
       const t = D.themes[key];
       const ok = await p.evaluate(({ t, D }) => {
         const s = document.documentElement.style;
-        const want = { ...D.colour[t.colour].dials, ...D.type[t.type].dials, ...D.space[t.space].dials };
-        return Object.entries(want).every(([k, v]) => /^--(brand|secondary|success|warning|danger|info|grey)$/.test(k) ? !!s.getPropertyValue(k) : s.getPropertyValue(k).trim() === String(v))
+        // a theme applies its type preset as themes/*.css do: without the type dials that are unset by default
+        const type = Object.fromEntries(Object.entries(D.type[t.type].dials).filter(([k]) => !D.typeOptional.includes(k)));
+        const want = { ...D.colour[t.colour].dials, ...type, ...D.space[t.space].dials };
+        return D.typeOptional.every(k => !s.getPropertyValue(k)) && Object.entries(want).every(([k, v]) => /^--(brand|secondary|success|warning|danger|info|grey)$/.test(k) ? !!s.getPropertyValue(k) : s.getPropertyValue(k).trim() === String(v))
           && document.querySelector(`[data-preset="${t.colour}"]`).getAttribute('aria-pressed') === 'true';
       }, { t, D });
       const fails = await p.$eval('#summary', el => el.textContent);
@@ -75,8 +77,29 @@ try {
     const counts = await p.evaluate(() => ({ tokens: document.querySelectorAll('#tokens tbody tr').length, contrast: document.querySelectorAll('#contrast tbody tr').length,
       rules: document.getElementById('rules-md').textContent.length, ladder: document.querySelectorAll('#ladder .r').length,
       demoBtn: getComputedStyle(document.querySelector('.base-demo button')).backgroundColor, demoCode: getComputedStyle(document.querySelector('.base-demo code')).fontFamily }));
-    expect(name, counts.tokens > 50 && counts.contrast > 40 && counts.rules > 500 && counts.ladder === 9, `tables: ${JSON.stringify(counts)}`);
+    expect(name, counts.tokens > 50 && counts.contrast > 40 && counts.rules > 500 && counts.ladder === 11, `tables: ${JSON.stringify(counts)}`);
     expect(name, counts.demoBtn !== 'rgba(0, 0, 0, 0)', `the base demo's button has a fill (${counts.demoBtn})`);
+    // the type dials that start unset: a preset clears the ones it doesn't set, a slider sets one, × unsets it, and the exports carry set ones only
+    await p.click('[role=tab][aria-controls=tab-type]');
+    await p.click('[data-typepreset="editorial"]');
+    await p.click('[data-typepreset="hi-fi"]');
+    const left = await p.evaluate(() => ['--leading-body', '--leading-display', '--tracking-small', '--tracking-display', '--tracking-caps', '--weight-body', '--weight-heading', '--line-length'].filter(k => document.documentElement.style.getPropertyValue(k)));
+    expect(name, !left.length, `Hi-Fi after Editorial leaves no type dials behind (left: ${left.join(', ')})`);
+    const h3 = () => p.$eval('.base-demo h3', el => { const cs = getComputedStyle(el); return parseFloat(cs.lineHeight) / parseFloat(cs.fontSize); });
+    const before = await h3();
+    await p.$eval('#k__leading_display', el => { el.value = '1.4'; el.dispatchEvent(new Event('input', { bubbles: true })); });
+    const after = await h3(), dial = await p.evaluate(() => document.documentElement.style.getPropertyValue('--leading-display'));
+    expect(name, dial === '1.4' && Math.abs(before - 1.15) < 0.002 && after > 1.25, `the display leading slider sets the dial and moves the base demo's h3 (dial ${dial}, ${before.toFixed(3)} -> ${after.toFixed(3)})`);
+    await p.click('[data-export="theme"]');
+    const themeOut = await p.$eval('#css', el => el.textContent);
+    await p.click('[data-export="full"]');
+    const fullOut = await p.$eval('#css', el => el.textContent);
+    await p.click('[data-export="theme"]');
+    expect(name, /\n  --leading-display: 1\.4;/.test(themeOut) && !/--leading-body/.test(themeOut) && !/:\s*;/.test(themeOut), 'the theme export lists the set type dial, and no unset one');
+    expect(name, /\n  --leading-display: 1\.4;/.test(fullOut) && /\/\* --leading-body: 1\.6;/.test(fullOut), 'the full export declares the set type dial and leaves unset ones as comments');
+    if (dial) await p.click('#k__leading_display ~ .unset-btn');   // hidden while the dial is unset
+    expect(name, !(await p.evaluate(() => document.documentElement.style.getPropertyValue('--leading-display'))) && Math.abs(await h3() - 1.15) < 0.002, 'the unset button removes the dial, and the h3 is back to 1.15');
+    await p.keyboard.press('Escape');
     // the mono picker lists monospace families only
     await p.click('[role=tab][aria-controls=tab-type]');
     await p.click('#k__font_mono');

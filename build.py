@@ -99,8 +99,11 @@ COLOUR_REQUIRED = ["--brand", "--secondary", "--success", "--warning", "--danger
 COLOUR_OPTIONAL = ["--paper-light", "--paper-dark", "--ink-light", "--ink-dark"]
 TYPE_REQUIRED = ["--screen-min", "--screen-max", "--size-min", "--size-max", "--ratio-min", "--ratio-max",
                  "--font-heading", "--font-body", "--font-mono"]
+# Unset by default (src/scale.css documents them in comments), so a preset may leave any of them out
+TYPE_OPTIONAL = ["--leading-body", "--leading-display", "--tracking-small", "--tracking-display", "--tracking-caps",
+                 "--weight-body", "--weight-heading", "--line-length", "--font-accent"]
 SPACE_REQUIRED = ["--space-min", "--space-max", "--space-density", "--radius-base"]
-REQUIRED = {"colour": (COLOUR_REQUIRED, COLOUR_OPTIONAL), "type": (TYPE_REQUIRED, []), "space": (SPACE_REQUIRED, [])}
+REQUIRED = {"colour": (COLOUR_REQUIRED, COLOUR_OPTIONAL), "type": (TYPE_REQUIRED, TYPE_OPTIONAL), "space": (SPACE_REQUIRED, [])}
 
 
 def validate_presets(presets):
@@ -124,6 +127,8 @@ def validate_defaults(presets, colour_src, scale_src):
         for k, v in p.items():
             if k in COLOUR_OPTIONAL:
                 fail(f"the house colour preset must not set {k}: the default derives it from --grey")
+            if k in TYPE_OPTIONAL:
+                fail(f"the house type preset must not set {k}: dials.css leaves it unset, so v0.2's type stays")
             if src.get(k) != v:
                 fail(f"src default {k}: {src.get(k)!r} differs from house preset {house[kind]} ({v!r})")
 
@@ -144,26 +149,39 @@ def face(stack):
     return m.group(1) if m else None
 
 
-def gf_param(name, table):
+def gf_param(name, table, wanted=(400, 700)):
     f = table.get(name.lower())
     if not f:
         fail(f"font '{name}' is not in the playground's Google Fonts list")
     w = f[2]
     near = lambda t: min(w, key=lambda x: (abs(x - t), x))
-    chosen = sorted(set([near(400), near(700)])) if len(w) > 1 else []
+    chosen = sorted(set(near(t) for t in wanted)) if len(w) > 1 else []
     return "family=" + f[0].replace(" ", "+") + (":wght@" + ";".join(map(str, chosen)) if len(chosen) > 1 else "")
 
 
+def face_weights(type_dials):
+    """The weights each face is asked for: 400 and 700, plus any weight a preset's type dials set."""
+    out = {k: {400, 700} for k in ("--font-heading", "--font-body", "--font-mono", "--font-accent")}
+    if "--weight-heading" in type_dials:
+        out["--font-heading"].add(int(type_dials["--weight-heading"]))
+    if "--weight-body" in type_dials:
+        wb = int(type_dials["--weight-body"])
+        out["--font-body"] |= {wb, min(900, wb + 200)}   # --weight-strong
+    return out
+
+
 def fonts_link(type_dials, table):
-    names = []
-    for k in ("--font-heading", "--font-body", "--font-mono"):
+    names, weights = [], face_weights(type_dials)
+    for k in ("--font-heading", "--font-body", "--font-mono", "--font-accent"):
         n = face(type_dials.get(k))
-        if n and n not in names:
-            names.append(n)
+        if n and n not in [x[0] for x in names]:
+            names.append((n, set(weights[k])))
+        elif n:
+            dict(names)[n].update(weights[k])
     if not names:
         return None
     return ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?'
-            + "&".join(gf_param(n, table) for n in names) + '&display=swap">')
+            + "&".join(gf_param(n, table, sorted(w)) for n, w in names) + '&display=swap">')
 
 
 # ---------------------------------------------------------------- outputs
@@ -217,8 +235,14 @@ def flat_stale(flat_src, colour_src):
 
 
 def theme_file(key, t, presets, table):
+    """A theme: its presets' dials, minus the type dials that are unset by default. Shipped themes
+    render as they did in v0.2; a type preset's leading, tracking, weights and line length are
+    offered in the header comment as an opt-in snippet."""
     parts = [(k, presets[k][t[k]]) for k in KINDS]
-    link = fonts_link(presets["type"][t["type"]]["dials"], table)
+    type_all = presets["type"][t["type"]]["dials"]
+    type_kept = {n: v for n, v in type_all.items() if n not in TYPE_OPTIONAL}
+    opt_in = {n: v for n, v in type_all.items() if n in TYPE_OPTIONAL}
+    link = fonts_link(type_kept, table)
     names = ", ".join(f"{p['name']} {k}" for k, p in parts)
     out = [BANNER.rstrip("\n"),
            f"/* Dials theme: {t['name']}" + (" (the house theme, and dials.css's default)" if key == "hi-fi" else ""),
@@ -226,27 +250,57 @@ def theme_file(key, t, presets, table):
            f"   presets/space/{t['space']}.css). Load after dials.css. This file doesn't set",
            "   color-scheme: the theme works in light and dark, and follows the page's setting.",
            f"   Faces: {link}" if link else "   Faces: system fonts only.",
-           "*/",
-           ":root, :host {"]
+           ]
+    if opt_in:
+        extra = fonts_link(type_all, table)
+        out += ["   Type, opt-in: this theme sets none of the leading, tracking, weight or line-length dials,",
+                "   so it renders as it did in v0.2. For the " + presets["type"][t["type"]]["name"] + " type preset's, add this to your own",
+                "   file, loaded after this one:",
+                "     :root { " + " ".join(f"{n}: {v};" for n, v in opt_in.items()) + " }"]
+        if extra != link:
+            out += [f"   and load its faces with {extra}"]
+    out += ["*/", ":root, :host {"]
     for k, p in parts:
         out.append(f"  /* {k}: {p['name']} */")
-        out += [f"  {n}: {v};" for n, v in p["dials"].items()]
+        out += [f"  {n}: {v};" for n, v in (type_kept if k == "type" else p["dials"]).items()]
     out.append("}")
     return "\n".join(out) + "\n"
 
 
+def split_layers(css):
+    """Top-level CSS split into (layer name or None, text) chunks: @layer blocks apart from the rest."""
+    css, out, i = strip_comments(css), [], 0
+    for m in re.finditer(r"@layer\s+([\w.-]+)\s*\{", css):
+        if m.start() < i:
+            continue
+        depth, j = 1, m.end()
+        while depth:
+            depth += {"{": 1, "}": -1}.get(css[j], 0)
+            j += 1
+        out += [(None, css[i:m.start()]), (m.group(1), css[m.end():j - 1])]
+        i = j
+    return out + [(None, css[i:])]
+
+
 def scoped_base(base_src, scope=".base-demo"):
-    """dials-base.css with every rule confined to `scope`, for the playground's demo boxes."""
+    """dials-base.css with every rule confined to `scope`, for the playground's demo boxes. Cascade
+    layers are kept, so the layered rules lose to the page's own rules here as they do on a site."""
     out = [f"/* Generated by build.py from src/base.css: the same rules confined to {scope}, so the\n"
            "   playground can show plain HTML without restyling its own page. Don't edit. */"]
-    for sel, body in blocks(base_src):
-        sels = []
-        for s in [x.strip() for x in re.split(r",(?![^()]*\))", sel)]:
-            if s == ":where(html)":
-                continue
-            sels.append(scope if s == ":where(body)" else f"{scope} {s}")
-        if sels:
-            out.append(", ".join(sels) + " { " + " ".join(body.split()) + " }")
+    for layer, chunk in split_layers(base_src):
+        rules = []
+        for sel, body in blocks(chunk):
+            sels = []
+            for s in [x.strip() for x in re.split(r",(?![^()]*\))", sel)]:
+                if s == ":where(html)":
+                    continue
+                sels.append(scope if s == ":where(body)" else f"{scope} {s}")
+            if sels:
+                rules.append(", ".join(sels) + " { " + " ".join(body.split()) + " }")
+        if layer and rules:
+            out += [f"@layer {layer} {{"] + ["  " + r for r in rules] + ["}"]
+        else:
+            out += rules
     return "\n".join(out) + "\n"
 
 
@@ -258,7 +312,8 @@ def agents_rules():
 
 
 def presets_js(presets, table, dial_names):
-    data = {"version": VERSION, "colour": {}, "type": {}, "space": {}, "themes": {}, "rules": agents_rules(), "dialNames": dial_names}
+    data = {"version": VERSION, "colour": {}, "type": {}, "space": {}, "themes": {}, "rules": agents_rules(), "dialNames": dial_names,
+            "typeOptional": TYPE_OPTIONAL}   # a theme leaves these out, as themes/*.css do
     for kind in KINDS:
         for slug, p in presets[kind].items():
             data[kind][slug] = {"name": p["name"], "note": p["note"], "dials": p["dials"]}
@@ -294,6 +349,11 @@ def documented(src, file):
         if h:
             section = h.group(1).rstrip(":. ")
             continue
+        u = re.match(r"/\*\s*(--[\w-]+)\s*:\s*(.+?);\s*(.*?)\s*\*/$", s)
+        if u and block == "dial":   # an unset dial, documented in a comment with the value used when unset
+            rows.append({"name": u.group(1), "kind": "dial", "file": file, "section": section, "unset": True,
+                         "default": f"(unset: {u.group(2).strip()})", "description": u.group(3).strip()})
+            continue
         m = re.match(r"(--[\w-]+)\s*:\s*(.+?);\s*(?:/\*\s*(.*?)\s*(?:\*/)?)?$", s)
         if m and block and not m.group(1).startswith("--dl-"):
             rows.append({"name": m.group(1), "kind": block, "file": file, "section": section,
@@ -324,7 +384,8 @@ def token_reference(colour_src, scale_src):
         ("--ink-light", "exact strongest text in light"), ("--ink-dark", "exact strongest text in dark")]]
     classes = [{"name": f".is-{g}", "description": f"points --solid, --on-solid, --soft, --on-soft and --line at the {g} group"} for g in GROUPS]
     classes += [{"name": ".is-accent", "description": "deprecated: the old name for .is-secondary, which it still points at"}]
-    classes += [{"name": ".is-light", "description": "a light band: color-scheme light, with its own background and text"},
+    classes += [{"name": ".is-typeset", "description": "dials-base.css only, opt-in: kerning always on, tabular figures in tables, and text-wrap: pretty on paragraphs, list items and quotes, inside it"},
+                {"name": ".is-light", "description": "a light band: color-scheme light, with its own background and text"},
                 {"name": ".is-dark", "description": "a dark band: color-scheme dark, with its own background and text"},
                 {"name": "[data-dials]", "description": "a scope: dials set on it re-derive every token inside it"}]
     deprecated = [{"name": n, "kind": "deprecated", "file": "dials-colour.css", "section": "Renamed colour dials",

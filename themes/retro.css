@@ -1,9 +1,14 @@
-/*! Dials v0.2.0 | MIT | https://github.com/joops/dials */
+/*! Dials v0.3.0 | MIT | https://github.com/joops/dials */
 /* Dials theme: Retro
    Presets: Gruvbox colour, Dramatic type, Square space (presets/colour/gruvbox.css, presets/type/dramatic.css,
    presets/space/square.css). Load after dials.css. This file doesn't set
    color-scheme: the theme works in light and dark, and follows the page's setting.
    Faces: <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700&family=Figtree:wght@400;700&display=swap">
+   Type, opt-in: this theme sets none of the leading, tracking, weight or line-length dials,
+   so it renders as it did in v0.2. For the Dramatic type preset's, add this to your own
+   file, loaded after this one:
+     :root { --leading-body: 1.55; --leading-display: 1; --tracking-display: -0.035; --tracking-caps: 0.1; --weight-heading: 800; }
+   and load its faces with <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700;800&family=Figtree:wght@400;700&display=swap">
 */
 :root, :host {
   /* colour: Gruvbox */

@@ -1,5 +1,5 @@
 /* Dials type preset: Friendly
-   Large, very legible body text and soft serif headings. */
+   Large, very legible body text and soft serif headings. Open leading throughout and slightly loosened small text. */
 :root, :host {
   --screen-min: 360;
   --screen-max: 1240;
@@ -10,4 +10,8 @@
   --font-heading: "Lora", ui-serif, Georgia, serif;
   --font-body: "Atkinson Hyperlegible", ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --leading-body: 1.65;
+  --leading-display: 1.2;
+  --tracking-small: 0.02;
+  --line-length: 70ch;
 }

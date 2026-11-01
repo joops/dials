@@ -178,6 +178,11 @@ section { display: grid; gap: 14px; min-width: 0; }
 .type-ctl .lbl { color: var(--text-muted); font-weight: 600; font-size: 13.5px; display: inline-flex; align-items: center; }
 .type-ctl .lbl label { cursor: pointer; }
 .type-ctl .dial { grid-template-columns: 150px minmax(0, 1fr) 52px; }
+.type-ctl .dial.opt { grid-template-columns: 150px minmax(0, 1fr) 64px 24px; }
+.type-ctl .dial.opt.unset output { color: var(--text-quiet); font-style: italic; }
+.type-ctl .dial .unset-btn { font: 600 14px/1 var(--page-body); color: var(--text-muted); background: none; border: 1px solid var(--border); border-radius: var(--radius-s); width: 24px; height: 24px; padding: 0; cursor: pointer; }
+.type-ctl .dial.unset .unset-btn { visibility: hidden; }
+.ctl-sub { font: 600 13.5px var(--page-body); color: var(--text-muted); margin: 14px 0 8px; }
 .type-ctl label.fontrow, .type-ctl div.fontrow { display: grid; align-items: center; gap: 10px; grid-template-columns: 150px minmax(0, 1fr); position: relative; }
 .info { display: inline-grid; place-items: center; width: 16px; height: 16px; margin-left: 5px; padding: 0; border-radius: 50%; border: 1px solid var(--border-strong); background: var(--surface-raised); color: var(--text-quiet); font: 700 10px/1 var(--page-body); cursor: help; position: relative; vertical-align: 1px; }
 .info:hover, .info:focus-visible { color: var(--text-strong); border-color: var(--text-muted); }
@@ -194,23 +199,24 @@ section { display: grid; gap: 14px; min-width: 0; }
 .font-preview { font-size: 13px; color: var(--text-quiet); grid-column: 2; }
 .specimen { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 18px; }
 @media (max-width: 860px) { .specimen { grid-template-columns: 1fr; } }
-.article { background: var(--surface-raised); border: 1px solid var(--border); border-radius: var(--radius-l); padding: var(--space-l); font-family: var(--font-body); font-size: var(--size-0); line-height: 1.55; color: var(--text); min-width: 0; }
+.article { background: var(--surface-raised); border: 1px solid var(--border); border-radius: var(--radius-l); padding: var(--space-l); font-family: var(--font-body); font-size: var(--size-0); font-weight: var(--weight-body, 400); line-height: var(--leading); color: var(--text); min-width: 0; }
 .article > * + * { margin-top: var(--space-s); }
-.article p { max-width: none; }
-.article .kicker { display: block; font-size: var(--size--1); letter-spacing: .06em; text-transform: uppercase; color: var(--brand-on-soft); font-weight: 700; }
-.article h3 { font: 600 var(--size-4)/1.08 var(--font-heading); color: var(--text-strong); margin-top: var(--space-2xs); }
-.article .lead { font-size: var(--size-1); color: var(--text-muted); line-height: 1.4; }
-.article h4 { font: 600 var(--size-2)/1.15 var(--font-heading); color: var(--text-strong); margin-top: var(--space-l); }
-.article h5 { font: 600 var(--size-1)/1.25 var(--font-heading); color: var(--text-strong); margin-top: var(--space-m); }
-.article small { display: block; font-size: var(--size--1); color: var(--text-quiet); }
+.article p { max-width: var(--line-length, none); }
+.article .kicker { display: block; font-size: var(--size--1); line-height: var(--leading); letter-spacing: var(--tracking-caps-total); text-transform: uppercase; color: var(--brand-on-soft); font-weight: var(--weight-strong); }
+.article h3, .article h4, .article h5 { font-family: var(--font-heading); font-weight: var(--weight-heading, 600); line-height: var(--leading); letter-spacing: var(--tracking); color: var(--text-strong); }
+.article h3 { font-size: var(--size-4); margin-top: var(--space-2xs); }
+.article .lead { font-family: var(--font-accent, var(--font-body)); font-size: var(--size-1); color: var(--text-muted); line-height: var(--leading); letter-spacing: var(--tracking); }
+.article h4 { font-size: var(--size-2); margin-top: var(--space-l); }
+.article h5 { font-size: var(--size-1); margin-top: var(--space-m); }
+.article small { display: block; font-size: var(--size--1); line-height: var(--leading); letter-spacing: var(--tracking); color: var(--text-quiet); }
 .article .stat { display: flex; gap: var(--space-l); flex-wrap: wrap; margin-top: var(--space-m); }
-.article .stat b { display: block; font: 600 var(--size-6)/1 var(--font-heading); color: var(--text-strong); }
+.article .stat b { display: block; font: var(--weight-heading, 600) var(--size-6)/var(--leading) var(--font-heading); letter-spacing: var(--tracking); color: var(--text-strong); }
 .ladder, .spaces { display: grid; gap: 4px; min-width: 0; }
 .ladder .r, .spaces .r { display: grid; grid-template-columns: 124px minmax(0, 1fr) auto; gap: 10px; border-bottom: 1px solid var(--border-quiet); padding-bottom: 4px; min-width: 0; }
 .ladder .r { align-items: baseline; }
 .spaces .r { align-items: center; }
 .ladder code, .spaces code { font-size: 12px; color: var(--text-quiet); }
-.ladder .aa { font-family: var(--font-heading); color: var(--text-strong); line-height: 1.05; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ladder .aa { font-family: var(--font-heading); font-weight: var(--weight-heading, 600); color: var(--text-strong); line-height: var(--leading); letter-spacing: var(--tracking); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .px { font: 12px var(--page-body); color: var(--text-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .spaces .bar { display: block; height: 12px; border-radius: 3px; background: var(--brand-solid); max-width: 100%; }
 .spaces .bar.pair { background: var(--secondary-solid); }
@@ -364,6 +370,9 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
     <div class="tabpanel" id="tab-type" role="tabpanel" aria-labelledby="t-type" hidden>
       <div class="row"><span class="label">Presets</span><span id="tpresets" class="row"></span></div>
       <div class="type-ctl" id="type-ctl"></div>
+      <h3 class="ctl-sub">Leading, tracking and weight</h3>
+      <div class="type-ctl" id="type-ctl2"></div>
+      <p class="ctl-note">These start unset, so <code>dials-base.css</code> keeps the type it has always had. Move one to set it; × unsets it. Leading and tracking are set at two ends, body text and the h1 step (<code>--size-5</code>), and every size in between slides along a curve; the display sizes above h1 keep the display values: watch the scale beside the article. Tracking dials are in em, and any you leave unset count as shown.</p>
       <p class="ctl-note">Body size and ratio are set at the narrowest and widest screens, and every size runs in a straight line between them; the screen range is shared with space. A bigger ratio gives more drama between headings and body text: 1.2 is a minor third, 1.333 a perfect fourth, 1.618 the golden ratio. Faces load from Google Fonts: choose one, or type any family name. The mono face is for code; its list holds every monospace family on Google Fonts.</p>
     </div>
     <div class="tabpanel" id="tab-space" role="tabpanel" aria-labelledby="t-space" hidden>
@@ -502,6 +511,9 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
   var NUMBER_DIALS = ['--balance', '--fill-lightness', '--dark-lift', '--tint-strength', '--tint-vividness', '--text-contrast', '--white-text-until',
     '--paper-lightness', '--paper-dark-lightness', '--ink-lightness', '--ink-dark-lightness'];
   var TYPE_DIALS = ['--screen-min', '--screen-max', '--size-min', '--size-max', '--ratio-min', '--ratio-max', '--font-heading', '--font-body', '--font-mono'];
+  /* unset by default: exported only once set */
+  var TYPE_OPTIONAL = ['--leading-body', '--leading-display', '--tracking-small', '--tracking-display', '--tracking-caps', '--weight-body', '--weight-heading', '--line-length', '--font-accent'];
+  function setOptional() { return TYPE_OPTIONAL.filter(function (v) { return root.style.getPropertyValue(v).trim(); }); }
   var SPACE_DIALS = ['--space-min', '--space-max', '--space-density', '--radius-base'];
   var SRC = { colour: '', scale: '', base: '' };   /* the dist files' text, fetched below */
 
@@ -736,16 +748,24 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
   var pre = document.getElementById('css'), exportMode = 'theme';
   function exactDials() { return NEUTRAL_HEX.map(function (d) { return d[0]; }).filter(function (v) { return root.style.getPropertyValue(v); }); }
   function fontsLink() {
-    var fams = [fontName(get('--font-heading')), fontName(get('--font-body')), fontName(get('--font-mono'))].filter(function (x, i, a) { return x && a.indexOf(x) === i; });
-    return fams.length ? '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?' + fams.map(gfParam).join('&') + '&display=swap">' : '(system fonts only)';
+    var fams = [fontName(get('--font-heading')), fontName(get('--font-body')), fontName(get('--font-mono')), fontName(get('--font-accent'))].filter(function (x, i, a) { return x && a.indexOf(x) === i; });
+    var want = {}, wh = root.style.getPropertyValue('--weight-heading').trim(), wb = root.style.getPropertyValue('--weight-body').trim();   /* as build.py's face_weights() */
+    function add(stack, ws) { var n = fontName(get(stack)); if (n) want[n] = (want[n] || []).concat(ws); }
+    if (wh) add('--font-heading', [+wh]);
+    if (wb) add('--font-body', [+wb, Math.min(900, +wb + 200)]);
+    return fams.length ? '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?' + fams.map(function (n) { return gfParam(n, want[n]); }).join('&') + '&display=swap">' : '(system fonts only)';
   }
   function themeText() {
     var lines = ['/* My Dials theme. Load it after dials.css.', '   Faces: ' + fontsLink() + ' */', ':root {'];
-    [['Colour', COLOUR_DIALS.map(function (p) { return '--' + p[0]; }).concat(NUMBER_DIALS, exactDials())], ['Type', TYPE_DIALS], ['Space', SPACE_DIALS]].forEach(function (g) {
+    [['Colour', COLOUR_DIALS.map(function (p) { return '--' + p[0]; }).concat(NUMBER_DIALS, exactDials())], ['Type', TYPE_DIALS.concat(setOptional())], ['Space', SPACE_DIALS]].forEach(function (g) {
       lines.push('  /* ' + g[0] + ' */');
       g[1].forEach(function (v) { lines.push('  ' + v + ': ' + get(v) + ';'); });
     });
     return lines.join('\n') + '\n}\n';
+  }
+  function uncomment(text) {   /* a set optional dial becomes a real declaration in the full export */
+    setOptional().forEach(function (v) { text = text.replace(new RegExp('/\\*\\s*' + v.replace(/-/g, '\\-') + ':\\s*[^;]+;\\s*(.*?)\\s*\\*/'), v + ': ' + get(v) + ';  /* $1 */'); });
+    return text;
   }
   function withDefaults(text, names) {
     names.forEach(function (v) { text = text.replace(new RegExp('(\\n\\s*' + v.replace(/-/g, '\\-') + ':\\s*)[^;]+;'), '$1' + get(v) + ';'); });
@@ -756,7 +776,7 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
     var exact = exactDials().map(function (v) { return '\n  ' + v + ': ' + get(v) + ';'; }).join('');
     if (exact) colour = colour.replace(':root, :host {', ':root, :host {\n  /* exact paper and ink */' + exact);
     return '/* Dials with your dials as its defaults: dials-colour.css, dials-scale.css and dials-base.css (optional).\n   Faces: ' + fontsLink() + ' */\n' +
-      colour + '\n' + withDefaults(SRC.scale, TYPE_DIALS.concat(SPACE_DIALS)) + '\n' + SRC.base;
+      colour + '\n' + uncomment(withDefaults(SRC.scale, TYPE_DIALS.concat(SPACE_DIALS))) + '\n' + SRC.base;
   }
   function cssText() { return exportMode === 'theme' ? themeText() : fullText(); }
   var NOTES = { theme: 'Your dials as a theme: save it as your own stylesheet and load it after dials.css. This is the way to use Dials.',
@@ -801,19 +821,20 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
   var MONO = GF_MONO.map(function (n) { return GFMAP[n.toLowerCase()]; }).filter(Boolean);
   var FALLBACK = { serif: 'ui-serif, Georgia, serif', sans: 'ui-sans-serif, system-ui, sans-serif', mono: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace', display: 'ui-sans-serif, system-ui, sans-serif', hand: 'cursive' };
   function gfInfo(name) { return GFMAP[(name || '').toLowerCase()]; }
-  function weightsFor(name) {   /* 400 and 700 where the family has them, else the nearest it does have */
+  function weightsFor(name, extra) {   /* 400 and 700 (and any weight a dial sets) where the family has them, else the nearest it does have */
     var f = gfInfo(name); if (!f || !f[2].length) return null; var w = f[2];
     if (w.length === 1) return [];
     var near = function (t) { return w.reduce(function (a, b) { return Math.abs(b - t) < Math.abs(a - t) ? b : a; }); };
-    var out = [near(400), near(700)].filter(function (x, i, a) { return a.indexOf(x) === i; }).sort(function (a, b) { return a - b; });
+    var out = [400, 700].concat(extra || []).map(near).filter(function (x, i, a) { return a.indexOf(x) === i; }).sort(function (a, b) { return a - b; });
     return out.length > 1 ? out : [];
   }
-  function gfParam(name) { var w = weightsFor(name); return 'family=' + name.trim().replace(/ /g, '+') + (w && w.length ? ':wght@' + w.join(';') : ''); }
+  function gfParam(name, extra) { var w = weightsFor(name, extra); return 'family=' + name.trim().replace(/ /g, '+') + (w && w.length ? ':wght@' + w.join(';') : ''); }
+  function gfAll(name) { var f = gfInfo(name), w = f ? f[2].filter(function (x) { return x >= 100 && x <= 900; }) : []; return 'family=' + name.trim().replace(/ /g, '+') + (w.length > 1 ? ':wght@' + w.join(';') : ''); }
   var loaded = {};
   function loadFont(name) {
     if (!name || loaded[name]) return; loaded[name] = 1;
     var l = document.createElement('link'); l.rel = 'stylesheet';
-    l.href = 'https://fonts.googleapis.com/css2?' + gfParam(name) + '&display=swap';
+    l.href = 'https://fonts.googleapis.com/css2?' + gfAll(name) + '&display=swap';
     l.onerror = function () { l.href = 'https://fonts.googleapis.com/css2?family=' + name.trim().replace(/ /g, '+') + '&display=swap'; l.onerror = null; };
     document.head.appendChild(l);
   }
@@ -828,6 +849,16 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
     inp.addEventListener('input', function () { set(v, inp.value); out.textContent = inp.value + (unit || ''); markTPreset(box ? 'space' : 'type', null); refresh(); });
     tIn[v] = function () { var x = spaceVal(v); inp.value = x; out.textContent = x + (unit || ''); inp.disabled = /^--space-(min|max)$/.test(v) && follow.checked; };
   }
+  var tc2 = document.getElementById('type-ctl2');
+  function topt(v, label, min, max, step, unit, def, tip) {   /* a dial that starts unset: the slider rests on the value Dials uses for it */
+    var l = document.createElement('div'); l.className = 'dial opt';
+    l.innerHTML = '<span><label for="' + idOf(v) + '">' + label + '</label>' + info(label, tip) + '</span><input type="range" id="' + idOf(v) + '" min="' + min + '" max="' + max + '" step="' + step + '"><output></output><button type="button" class="unset-btn" aria-label="Unset ' + label + '" title="Unset">×</button>';
+    tc2.appendChild(l); var inp = l.querySelector('input'), out = l.querySelector('output');
+    function show() { var x = root.style.getPropertyValue(v).trim(); l.classList.toggle('unset', !x); inp.value = x ? parseFloat(x) : def; out.textContent = x ? x : 'unset'; }
+    inp.addEventListener('input', function () { set(v, inp.value + (unit === 'ch' ? 'ch' : '')); show(); markTPreset('type', null); refresh(); });
+    l.querySelector('.unset-btn').addEventListener('click', function () { root.style.removeProperty(v); show(); markTPreset('type', null); refresh(); });
+    tIn[v] = show;
+  }
   function tratio(v, label, tip) {
     var l = document.createElement('label'); l.className = 'fontrow';
     l.innerHTML = '<span>' + label + info(label, tip) + '</span><select id="' + idOf(v) + '">' + RATIOS.map(function (r) { return '<option value="' + r[0] + '">' + r[0] + ' · ' + r[1] + '</option>'; }).join('') + '</select>';
@@ -839,7 +870,7 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
     var wrap = document.createElement('div'); wrap.className = 'fontrow';
     var lb = 'fonts-' + key, list0 = mono ? MONO : GF;
     wrap.innerHTML = '<span class="lbl"><label for="' + idOf(v) + '">' + label + '</label>' + info(label, tip) + '</span>' +
-      '<div class="fontbox"><input type="text" id="' + idOf(v) + '" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="' + lb + '" spellcheck="false" autocomplete="off" placeholder="' + (mono ? 'Search monospace fonts' : 'Search Google Fonts') + '"><ul role="listbox" id="' + lb + '" class="fontlist" hidden></ul></div>';
+      '<div class="fontbox"><input type="text" id="' + idOf(v) + '" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="' + lb + '" spellcheck="false" autocomplete="off" placeholder="' + (mono ? 'Search monospace fonts' : TYPE_OPTIONAL.indexOf(v) >= 0 ? 'Unset: the body face' : 'Search Google Fonts') + '"><ul role="listbox" id="' + lb + '" class="fontlist" hidden></ul></div>';
     tc.appendChild(wrap);
     var inp = wrap.querySelector('input'), list = wrap.querySelector('ul'), items = [], active = -1;
     function render(q) {
@@ -857,7 +888,8 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
       inp.setAttribute('aria-activedescendant', lb + '-' + active);
     }
     function choose(name) {
-      name = (name || '').trim(); if (!name) return;
+      name = (name || '').trim();
+      if (!name) { if (TYPE_OPTIONAL.indexOf(v) >= 0) { root.style.removeProperty(v); inp.value = ''; open(false); markTPreset('type', null); refresh(); } return; }   /* clearing an optional face unsets it */
       var f = gfInfo(name); if (f) name = f[0];
       inp.value = name; open(false); loadFont(name); set(v, fontStack(name, mono ? 'mono' : null)); markTPreset('type', null); refresh();
     }
@@ -881,6 +913,15 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
   tdial('--screen-max', 'Wide screen', 960, 1600, 20, 'px', null, 'The screen width where the wide sizes apply. Above it, sizes stay at their wide values. Space uses the same widths.');
   tfont('--font-heading', 'h', 'Heading face', 'Any Google Font for headings. Type to search the 500 most popular and every monospace family, or type any family name to load it.');
   tfont('--font-body', 'b', 'Body face', 'Any Google Font for body text and controls.');
+  topt('--leading-body', 'Leading · body', 1, 2.2, 0.01, '', 1.6, 'Line height at body size, unitless. Unset, body text keeps 1.6.');
+  topt('--leading-display', 'Leading · display', 0.8, 1.6, 0.01, '', 1.15, 'Line height for the h1 step (--size-5) and the display sizes above it. Sizes between body and h1 slide in a straight line, so headings get proportionally tighter as they grow. Unset, headings keep 1.15.');
+  topt('--tracking-small', 'Tracking · small', -0.05, 0.15, 0.005, '', 0, 'Letter spacing at the smallest size (--size--2), in em. Positive opens up captions and small print. Body text stays at 0.');
+  topt('--tracking-display', 'Tracking · display', -0.1, 0.05, 0.005, '', 0, 'Letter spacing for the h1 step (--size-5) and the display sizes above it, in em. Negative tightens display type. Sizes in between slide evenly per step.');
+  topt('--tracking-caps', 'Tracking · capitals', 0, 0.2, 0.005, '', 0, 'Extra letter spacing for text in capitals, in em, added to the tracking for its size. The kicker above the article shows it.');
+  topt('--weight-body', 'Weight · body', 100, 900, 10, '', 400, 'Body text weight. Bold text, buttons and labels take this plus 200 (--weight-strong).');
+  topt('--weight-heading', 'Weight · headings', 100, 900, 10, '', 600, 'Heading weight. The face needs that weight: the playground loads every weight a Google Font has.');
+  topt('--line-length', 'Line length', 30, 100, 1, 'ch', 66, 'The longest line of running text, in characters. Unset, lines run the full width.');
+  tfont('--font-accent', 'a', 'Accent face', 'Optional: a third face, for ledes, pull quotes or buttons. Unset, those use the body face. The lede under the article\'s title shows it.');
   tfont('--font-mono', 'm', 'Mono face', 'A monospace face for code, kbd, samp and pre. The list holds every monospace family on Google Fonts; clear it in your CSS to use the system monospace.', true);
   var sc = document.getElementById('space-ctl'), follow = document.getElementById('k_spfollow');
   function spaceVal(v) { var x = get(v); if (/^var\(/.test(x)) x = get(x.slice(4, -1)); return x; }
@@ -899,10 +940,11 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
     document.querySelectorAll('[data-' + kind + 'preset]').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-' + kind + 'preset') === n); });
     document.getElementById(kind + 'preset-note').textContent = n ? D[kind][n].note : 'Custom.';
   }
-  function applyTPreset(n) {
+  function applyTPreset(n, asTheme) {   /* asTheme: as themes/*.css apply it, without the type dials that are unset by default */
     var p = D.type[n].dials;
-    Object.keys(p).forEach(function (k) { set(k, p[k]); });
-    ['--font-heading', '--font-body', '--font-mono'].forEach(function (k) { loadFont(fontName(p[k])); });
+    TYPE_OPTIONAL.forEach(function (k) { if (asTheme || !(k in p)) root.style.removeProperty(k); });
+    Object.keys(p).forEach(function (k) { if (!asTheme || TYPE_OPTIONAL.indexOf(k) < 0) set(k, p[k]); });
+    ['--font-heading', '--font-body', '--font-mono', '--font-accent'].forEach(function (k) { loadFont(fontName(p[k])); });
     Object.keys(tIn).forEach(function (k) { tIn[k](); }); markTPreset('type', n); refresh();
   }
   function applySPreset(n) {
@@ -927,11 +969,15 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
     var f0 = num('--size-min'), f1 = num('--size-max'), r0 = num('--ratio-min'), r1 = num('--ratio-max'), d = num('--space-density');
     var s0 = parseFloat(spaceVal('--space-min')), s1 = parseFloat(spaceVal('--space-max'));
     var h = '';
-    for (var n = 6; n >= -2; n--) {
+    for (var n = 8; n >= -2; n--) {
       var a = f0 * Math.pow(r0, n), b = f1 * Math.pow(r1, n);
-      h += '<div class="r"><code>--size-' + n + '</code><span class="aa" style="font-size:var(--size-' + n + ')">Aa Sample</span><span class="px">' + nowPx('--size-' + n).toFixed(1) + 'px · ' + a.toFixed(1) + '→' + b.toFixed(1) + '</span></div>';
+      h += '<div class="r"><code>--size-' + n + '</code><span class="aa" style="font-size:var(--size-' + n + ')">Aa Sample</span><span class="px">' + nowPx('--size-' + n).toFixed(1) + 'px · ' + a.toFixed(1) + '→' + b.toFixed(1) + '<br><span class="lt"></span></span></div>';
     }
     ladder.innerHTML = h; h = '';
+    [].forEach.call(ladder.querySelectorAll('.aa'), function (el) {   /* each size's leading and tracking, as the browser works them out */
+      var cs = getComputedStyle(el), fs = parseFloat(cs.fontSize), ls = cs.letterSpacing === 'normal' ? 0 : parseFloat(cs.letterSpacing);
+      el.parentNode.querySelector('.lt').textContent = 'leading ' + (parseFloat(cs.lineHeight) / fs).toFixed(2) + ' · tracking ' + (ls / fs >= 0 ? '+' : '−') + Math.abs(ls / fs).toFixed(3) + 'em';
+    });
     SIZES.forEach(function (sz) { h += row('--space-' + sz[0], sz[1] * s0 * d, sz[1] * s1 * d, false); });
     for (var i = 0; i < SIZES.length - 1; i++) h += row('--space-' + SIZES[i][0] + '-' + SIZES[i + 1][0], SIZES[i][1] * s0 * d, SIZES[i + 1][1] * s1 * d, true);
     h += row('--space-s-l', s0 * d, 2 * s1 * d, true) + row('--space-m-xl', 1.5 * s0 * d, 3 * s1 * d, true) + row('--space-l-2xl', 2 * s0 * d, 4 * s1 * d, true);
@@ -959,7 +1005,7 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
   var combo = document.getElementById('combo');
   combo.innerHTML = '<option value="" disabled>Custom</option><option value="_shuffle" disabled hidden></option>' + Object.keys(D.themes).map(function (n) { var c = D.themes[n]; return '<option value="' + n + '" title="' + D.colour[c.colour].name + ' colours, ' + D.type[c.type].name + ' type, ' + D.space[c.space].name + ' space">' + c.name + '</option>'; }).join('');
   function applyAll(c, t, sp, scheme) {
-    applyPreset(c); applyTPreset(t); applySPreset(sp); if (scheme) setScheme(scheme);
+    applyPreset(c); applyTPreset(t, true); applySPreset(sp); if (scheme) setScheme(scheme);
   }
   combo.addEventListener('change', function () { var c = D.themes[combo.value]; if (c) applyAll(c.colour, c.type, c.space, c.preview); });
   function randomKey(o) { var k = Object.keys(o); return k[Math.floor(Math.random() * k.length)]; }

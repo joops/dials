@@ -1,9 +1,14 @@
-/*! Dials v0.2.0 | MIT | https://github.com/joops/dials */
+/*! Dials v0.3.0 | MIT | https://github.com/joops/dials */
 /* Dials theme: Terminal
    Presets: Tokyo Night colour, Terminal type, Compact space (presets/colour/tokyo-night.css, presets/type/terminal.css,
    presets/space/compact.css). Load after dials.css. This file doesn't set
    color-scheme: the theme works in light and dark, and follows the page's setting.
    Faces: <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&family=IBM+Plex+Sans:wght@400;700&display=swap">
+   Type, opt-in: this theme sets none of the leading, tracking, weight or line-length dials,
+   so it renders as it did in v0.2. For the Terminal type preset's, add this to your own
+   file, loaded after this one:
+     :root { --leading-body: 1.5; --leading-display: 1.2; --tracking-caps: 0.08; --weight-heading: 500; }
+   and load its faces with <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=IBM+Plex+Sans:wght@400;700&display=swap">
 */
 :root, :host {
   /* colour: Tokyo Night */

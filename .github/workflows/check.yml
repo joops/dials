@@ -27,5 +27,7 @@ jobs:
         run: node checks/contrast.mjs --fallback
       - name: Scoping, specificity and fallback
         run: node checks/scoping.mjs
+      - name: Type (v0.2's type when no type dials are set, and the leading and tracking curves)
+        run: node checks/type.mjs
       - name: Playground
         run: node checks/playground.mjs

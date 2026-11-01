@@ -1,5 +1,39 @@
 # Changelog
 
+## 0.3.0
+
+The type pass: leading, tracking, weight and line length are dials, and Dials works out the leading and tracking for every size from two ends each.
+
+### Upgrading from 0.2
+
+- **Nothing changes until you set a type dial.** Every new dial is unset by default, `dials.css` sets no type on any element, and with no type dials set `dials-base.css` renders every element it styles exactly as 0.2 did: body 1.6, headings 1.15 at weight 600, buttons, labels, `summary`, `th` and `legend` at 600, no letter spacing, no line-length cap, the browser's font features. CI renders every element base styles with 0.2.0's files and with these, at a phone and a desktop width, and compares every computed property and every element's box: with no theme, with each shipped theme, after a site reset loaded before `dials-base.css`, and in the playground's scoped demo under the page's own rules.
+- **Themes render exactly as in 0.2.** No file in `themes/` sets a type dial in this release, and their font links are unchanged. The type presets' leading, tracking, weights and line lengths are offered to themes as an **opt-in snippet**: each theme built from a preset that sets them carries them in its header comment, ready to paste into your own file after the theme (with a font link where the preset needs another weight). A later minor release may add themes that set type dials; it won't change these.
+- **The rules block in AGENTS.md changed: copy it again.** The type rule now says line height, letter spacing and weight come from the type tokens and dials, and that the leading and tracking tokens go on every element that sets its own font size, never on a wrapper for children to inherit. A new rule says a dial the reference lists as unset is read with the value it gives as the fallback (`var(--weight-heading, 600)`).
+
+### Added
+
+- **Type dials, unset by default**: `--leading-body` (line height at body size, 1.6 when unset), `--leading-display` (line height at the h1 step, `--size-5`, and above, 1.15), `--tracking-small` (letter spacing at `--size--2`, in em, 0), `--tracking-display` (at `--size-5` and above, 0), `--tracking-caps` (extra for capitals, 0), `--weight-body` (400), `--weight-heading` (600), `--line-length` (no cap) and `--font-accent`, an optional third face (the body face when unset). The value in brackets is what Dials uses for a dial you leave unset once you've set another.
+- **`--leading`**, a length: the line height for the size it's on. It runs in a straight line in size, `m × size + g`, through `--leading-body` at `--size-0` and `--leading-display` at `--size-5`, the h1 step, so the gap above the text is fixed and bigger text gets proportionally tighter lines. Outside those two sizes it keeps the end ratio: small print keeps body leading (a fixed gap would have given captions about 1.9), and the display sizes above h1 keep `--leading-display`.
+- **`--tracking`**, a length: the letter spacing for the size it's on. It's 0 at `--size-0` and slides to `--tracking-small` at `--size--2` and `--tracking-display` at `--size-5`, evenly per step of the scale (in log size), held at the end values beyond them. The display end is the h1 step, the largest heading `dials-base.css` styles, because a designer reads the display dials as what the main heading gets, and the reference sites' display tracking is already at full strength by about 32px. **`--tracking-caps-total`** adds `--tracking-caps`, for text in capitals.
+- **`--weight-strong`**: the body weight plus 200, at most 900. A fixed step rather than a dial: it's the usual semibold-over-regular contrast and it follows a light or heavy body face. `strong`, buttons, labels, `summary`, `th` and `legend` use it (600 with nothing set, as in 0.2).
+- **`--size-7`, `--size-8`**: two more steps of the scale, for display type.
+- **`dials-base.css`** applies them per element: body takes `--weight-body` and `--leading-body` (as a number, so it inherits as one); headings take `--weight-heading`, `--leading` and `--tracking`; captions, `small`, buttons and `pre` take `--leading` or `--tracking` as their size needs; paragraphs, list items, quotes and captions take `--line-length`. The leading and tracking rules engage only once one of their dials is set: until then a heading keeps 1.15. Rules for properties 0.2 left alone (letter spacing, the line height of captions and `pre`, line length, the weight of `strong`) sit in a cascade layer, `@layer dials-type`, and fall back to `revert-layer` while their dial is unset. Any rule of a site's own wins over a layer, whatever its specificity or order, and `revert-layer` removes only the layer's own value, so with nothing set these elements get exactly what they got in 0.2, including from a site's reset loaded before Dials (a plain `revert` would have discarded that too).
+- **`.is-typeset`** (`dials-base.css`), opt-in on `<html>` or any section: kerning at every size, tabular figures in tables, `text-wrap: pretty` on paragraphs, list items and quotes.
+- **Type presets** set type dials to suit them: Balanced (1.6 to 1.1, display −0.02em, 70ch), Compact (1.45 to 1.15, captions +0.015em, display −0.015em), Dramatic (1.55 to 1.0, display −0.035em, capitals +0.1em, headings 800), Editorial (1.65 to 1.08, captions +0.01em, display −0.02em, capitals +0.06em, headings 400, 66ch), Friendly (1.65 to 1.2, captions +0.02em, 70ch) and Terminal (1.5 to 1.2, capitals +0.08em, headings 500). Hi-Fi sets none, so `dials.css`'s defaults still match it. The playground's Type tab applies them; its theme menu applies each theme as `themes/*.css` does, without them.
+- **Patterns**: a "Type" section in [docs/tokens.md](docs/tokens.md#type) covers components that set their own size, an eyebrow in capitals, a lede, display type, line length on a component, the accent face and `.is-typeset`.
+- **Playground**: sliders for every type dial (each unset until moved, with × to unset it), an accent face picker, the scale ladder up to `--size-8` with each size's leading and tracking, and an article specimen built from the type tokens.
+
+### Browser support
+
+The type rules for properties 0.2 left alone are in a cascade layer with `revert-layer` (Chrome and Edge 99+, Safari 15.4+, Firefox 97+, all older than what Dials' colour needs).
+
+The leading and tracking curves need `tan()`, `atan2()` and `log()` (Chrome and Edge 120+, Safari 15.4+, Firefox 118+); `tan(atan2(a, b))` turns two lengths into a number, since Firefox has no typed division. Without them, the gates in `dials.css` stay undefined, so `dials-base.css` keeps headings at `--leading-display` (or 1.15) for every size, body at `--leading-body`, and leaves letter spacing alone. The colour fallbacks are unchanged and `src/fallback.css` still has no `calc()`.
+
+### Checks
+
+- New `checks/type.mjs`, in CI: with no type dials set, every element `dials-base.css` styles matches 0.2.0's (`checks/fixtures/v0.2.0/`) in every computed property and in its box, at 360px and 1280px, in Chromium and Firefox, alone, with each of the ten themes against 0.2.0's copy, after a zero-specificity reset loaded before `dials-base.css`, and in the playground's scoped demo; `dials.css` alone sets no type on any element, even with every type dial set; across 30 random dial sets and three widths, `--leading`, `--tracking` and `--tracking-caps-total` are exact at `--size--2`, `--size-0` and `--size-5`, held beyond them (`--size-6` to `--size-8` included), monotonic between and on the reference formula; each family of dials engages only its own base rules, also in a `[data-dials]` scope; and without the maths functions (emulated) headings keep `--leading-display`.
+- `checks/playground.mjs`: a theme applies no type dial that's unset by default, presets clear the type dials they don't set, the sliders set and unset a dial, and the exports carry set dials only.
+
 ## 0.2.0
 
 The colour pass, from field testing on two real sites.

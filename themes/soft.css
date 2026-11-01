@@ -1,9 +1,13 @@
-/*! Dials v0.2.0 | MIT | https://github.com/joops/dials */
+/*! Dials v0.3.0 | MIT | https://github.com/joops/dials */
 /* Dials theme: Soft
    Presets: Catppuccin colour, Friendly type, Roomy space (presets/colour/catppuccin.css, presets/type/friendly.css,
    presets/space/roomy.css). Load after dials.css. This file doesn't set
    color-scheme: the theme works in light and dark, and follows the page's setting.
    Faces: <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+   Type, opt-in: this theme sets none of the leading, tracking, weight or line-length dials,
+   so it renders as it did in v0.2. For the Friendly type preset's, add this to your own
+   file, loaded after this one:
+     :root { --leading-body: 1.65; --leading-display: 1.2; --tracking-small: 0.02; --line-length: 70ch; }
 */
 :root, :host {
   /* colour: Catppuccin */

@@ -1,5 +1,5 @@
 /* Dials type preset: Terminal
-   Compact sizes with monospace headings: IBM Plex Mono over IBM Plex Sans, for tools and dashboards that should feel like a console. */
+   Compact sizes with monospace headings: IBM Plex Mono over IBM Plex Sans, for tools and dashboards that should feel like a console. Monospace isn't tightened; capitals get extra space. */
 :root, :host {
   --screen-min: 360;
   --screen-max: 1240;
@@ -10,4 +10,8 @@
   --font-heading: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --font-body: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --leading-body: 1.5;
+  --leading-display: 1.2;
+  --tracking-caps: 0.08;
+  --weight-heading: 500;
 }

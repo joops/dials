@@ -1,0 +1,43 @@
+/*! Dials v0.2.0 | MIT | https://github.com/joops/dials */
+/* Dials theme: Ink
+   Presets: Monochrome colour, Compact type, Square space (presets/colour/monochrome.css, presets/type/compact.css,
+   presets/space/square.css). Load after dials.css. This file doesn't set
+   color-scheme: the theme works in light and dark, and follows the page's setting.
+   Faces: <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;700&family=IBM+Plex+Mono:wght@400;700&display=swap">
+*/
+:root, :host {
+  /* colour: Monochrome */
+  --brand: hsl(0 0% 20%);
+  --secondary: hsl(0 0% 45%);
+  --success: hsl(145 63% 30%);
+  --warning: hsl(38 92% 40%);
+  --danger: hsl(0 70% 46%);
+  --info: hsl(215 70% 46%);
+  --grey: hsl(0 0% 50%);
+  --balance: 0;
+  --fill-lightness: 0.52;
+  --dark-lift: 0.5;
+  --tint-strength: 11%;
+  --tint-vividness: 1;
+  --text-contrast: 0;
+  --white-text-until: 0.179;
+  --paper-lightness: 0.985;
+  --paper-dark-lightness: 0.16;
+  --ink-lightness: 0.2;
+  --ink-dark-lightness: 0.94;
+  /* type: Compact */
+  --screen-min: 360;
+  --screen-max: 1240;
+  --size-min: 14;
+  --size-max: 16;
+  --ratio-min: 1.125;
+  --ratio-max: 1.2;
+  --font-heading: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  /* space: Square */
+  --space-min: var(--size-min);
+  --space-max: var(--size-max);
+  --space-density: 1;
+  --radius-base: 0;
+}
