@@ -118,19 +118,19 @@ def validate_presets(presets):
 
 
 def validate_defaults(presets, colour_src, scale_src):
-    """dials.css's defaults must be the Hi-Fi house theme: one source, checked here."""
+    """dials.css's defaults must be the Default theme's presets: one source, checked here."""
     dc = first_block(colour_src, ":root, :host")
     ds = first_block(scale_src, ":root, :host")
-    house = THEMES["hi-fi"]
+    house = THEMES["default"]
     for kind, src in (("colour", dc), ("type", ds), ("space", ds)):
         p = presets[kind][house[kind]]["dials"]
         for k, v in p.items():
             if k in COLOUR_OPTIONAL:
-                fail(f"the house colour preset must not set {k}: the default derives it from --grey")
+                fail(f"the Default colour preset must not set {k}: the default derives it from --grey")
             if k in TYPE_OPTIONAL:
-                fail(f"the house type preset must not set {k}: dials.css doesn't declare it, so the house type takes its default")
+                fail(f"the Default type preset must not set {k}: dials.css doesn't declare it, so it takes its default")
             if src.get(k) != v:
-                fail(f"src default {k}: {src.get(k)!r} differs from house preset {house[kind]} ({v!r})")
+                fail(f"src default {k}: {src.get(k)!r} differs from the Default theme's {kind} preset {house[kind]} ({v!r})")
 
 
 # ---------------------------------------------------------------- Google Fonts
@@ -197,7 +197,8 @@ def dist_files(colour_src, scale_src, base_src, fallback_src, flat_src, house_li
     base = header_comment(base_src, "Dials: base (dials-base.css, optional)")
     intro = ("/* Dials: an AI-first CSS framework. This file is dials-colour.css, then\n"
              "   dials-scale.css, then the fallback for older browsers; dials-base.css is optional.\n"
-             "   Default theme: Hi-Fi. Load its faces with:\n   " + house_link + "\n*/\n")
+             "   Its defaults are the Default theme: the device's own faces, nothing to load.\n"
+             "   The Dials house theme is themes/dials.css.\n*/\n")
     return {
         "dials-colour.css": BANNER + colour,
         "dials-scale.css": BANNER + scale,
@@ -241,7 +242,7 @@ def theme_file(key, t, presets, table):
     link = fonts_link(presets["type"][t["type"]]["dials"], table)
     names = ", ".join(f"{p['name']} {k}" for k, p in parts)
     out = [BANNER.rstrip("\n"),
-           f"/* Dials theme: {t['name']}" + (" (the house theme, and dials.css's default)" if key == "hi-fi" else ""),
+           f"/* Dials theme: {t['name']}" + {"dials": " (the house theme)", "default": " (what dials.css gives with nothing set)"}.get(key, ""),
            f"   Presets: {names} (presets/colour/{t['colour']}.css, presets/type/{t['type']}.css,",
            f"   presets/space/{t['space']}.css). Load after dials.css. This file doesn't set",
            "   color-scheme: the theme works in light and dark, and follows the page's setting.",
@@ -446,13 +447,16 @@ def build():
     validate_defaults(presets, colour_src, scale_src)
     validate_fallback(fallback_src, flat_src, colour_src, scale_src)
     table = gf_table()
-    house_link = fonts_link(presets["type"][THEMES["hi-fi"]["type"]]["dials"], table)
+    house_link = fonts_link(presets["type"][THEMES["dials"]["type"]]["dials"], table)
 
     out = dist_files(colour_src, scale_src, base_src, fallback_src, flat_src, house_link)
     for name in list(out):
         out["site/" + name] = out[name]
     for key, t in THEMES.items():
         out[f"themes/{key}.css"] = theme_file(key, t, presets, table)
+    # renamed in 0.4.0: the house theme was themes/hi-fi.css; the old file stays for one minor release
+    out["themes/hi-fi.css"] = out["themes/dials.css"].replace("/* Dials theme: Dials (the house theme)",
+        "/* Deprecated: renamed to themes/dials.css, and removed in a later release. Load that instead.\n   Dials theme: Dials (the house theme)", 1)
     out["site/dials-base-demo.css"] = scoped_base(base_src)
     out["site/favicon.svg"] = (ROOT / "brand/mark/favicon.svg").read_text()
     rows = documented(colour_src, "dials-colour.css") + documented(scale_src, "dials-scale.css")

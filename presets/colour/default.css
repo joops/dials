@@ -1,0 +1,22 @@
+/* Dials colour preset: Default
+   What dials.css gives with nothing set: a plain blue on cool neutral greys, white paper and near-black ink. A starting point, not a look. */
+:root, :host {
+  --brand: hsl(221 83% 53%);
+  --secondary: hsl(262 52% 55%);
+  --success: hsl(142 64% 38%);
+  --warning: hsl(38 92% 50%);
+  --danger: hsl(0 72% 51%);
+  --info: hsl(199 89% 42%);
+  --grey: hsl(220 9% 50%);
+  --balance: 0;
+  --fill-lightness: 0.52;
+  --dark-lift: 0.06;
+  --tint-strength: 10%;
+  --tint-vividness: 1;
+  --text-contrast: 0;
+  --white-text-until: 0.179;
+  --paper-lightness: 0.985;
+  --paper-dark-lightness: 0.17;
+  --ink-lightness: 0.2;
+  --ink-dark-lightness: 0.95;
+}

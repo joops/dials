@@ -1,8 +1,15 @@
 {
   "$comment": "Each theme is one colour, one type and one space preset from presets/. build.py concatenates them into themes/<key>.css. \"preview\" is only the scheme the playground shows the theme in first; theme files never set color-scheme. \"presetOrder\" is the order the playground lists the presets in.",
   "themes": {
-    "hi-fi": {
-      "name": "Hi-Fi",
+    "default": {
+      "name": "Default",
+      "colour": "default",
+      "type": "default",
+      "space": "default",
+      "preview": "system"
+    },
+    "dials": {
+      "name": "Dials",
       "colour": "hi-fi",
       "type": "hi-fi",
       "space": "machined",
@@ -74,6 +81,7 @@
   },
   "presetOrder": {
     "colour": [
+      "default",
       "hi-fi",
       "dracula",
       "tokyo-night",
@@ -87,6 +95,7 @@
       "monochrome"
     ],
     "type": [
+      "default",
       "hi-fi",
       "balanced",
       "compact",
@@ -96,8 +105,8 @@
       "dramatic"
     ],
     "space": [
-      "machined",
       "default",
+      "machined",
       "compact",
       "roomy",
       "airy-layout",

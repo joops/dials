@@ -22,12 +22,12 @@
   --space-min: var(--size-min);  /* --space-s at each end, in px: follows body text */
   --space-max: var(--size-max);  /* size unless you set a number */
   --space-density: 1;      /* scales every space size: 0.8 compact, 1.25 roomy */
-  --radius-base: 3;        /* corner radius of cards and fields, in px (a number, not a length) */
+  --radius-base: 10;       /* corner radius of cards and fields, in px (a number, not a length) */
 
   /* Faces: set per site, and load them yourself (each theme file names its Google Fonts link) */
-  --font-body: "Barlow", ui-sans-serif, system-ui, sans-serif;  /* body text and controls */
-  --font-heading: "Michroma", ui-sans-serif, system-ui, sans-serif;  /* headings */
-  --font-mono: "Share Tech Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;  /* code, kbd, samp, pre */
+  --font-body: ui-sans-serif, system-ui, sans-serif;  /* body text and controls */
+  --font-heading: ui-sans-serif, system-ui, sans-serif;  /* headings */
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;  /* code, kbd, samp, pre */
 
   /* Border widths: every border and outline uses one of these */
   --border-width-s: 1px;   /* hairlines: cards, fields, tables */

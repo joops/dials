@@ -483,7 +483,7 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
     <li><b>Size everything from the scale</b>: <code>--size-*</code> for every text size, <code>--space-*</code> for every gap, a pair such as <code>--space-s-l</code> where a gap should grow more than the text does, <code>--radius-*</code> for corners and <code>--border-width-*</code> for borders. It's Utopia's method, so Utopia's guides apply; there's just no calculator step.</li>
     <li><b>Give your agents the rules below</b> and run the contrast check in CI.</li>
   </ol>
-  <p class="lede">Needs <code>color-mix()</code>, <code>light-dark()</code> and relative colour: Chrome and Edge 123+, Safari 18+, Firefox 128+. Older browsers get a built-in fallback: with <code>color-mix()</code> (Safari 16.2+, so iOS 16 and 17, Chrome 111+, Firefox 113+) it follows your dials in a light page, with dark bands; before that, the Hi-Fi theme as flat colours. Don't register these properties with <code>@property</code>: they must work out their colour where they're used, which is what makes dark bands work.</p>
+  <p class="lede">Needs <code>color-mix()</code>, <code>light-dark()</code> and relative colour: Chrome and Edge 123+, Safari 18+, Firefox 128+. Older browsers get a built-in fallback: with <code>color-mix()</code> (Safari 16.2+, so iOS 16 and 17, Chrome 111+, Firefox 113+) it follows your dials in a light page, with dark bands; before that, the default colours as flat colours. Don't register these properties with <code>@property</code>: they must work out their colour where they're used, which is what makes dark bands work.</p>
 </section>
 
 <section>
@@ -1028,7 +1028,7 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
     applyTPreset('hi-fi');
     applySPreset('machined');
     applyPreset('hi-fi');
-    combo.value = 'hi-fi';
+    combo.value = 'dials';   /* the page opens in the house theme; Default is what dials.css gives with nothing set */
     root.setAttribute('data-ready', '');
   }).catch(function (e) {
     pre.textContent = 'Could not load the CSS files (' + e.message + '). Serve this folder over HTTP, e.g. python3 -m http.server, rather than opening the file directly.';

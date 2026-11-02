@@ -12,13 +12,13 @@ This is the reference for Dials v0.3.0. Names can change between versions: for a
 
 | Name | Default | What it is |
 |---|---|---|
-| `--brand` | `#f39c12` | the main colour: links, focus, primary buttons |
-| `--secondary` | `#2ec4b6` | a second colour: highlights and secondary actions (was --accent) |
-| `--success` | `#3fbf55` | status: done, saved, live |
-| `--warning` | `#f2c230` | status: check this |
-| `--danger` | `#e0322b` | status: errors and destructive actions |
-| `--info` | `#3b82c4` | status: neutral news |
-| `--grey` | `hsl(42 7% 50%)` | the hue and strength of the tint in paper and ink |
+| `--brand` | `hsl(221 83% 53%)` | the main colour: links, focus, primary buttons |
+| `--secondary` | `hsl(262 52% 55%)` | a second colour: highlights and secondary actions (was --accent) |
+| `--success` | `hsl(142 64% 38%)` | status: done, saved, live |
+| `--warning` | `hsl(38 92% 50%)` | status: check this |
+| `--danger` | `hsl(0 72% 51%)` | status: errors and destructive actions |
+| `--info` | `hsl(199 89% 42%)` | status: neutral news |
+| `--grey` | `hsl(220 9% 50%)` | the hue and strength of the tint in paper and ink |
 
 ### Number dials
 
@@ -26,8 +26,8 @@ This is the reference for Dials v0.3.0. Names can change between versions: for a
 |---|---|---|
 | `--balance` | `0` | 1: every fill at --fill-lightness, so they carry equal weight. 0: exactly as set |
 | `--fill-lightness` | `0.52` | the shared OKLCH lightness used when --balance is 1 |
-| `--dark-lift` | `0.04` | how much lighter the fills are in dark |
-| `--tint-strength` | `8%` | how much colour goes into a soft tint |
+| `--dark-lift` | `0.06` | how much lighter the fills are in dark |
+| `--tint-strength` | `10%` | how much colour goes into a soft tint |
 | `--tint-vividness` | `1` | 1-3: how saturated soft tints are, for crisper pastels |
 | `--text-contrast` | `0` | 0-30: strengthens body, muted and quiet text and strong borders, for paper and ink that sit close together |
 | `--white-text-until` | `0.179` | fills below this luminance get white text, above it black. 0.179 gives each fill whichever contrasts more; held between 0.175 and 0.18333, where both still give 4.5:1: black needs (L + 0.05) / 0.05 >= 4.5, so L >= 0.175; white needs 1.05 / (L + 0.05) >= 4.5, so L <= 1.05 / 4.5 - 0.05 = 0.18333 |
@@ -36,10 +36,10 @@ This is the reference for Dials v0.3.0. Names can change between versions: for a
 
 | Name | Default | What it is |
 |---|---|---|
-| `--paper-lightness` | `0.922` | page background in light |
-| `--paper-dark-lightness` | `0.186` | page background in dark |
-| `--ink-lightness` | `0.213` | strongest text in light |
-| `--ink-dark-lightness` | `0.934` | strongest text in dark |
+| `--paper-lightness` | `0.985` | page background in light |
+| `--paper-dark-lightness` | `0.17` | page background in dark |
+| `--ink-lightness` | `0.2` | strongest text in light |
+| `--ink-dark-lightness` | `0.95` | strongest text in dark |
 
 ### Dials
 
@@ -54,10 +54,10 @@ This is the reference for Dials v0.3.0. Names can change between versions: for a
 | `--space-min` | `var(--size-min)` | --space-s at each end, in px: follows body text |
 | `--space-max` | `var(--size-max)` | size unless you set a number |
 | `--space-density` | `1` | scales every space size: 0.8 compact, 1.25 roomy |
-| `--radius-base` | `3` | corner radius of cards and fields, in px (a number, not a length) |
-| `--font-body` | `"Barlow", ui-sans-serif, system-ui, sans-serif` | body text and controls |
-| `--font-heading` | `"Michroma", ui-sans-serif, system-ui, sans-serif` | headings |
-| `--font-mono` | `"Share Tech Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace` | code, kbd, samp, pre |
+| `--radius-base` | `10` | corner radius of cards and fields, in px (a number, not a length) |
+| `--font-body` | `ui-sans-serif, system-ui, sans-serif` | body text and controls |
+| `--font-heading` | `ui-sans-serif, system-ui, sans-serif` | headings |
+| `--font-mono` | `ui-monospace, "SF Mono", Menlo, Consolas, monospace` | code, kbd, samp, pre |
 | `--border-width-s` | `1px` | hairlines: cards, fields, tables |
 | `--border-width-m` | `2px` | emphasis; outline offsets |
 | `--border-width-l` | `3px` | focus rings, quote bars, active tabs |

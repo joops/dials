@@ -2,6 +2,30 @@
 window.DIALS = {
  "version": "0.3.0",
  "colour": {
+  "default": {
+   "name": "Default",
+   "note": "What dials.css gives with nothing set: a plain blue on cool neutral greys, white paper and near-black ink. A starting point, not a look.",
+   "dials": {
+    "--brand": "hsl(221 83% 53%)",
+    "--secondary": "hsl(262 52% 55%)",
+    "--success": "hsl(142 64% 38%)",
+    "--warning": "hsl(38 92% 50%)",
+    "--danger": "hsl(0 72% 51%)",
+    "--info": "hsl(199 89% 42%)",
+    "--grey": "hsl(220 9% 50%)",
+    "--balance": "0",
+    "--fill-lightness": "0.52",
+    "--dark-lift": "0.06",
+    "--tint-strength": "10%",
+    "--tint-vividness": "1",
+    "--text-contrast": "0",
+    "--white-text-until": "0.179",
+    "--paper-lightness": "0.985",
+    "--paper-dark-lightness": "0.17",
+    "--ink-lightness": "0.2",
+    "--ink-dark-lightness": "0.95"
+   }
+  },
   "hi-fi": {
    "name": "Hi-Fi",
    "note": "Part of the Dials house style: a brushed-aluminium faceplate (black in dark), amber VU meters, a teal display and LED status lights.",
@@ -292,6 +316,22 @@ window.DIALS = {
   }
  },
  "type": {
+  "default": {
+   "name": "Default",
+   "note": "What dials.css gives with nothing set: the device's own interface faces, nothing to load. Body 16 to 18px, minor third to major third.",
+   "dials": {
+    "--screen-min": "360",
+    "--screen-max": "1240",
+    "--size-min": "16",
+    "--size-max": "18",
+    "--ratio-min": "1.2",
+    "--ratio-max": "1.25",
+    "--font-heading": "ui-sans-serif, system-ui, sans-serif",
+    "--font-body": "ui-sans-serif, system-ui, sans-serif",
+    "--font-mono": "ui-monospace, \"SF Mono\", Menlo, Consolas, monospace"
+   },
+   "fonts": null
+  },
   "hi-fi": {
    "name": "Hi-Fi",
    "note": "Part of the Dials house style: Michroma, a wide Eurostile-style face off an amplifier panel, over Barlow, an industrial grotesk.",
@@ -304,7 +344,8 @@ window.DIALS = {
     "--ratio-max": "1.25",
     "--font-heading": "\"Michroma\", ui-sans-serif, system-ui, sans-serif",
     "--font-body": "\"Barlow\", ui-sans-serif, system-ui, sans-serif",
-    "--font-mono": "\"Share Tech Mono\", ui-monospace, \"SF Mono\", Menlo, Consolas, monospace"
+    "--font-mono": "\"Share Tech Mono\", ui-monospace, \"SF Mono\", Menlo, Consolas, monospace",
+    "--leading-body": "1.6"
    },
    "fonts": "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Michroma&family=Barlow:wght@400;700&family=Share+Tech+Mono&display=swap\">"
   },
@@ -412,16 +453,6 @@ window.DIALS = {
   }
  },
  "space": {
-  "machined": {
-   "name": "Machined",
-   "note": "Part of the Dials house style: standard spacing with small, machined 3px corners, like the edges of an amplifier faceplate.",
-   "dials": {
-    "--space-min": "var(--size-min)",
-    "--space-max": "var(--size-max)",
-    "--space-density": "1",
-    "--radius-base": "3"
-   }
-  },
   "default": {
    "name": "Default",
    "note": "Follows body text size, density 1, 10px corners.",
@@ -430,6 +461,16 @@ window.DIALS = {
     "--space-max": "var(--size-max)",
     "--space-density": "1",
     "--radius-base": "10"
+   }
+  },
+  "machined": {
+   "name": "Machined",
+   "note": "Part of the Dials house style: standard spacing with small, machined 3px corners, like the edges of an amplifier faceplate.",
+   "dials": {
+    "--space-min": "var(--size-min)",
+    "--space-max": "var(--size-max)",
+    "--space-density": "1",
+    "--radius-base": "3"
    }
   },
   "compact": {
@@ -474,8 +515,15 @@ window.DIALS = {
   }
  },
  "themes": {
-  "hi-fi": {
-   "name": "Hi-Fi",
+  "default": {
+   "name": "Default",
+   "colour": "default",
+   "type": "default",
+   "space": "default",
+   "preview": "system"
+  },
+  "dials": {
+   "name": "Dials",
    "colour": "hi-fi",
    "type": "hi-fi",
    "space": "machined",

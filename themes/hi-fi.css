@@ -1,5 +1,6 @@
 /*! Dials v0.3.0 | MIT | https://github.com/joops/dials */
-/* Dials theme: Hi-Fi (the house theme, and dials.css's default)
+/* Deprecated: renamed to themes/dials.css, and removed in a later release. Load that instead.
+   Dials theme: Dials (the house theme)
    Presets: Hi-Fi colour, Hi-Fi type, Machined space (presets/colour/hi-fi.css, presets/type/hi-fi.css,
    presets/space/machined.css). Load after dials.css. This file doesn't set
    color-scheme: the theme works in light and dark, and follows the page's setting.
@@ -35,6 +36,7 @@
   --font-heading: "Michroma", ui-sans-serif, system-ui, sans-serif;
   --font-body: "Barlow", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Share Tech Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --leading-body: 1.6;
   /* space: Machined */
   --space-min: var(--size-min);
   --space-max: var(--size-max);

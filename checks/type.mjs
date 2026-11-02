@@ -172,9 +172,10 @@ try {
         if (label === 'no theme') { const h1 = none.find(e => /:h1$/.test(e.el)), h3 = none.find(e => /:h3$/.test(e.el)); summary[`${name} ${width}px no theme`] = `${none.length} elements, ${Object.keys(none[1].props).length} computed properties each, plus boxes (body ${none[1].props['font-size']}/${none[1].props['line-height']}, h1 ${h1.props['font-size']}/${h1.props['line-height']}, h3 ${h3.props['font-size']}/${h3.props['line-height']}, weight ${h1.props['font-weight']})`; }
         // against v0.2.0 (no dials set in either): only the type the defaults now apply differs. Themes that set type dials
         // now are left out: they're meant to look different
-        if (label.startsWith('theme') && (!existsSync(join(ROOT, `checks/fixtures/v0.2.0/themes/${label.slice(6)}.css`))
-          || Object.keys(DEFAULT_DIALS).some(k => readFileSync(join(ROOT, `themes/${label.slice(6)}.css`), 'utf8').includes(`${k}:`)))) continue;
-        const old = await full('v=old' + q, width);
+        // Since 0.4.0 the defaults are the plain Default theme, so the comparison is the house theme, Dials, against
+        // v0.2.0's Hi-Fi theme, which it was called then: only line height and the sizes it moves may differ
+        if (label !== 'theme dials') continue;
+        const old = await full('v=old&theme=hi-fi', width);
         for (let i = 0; i < Math.min(old.length, none.length); i++) for (const k of new Set([...Object.keys(old[i].props), ...Object.keys(none[i].props)])) {
           if (old[i].props[k] === none[i].props[k]) continue;
           const strong = /:(strong|b)$/.test(none[i].el);

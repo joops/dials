@@ -1,8 +1,8 @@
 /*! Dials v0.3.0 | MIT | https://github.com/joops/dials */
 /* Dials: an AI-first CSS framework. This file is dials-colour.css, then
    dials-scale.css, then the fallback for older browsers; dials-base.css is optional.
-   Default theme: Hi-Fi. Load its faces with:
-   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Michroma&family=Barlow:wght@400;700&family=Share+Tech+Mono&display=swap">
+   Its defaults are the Default theme: the device's own faces, nothing to load.
+   The Dials house theme is themes/dials.css.
 */
 /* ============================================================
    Dials: colour (dials-colour.css)
@@ -19,19 +19,19 @@
    ============================================================ */
 :root, :host {
   /* ---- Colour dials: any CSS colour, preferably HSL ---- */
-  --brand:     #f39c12;  /* the main colour: links, focus, primary buttons */
-  --secondary: #2ec4b6;  /* a second colour: highlights and secondary actions (was --accent) */
-  --success:   #3fbf55;  /* status: done, saved, live */
-  --warning:   #f2c230;  /* status: check this */
-  --danger:    #e0322b;  /* status: errors and destructive actions */
-  --info:      #3b82c4;  /* status: neutral news */
-  --grey:      hsl(42 7% 50%);  /* the hue and strength of the tint in paper and ink */
+  --brand:     hsl(221 83% 53%);  /* the main colour: links, focus, primary buttons */
+  --secondary: hsl(262 52% 55%);  /* a second colour: highlights and secondary actions (was --accent) */
+  --success:   hsl(142 64% 38%);  /* status: done, saved, live */
+  --warning:   hsl(38 92% 50%);  /* status: check this */
+  --danger:    hsl(0 72% 51%);  /* status: errors and destructive actions */
+  --info:      hsl(199 89% 42%);  /* status: neutral news */
+  --grey:      hsl(220 9% 50%);  /* the hue and strength of the tint in paper and ink */
 
   /* ---- Number dials ---- */
   --balance: 0;              /* 1: every fill at --fill-lightness, so they carry equal weight. 0: exactly as set */
   --fill-lightness: 0.52;    /* the shared OKLCH lightness used when --balance is 1 */
-  --dark-lift: 0.04;         /* how much lighter the fills are in dark */
-  --tint-strength: 8%;       /* how much colour goes into a soft tint */
+  --dark-lift: 0.06;         /* how much lighter the fills are in dark */
+  --tint-strength: 10%;      /* how much colour goes into a soft tint */
   --tint-vividness: 1;       /* 1-3: how saturated soft tints are, for crisper pastels */
   --text-contrast: 0;        /* 0-30: strengthens body, muted and quiet text and strong borders, for paper and ink that sit close together */
   --white-text-until: 0.179; /* fills below this luminance get white text, above it black. 0.179 gives each fill whichever contrasts more; held between 0.175 and 0.18333, where both still give 4.5:1: black needs (L + 0.05) / 0.05 >= 4.5, so L >= 0.175; white needs 1.05 / (L + 0.05) >= 4.5, so L <= 1.05 / 4.5 - 0.05 = 0.18333 */
@@ -39,10 +39,10 @@
   /* ---- Paper and ink: near-white and near-black, tinted by --grey at these OKLCH lightnesses.
      To use exact colours instead, set --paper-light, --paper-dark, --ink-light and/or
      --ink-dark (unset by default) to any colour. ---- */
-  --paper-lightness: 0.922;       /* page background in light */
-  --paper-dark-lightness: 0.186;  /* page background in dark */
-  --ink-lightness: 0.213;         /* strongest text in light */
-  --ink-dark-lightness: 0.934;    /* strongest text in dark */
+  --paper-lightness: 0.985;       /* page background in light */
+  --paper-dark-lightness: 0.17;   /* page background in dark */
+  --ink-lightness: 0.2;           /* strongest text in light */
+  --ink-dark-lightness: 0.95;     /* strongest text in dark */
 }
 
 /* Follow the visitor's light or dark setting. To force one, set
@@ -247,12 +247,12 @@
   --space-min: var(--size-min);  /* --space-s at each end, in px: follows body text */
   --space-max: var(--size-max);  /* size unless you set a number */
   --space-density: 1;      /* scales every space size: 0.8 compact, 1.25 roomy */
-  --radius-base: 3;        /* corner radius of cards and fields, in px (a number, not a length) */
+  --radius-base: 10;       /* corner radius of cards and fields, in px (a number, not a length) */
 
   /* Faces: set per site, and load them yourself (each theme file names its Google Fonts link) */
-  --font-body: "Barlow", ui-sans-serif, system-ui, sans-serif;  /* body text and controls */
-  --font-heading: "Michroma", ui-sans-serif, system-ui, sans-serif;  /* headings */
-  --font-mono: "Share Tech Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;  /* code, kbd, samp, pre */
+  --font-body: ui-sans-serif, system-ui, sans-serif;  /* body text and controls */
+  --font-heading: ui-sans-serif, system-ui, sans-serif;  /* headings */
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;  /* code, kbd, samp, pre */
 
   /* Border widths: every border and outline uses one of these */
   --border-width-s: 1px;   /* hairlines: cards, fields, tables */
@@ -505,7 +505,7 @@
   .is-info      { --solid: var(--info-solid);      --on-solid: var(--info-on-solid);      --soft: var(--info-soft);      --on-soft: var(--info-on-soft);      --line: var(--info-line); }
   .is-accent    { --solid: var(--secondary-solid); --on-solid: var(--secondary-on-solid); --soft: var(--secondary-soft); --on-soft: var(--secondary-on-soft); --line: var(--secondary-line); }
 }
-/* Generated by tools/fallback.mjs from dials.css (src/colour.css 93ca251ad22dc853): the Hi-Fi defaults in
+/* Generated by tools/fallback.mjs from dials.css (src/colour.css 8cab4e67a684f482): the defaults in
    the light scheme. Don't edit. The last resort, for browsers without color-mix() (Chrome and Edge
    before 111, Safari before 16.2, Firefox before 113, all 2022 or older): they can't work anything
    out, so every colour token is flat and they get the house colours, light only. Colour dials have no
@@ -513,68 +513,68 @@
 @supports not (color: color-mix(in srgb, red, blue)) {
   :root, [data-dials], :host, .is-light, .is-dark {
     color-scheme: light;
-    --surface: #e6e5e3;
-    --surface-raised: #efefee;
-    --surface-lowered: #dcdcda;
-    --surface-sunken: #d3d2d1;
+    --surface: #f9fafc;
+    --surface-raised: #feffff;
+    --surface-lowered: #eef0f2;
+    --surface-sunken: #e4e5e7;
     --surface-overlay: rgb(0 0 0 / 45%);
-    --text-strong: #1a1916;
-    --text: #32312e;
-    --text-muted: #4f4e4c;
-    --text-quiet: #5b5a58;
-    --text-disabled: #91908e;
-    --link: #875505;
-    --link-hover: #663900;
-    --border-quiet: #d5d5d3;
-    --border: #c8c7c5;
-    --border-strong: #807f7d;
-    --focus: #875505;
-    --selection: #ead6c0;
+    --text-strong: #151619;
+    --text: #2f3033;
+    --text-muted: #505154;
+    --text-quiet: #5d5e61;
+    --text-disabled: #999a9d;
+    --link: #2362e9;
+    --link-hover: #0743c2;
+    --border-quiet: #e7e8ea;
+    --border: #d7d8db;
+    --border-strong: #86878a;
+    --focus: #2362e9;
+    --selection: #c9dbfc;
     --shadow-color: rgb(0 0 0 / 10%);
     --shadow-s: 0 1px 3px rgb(0 0 0 / 10%);
     --shadow-m: 0 4px 14px rgb(0 0 0 / 10%);
     --shadow-l: 0 12px 32px rgb(0 0 0 / 10%);
     --mix-hover: black 12%;
     --mix-active: black 22%;
-    --brand-solid: #f39c12;
-    --brand-on-solid: #000000;
-    --brand-soft: #e7e0d8;
-    --brand-on-soft: #875505;
-    --brand-line: #ac6d09;
-    --secondary-solid: #2ec4b6;
-    --secondary-on-solid: #000000;
-    --secondary-soft: #dae3e1;
-    --secondary-on-soft: #156b63;
-    --secondary-line: #1d897f;
-    --neutral-solid: #1a1916;
-    --neutral-on-solid: #e6e5e3;
-    --neutral-soft: #dcdcda;
-    --neutral-on-soft: #32312e;
-    --neutral-line: #c8c7c5;
-    --success-solid: #3fbf55;
+    --brand-solid: #2463eb;
+    --brand-on-solid: #ffffff;
+    --brand-soft: #e9f1ff;
+    --brand-on-soft: #2362e9;
+    --brand-line: #2463eb;
+    --secondary-solid: #7c51c8;
+    --secondary-on-solid: #ffffff;
+    --secondary-soft: #f1eefc;
+    --secondary-on-soft: #7c51c8;
+    --secondary-line: #7c51c8;
+    --neutral-solid: #151619;
+    --neutral-on-solid: #f9fafc;
+    --neutral-soft: #eef0f2;
+    --neutral-on-soft: #2f3033;
+    --neutral-line: #d7d8db;
+    --success-solid: #239f50;
     --success-on-solid: #000000;
-    --success-soft: #dae2da;
-    --success-on-soft: #206e2e;
-    --success-line: #2c8c3c;
-    --warning-solid: #f2c230;
+    --success-soft: #eaf4eb;
+    --success-on-soft: #197c3d;
+    --success-line: #229c4f;
+    --warning-solid: #f59f0a;
     --warning-on-solid: #000000;
-    --warning-soft: #e6e3da;
-    --warning-on-soft: #755d12;
-    --warning-line: #95771a;
-    --danger-solid: #e0322b;
-    --danger-on-solid: #000000;
-    --danger-soft: #eadbd9;
-    --danger-on-soft: #b72721;
-    --danger-line: #e0322b;
-    --info-solid: #3b82c4;
+    --warning-soft: #faf1e7;
+    --warning-on-soft: #976003;
+    --warning-line: #bd7906;
+    --danger-solid: #dc2828;
+    --danger-on-solid: #ffffff;
+    --danger-soft: #ffece9;
+    --danger-on-soft: #d02525;
+    --danger-line: #dc2828;
+    --info-solid: #0c8eca;
     --info-on-solid: #000000;
-    --info-soft: #dae0e6;
-    --info-on-soft: #2b6396;
-    --info-line: #397ebf;
-    --accent-solid: #2ec4b6;
-    --accent-on-solid: #000000;
-    --accent-soft: #dae3e1;
-    --accent-on-soft: #156b63;
-    --accent-line: #1d897f;
+    --info-soft: #e9f2f9;
+    --info-on-soft: #0773a4;
+    --info-line: #0c8eca;
+    --accent-solid: #7c51c8;
+    --accent-on-solid: #ffffff;
+    --accent-soft: #f1eefc;
+    --accent-on-soft: #7c51c8;
+    --accent-line: #7c51c8;
   }
 }

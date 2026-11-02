@@ -1,0 +1,13 @@
+/* Dials type preset: Default
+   What dials.css gives with nothing set: the device's own interface faces, nothing to load. Body 16 to 18px, minor third to major third. */
+:root, :host {
+  --screen-min: 360;
+  --screen-max: 1240;
+  --size-min: 16;
+  --size-max: 18;
+  --ratio-min: 1.2;
+  --ratio-max: 1.25;
+  --font-heading: ui-sans-serif, system-ui, sans-serif;
+  --font-body: ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
