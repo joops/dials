@@ -322,8 +322,7 @@ window.DIALS = {
     "--font-body": "\"Figtree\", ui-sans-serif, system-ui, sans-serif",
     "--font-mono": "ui-monospace, \"SF Mono\", Menlo, Consolas, monospace",
     "--leading-body": "1.6",
-    "--leading-display": "1.1",
-    "--tracking-display": "-0.02"
+    "--tracking-curve": "0.8"
    },
    "fonts": "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700&family=Figtree:wght@400;700&display=swap\">"
   },
@@ -341,8 +340,7 @@ window.DIALS = {
     "--font-body": "\"IBM Plex Sans\", ui-sans-serif, system-ui, sans-serif",
     "--font-mono": "\"IBM Plex Mono\", ui-monospace, \"SF Mono\", Menlo, Consolas, monospace",
     "--leading-body": "1.45",
-    "--leading-display": "1.15",
-    "--tracking-display": "-0.015"
+    "--tracking-curve": "0.6"
    },
    "fonts": "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;700&family=IBM+Plex+Mono:wght@400;700&display=swap\">"
   },
@@ -360,7 +358,6 @@ window.DIALS = {
     "--font-body": "\"IBM Plex Sans\", ui-sans-serif, system-ui, sans-serif",
     "--font-mono": "\"IBM Plex Mono\", ui-monospace, \"SF Mono\", Menlo, Consolas, monospace",
     "--leading-body": "1.5",
-    "--leading-display": "1.2",
     "--tracking-caps": "0.08",
     "--weight-heading": "500"
    },
@@ -380,10 +377,9 @@ window.DIALS = {
     "--font-body": "\"Source Serif 4\", ui-serif, Georgia, serif",
     "--font-mono": "ui-monospace, \"SF Mono\", Menlo, Consolas, monospace",
     "--leading-body": "1.65",
-    "--leading-display": "1.08",
-    "--tracking-display": "-0.02",
     "--tracking-caps": "0.06",
-    "--weight-heading": "400"
+    "--weight-heading": "400",
+    "--tracking-curve": "0.8"
    },
    "fonts": "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700&family=Source+Serif+4:wght@400;700&display=swap\">"
   },
@@ -401,7 +397,7 @@ window.DIALS = {
     "--font-body": "\"Atkinson Hyperlegible\", ui-sans-serif, system-ui, sans-serif",
     "--font-mono": "ui-monospace, \"SF Mono\", Menlo, Consolas, monospace",
     "--leading-body": "1.65",
-    "--leading-display": "1.2"
+    "--tracking-curve": "0.6"
    },
    "fonts": "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap\">"
   },
@@ -419,10 +415,9 @@ window.DIALS = {
     "--font-body": "\"Figtree\", ui-sans-serif, system-ui, sans-serif",
     "--font-mono": "ui-monospace, \"SF Mono\", Menlo, Consolas, monospace",
     "--leading-body": "1.55",
-    "--leading-display": "1",
-    "--tracking-display": "-0.035",
     "--tracking-caps": "0.1",
-    "--weight-heading": "800"
+    "--weight-heading": "800",
+    "--tracking-curve": "1.4"
    },
    "fonts": "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700;800&family=Figtree:wght@400;700&display=swap\">"
   }
@@ -598,9 +593,7 @@ window.DIALS = {
   "--border-width-m",
   "--border-width-l",
   "--leading-body",
-  "--leading-display",
-  "--tracking-body",
-  "--tracking-display",
+  "--tracking-curve",
   "--tracking-caps",
   "--weight-body",
   "--weight-heading",
@@ -608,9 +601,7 @@ window.DIALS = {
  ],
  "typeOptional": [
   "--leading-body",
-  "--leading-display",
-  "--tracking-body",
-  "--tracking-display",
+  "--tracking-curve",
   "--tracking-caps",
   "--weight-body",
   "--weight-heading",

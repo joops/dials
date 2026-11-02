@@ -11,7 +11,6 @@
   --font-body: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --leading-body: 1.5;
-  --leading-display: 1.2;
   --tracking-caps: 0.08;
   --weight-heading: 500;
 }

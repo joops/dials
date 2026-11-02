@@ -36,10 +36,8 @@
   /* ---- Leading, tracking, weight and line length: unset by default ---- */
   /* While none is set, dials-base.css keeps v0.2's type. Set them in your own file; the value
      shown is what Dials uses for any you leave unset once you've set another. */
-  /* --leading-body: 1.6;      line height at body size (--size-0), unitless */
-  /* --leading-display: 1.15;  line height at the h1 step (--size-5) and above, unitless; sizes in between slide in a straight line */
-  /* --tracking-body: 0;       letter spacing at body size (--size-0), in em without the unit; sizes up to h1 slide to --tracking-display, smaller ones continue the line */
-  /* --tracking-display: 0;    letter spacing at the h1 step (--size-5) and above, in em without the unit: negative tightens display type */
+  /* --leading-body: 1.6;      line height at body size (--size-0), unitless; every larger size keeps the same gap between lines, so it gets proportionally tighter */
+  /* --tracking-curve: 0;      how strongly letter spacing follows size: 0 is flat; 1 loosens the smallest text by about 0.012em and tightens large text by up to 0.025em; body text stays at 0 */
   /* --tracking-caps: 0;       extra letter spacing for all caps and small caps, in em without the unit (0.05 to 0.12 is usual) */
   /* --weight-body: 400;       body text weight */
   /* --weight-heading: 600;    heading weight */
@@ -92,23 +90,14 @@
   /* --leading and --tracking are lengths: apply them on each element that sets a font size, never
      on body, where they'd inherit as one fixed length. */
   --dl-leading-body: var(--leading-body, 1.6);
-  --dl-leading-display: var(--leading-display, 1.15);
-  --dl-tracking-body: var(--tracking-body, 0);
-  --dl-tracking-display: var(--tracking-display, 0);
-  /* body size over the h1 step, as a number: tan(atan2(a, b)) is a / b for two lengths
-     (Firefox has no typed division) */
-  --dl-type-q: tan(atan2(var(--size-0), var(--size-5)));
-  /* leading runs in a straight line in size, m * size + g, through leading-body at --size-0 and leading-display at --size-5, the h1 step */
-  --dl-leading-m: calc((var(--dl-leading-display) - var(--dl-leading-body) * var(--dl-type-q)) / max(1 - var(--dl-type-q), 0.000001));
-  --dl-leading-g: calc(var(--size-0) * (var(--dl-leading-body) - var(--dl-leading-m)));
-  /* how far up the scale this size is, from --size-0 (0) to --size-5 (1), and down it to --size--2, evenly per step */
-  --dl-type-up: clamp(0, log(tan(atan2(var(--size-0), 1em))) / min(log(var(--dl-type-q)), -0.000001), 1);
-  --dl-type-down: clamp(0, log(tan(atan2(1em, var(--size-0)))) / min(log(tan(atan2(var(--size--2), var(--size-0)))), -0.000001), 1);
-  --leading: clamp(min(var(--dl-leading-body), var(--dl-leading-display)) * 1em, var(--dl-leading-m) * 1em + var(--dl-leading-g), max(var(--dl-leading-body), var(--dl-leading-display)) * 1em);  /* line height for the size it's on, from --leading-body at body size to --leading-display at --size-5 (h1) and above */
-  /* tracking runs in a straight line in log size: --tracking-body at --size-0, --tracking-display at --size-5 (h1) and up;
-     smaller text continues the line, clamped at --size--2. --dl-type-t is that position: 0 at body, 1 at h1, negative below body */
-  --dl-type-t: clamp(log(tan(atan2(var(--size-0), var(--size--2)))) / min(log(var(--dl-type-q)), -0.000001), log(tan(atan2(var(--size-0), 1em))) / min(log(var(--dl-type-q)), -0.000001), 1);
-  --tracking: calc(1em * (var(--dl-tracking-body) + (var(--dl-tracking-display) - var(--dl-tracking-body)) * var(--dl-type-t)));  /* letter spacing for the size it's on: --tracking-body at body size, --tracking-display at --size-5 (h1) and above, the line continued below body down to --size--2 */
+  /* leading keeps the body's gap between lines at every larger size (1em + the body gap), so bigger text gets
+     proportionally tighter lines; smaller text keeps the body ratio; and no size goes below 1.05 */
+  --leading: max(1.05em, min(var(--dl-leading-body) * 1em, 1em + (var(--dl-leading-body) - 1) * var(--size-0)));  /* line height for the size it's on, from --leading-body: the same gap between lines at every larger size */
+  /* how far this size is from body size, as a number: tan(atan2(a, b)) is a / b for two lengths (Firefox has no typed division).
+     Tracking tightens from body size up to three times body size, and loosens down to 0.625 times it, then holds */
+  --dl-type-up: clamp(0, log(tan(atan2(1em, var(--size-0)))) / log(3), 1);
+  --dl-type-down: clamp(0, log(tan(atan2(var(--size-0), 1em))) / log(1.6), 1);
+  --tracking: calc(1em * var(--tracking-curve, 0) * (0.012 * var(--dl-type-down) - 0.025 * var(--dl-type-up)));  /* letter spacing for the size it's on: 0 at body size, looser below, tighter above, as strongly as --tracking-curve says */
   --tracking-caps-total: calc(var(--tracking) + 1em * var(--tracking-caps, 0));  /* letter spacing for text in capitals: --tracking plus --tracking-caps */
   --weight-strong: min(900, var(--weight-body, 400) + 200);  /* bold within body text, buttons and labels: the body weight plus 200 */
   /* dials-base.css reads these, so an untouched site keeps v0.2's type: each is valid only once one of its dials is set */
@@ -154,7 +143,7 @@
    and leaves letter spacing alone. */
 @supports (width: calc(1px * tan(atan2(1px, 1px)) * log(2))) {
   :root, [data-dials], :host {
-    --dl-leading-on: calc(var(--leading) + 0px * var(--leading-body, var(--leading-display)));
-    --dl-tracking-on: calc(var(--tracking) + 0em * var(--tracking-body, var(--tracking-display)));
+    --dl-leading-on: calc(var(--leading) + 0px * var(--leading-body));
+    --dl-tracking-on: calc(var(--tracking) + 0em * var(--tracking-curve));
   }
 }

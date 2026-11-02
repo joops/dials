@@ -36,8 +36,7 @@
   --font-body: "Figtree", ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --leading-body: 1.6;
-  --leading-display: 1.1;
-  --tracking-display: -0.02;
+  --tracking-curve: 0.8;
   /* space: Airy layout */
   --space-min: 18;
   --space-max: 28;

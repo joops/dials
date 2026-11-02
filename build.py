@@ -101,7 +101,7 @@ TYPE_REQUIRED = ["--screen-min", "--screen-max", "--size-min", "--size-max", "--
                  "--font-heading", "--font-body", "--font-mono"]
 # Not declared in dials.css: src/scale.css documents them in comments with their defaults, which Dials
 # always applies (dials-base.css reads each with its default as the fallback), so a preset may leave any of them out
-TYPE_OPTIONAL = ["--leading-body", "--leading-display", "--tracking-body", "--tracking-display", "--tracking-caps",
+TYPE_OPTIONAL = ["--leading-body", "--tracking-curve", "--tracking-caps",
                  "--weight-body", "--weight-heading", "--font-accent"]
 SPACE_REQUIRED = ["--space-min", "--space-max", "--space-density", "--radius-base"]
 REQUIRED = {"colour": (COLOUR_REQUIRED, COLOUR_OPTIONAL), "type": (TYPE_REQUIRED, TYPE_OPTIONAL), "space": (SPACE_REQUIRED, [])}

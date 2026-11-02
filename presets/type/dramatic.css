@@ -11,8 +11,7 @@
   --font-body: "Figtree", ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --leading-body: 1.55;
-  --leading-display: 1;
-  --tracking-display: -0.035;
   --tracking-caps: 0.1;
   --weight-heading: 800;
+  --tracking-curve: 1.4;
 }

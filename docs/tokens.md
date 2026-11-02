@@ -68,10 +68,8 @@ This is the reference for Dials v0.3.0. Names can change between versions: for a
 
 | Name | Default | What it is |
 |---|---|---|
-| `--leading-body` | `1.6` | line height at body size (--size-0), unitless |
-| `--leading-display` | `1.15` | line height at the h1 step (--size-5) and above, unitless; sizes in between slide in a straight line |
-| `--tracking-body` | `0` | letter spacing at body size (--size-0), in em without the unit; sizes up to h1 slide to --tracking-display, smaller ones continue the line |
-| `--tracking-display` | `0` | letter spacing at the h1 step (--size-5) and above, in em without the unit: negative tightens display type |
+| `--leading-body` | `1.6` | line height at body size (--size-0), unitless; every larger size keeps the same gap between lines, so it gets proportionally tighter |
+| `--tracking-curve` | `0` | how strongly letter spacing follows size: 0 is flat; 1 loosens the smallest text by about 0.012em and tightens large text by up to 0.025em; body text stays at 0 |
 | `--tracking-caps` | `0` | extra letter spacing for all caps and small caps, in em without the unit (0.05 to 0.12 is usual) |
 | `--weight-body` | `400` | body text weight |
 | `--weight-heading` | `600` | heading weight |
@@ -225,8 +223,8 @@ Old names that still work in this release. Rename them: they'll be removed in a 
 
 | Name | Default | What it is |
 |---|---|---|
-| `--leading` | `derived: see tokens.json` | line height for the size it's on, from --leading-body at body size to --leading-display at --size-5 (h1) and above |
-| `--tracking` | `derived: see tokens.json` | letter spacing for the size it's on: --tracking-body at body size, --tracking-display at --size-5 (h1) and above, the line continued below body down to --size--2 |
+| `--leading` | `derived: see tokens.json` | line height for the size it's on, from --leading-body: the same gap between lines at every larger size |
+| `--tracking` | `derived: see tokens.json` | letter spacing for the size it's on: 0 at body size, looser below, tighter above, as strongly as --tracking-curve says |
 | `--tracking-caps-total` | `derived: see tokens.json` | letter spacing for text in capitals: --tracking plus --tracking-caps |
 | `--weight-strong` | `min(900, var(--weight-body, 400) + 200)` | bold within body text, buttons and labels: the body weight plus 200 |
 

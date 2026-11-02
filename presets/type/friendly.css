@@ -11,5 +11,5 @@
   --font-body: "Atkinson Hyperlegible", ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --leading-body: 1.65;
-  --leading-display: 1.2;
+  --tracking-curve: 0.6;
 }
