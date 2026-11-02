@@ -28,11 +28,11 @@ const FORMULA_WIDTHS = [360, 800, 1280]; // the formulas: both ends of the scree
 const TYPE_PROPS = ['font-size', 'line-height', 'font-weight', 'letter-spacing', 'font-family', 'font-style', 'max-inline-size',
   'font-kerning', 'font-variant-numeric', 'font-feature-settings', 'font-optical-sizing', 'text-wrap-mode', 'text-wrap-style', 'text-transform'];
 // Every type dial at its default: the values docs/tokens.md gives. Setting them must change nothing.
-const DEFAULT_DIALS = { '--leading-body': '1.6', '--tracking-curve': '0',
+const DEFAULT_DIALS = { '--leading-body': '1.5', '--paragraph-spacing': '1', '--tracking-curve': '0',
   '--tracking-caps': '0.06', '--weight-body': '400', '--weight-heading': '600', '--font-accent': 'var(--font-body)' };
 // What the defaults now apply that v0.2.0 didn't: the leading curve, letter spacing (0px rather than normal), the weight of strong,
 // and the sizes that follow from the line heights.
-const V02_CHANGED = new Set(['line-height', 'letter-spacing', 'font-weight', 'height', 'block-size', 'width', 'inline-size', 'perspective-origin', 'transform-origin']);
+const V02_CHANGED = new Set(['line-height', 'letter-spacing', 'font-weight', 'margin-top', 'margin-bottom', 'margin-block-start', 'margin-block-end', 'height', 'block-size', 'width', 'inline-size', 'perspective-origin', 'transform-origin']);
 const ALL_DIALS = { '--leading-body': '1.45', '--tracking-curve': '1.2',
   '--tracking-caps': '0.1', '--weight-body': '300', '--weight-heading': '800' };
 
@@ -220,13 +220,13 @@ try {
         return o;
       }, PROBES.map(x => x[0]));
       const tag = `set ${si}${si ? '' : ' (no dials)'} ${JSON.stringify(d)} at ${width}px`;
-      const lb = +(d['--leading-body'] ?? 1.6), kc = +(d['--tracking-curve'] ?? 0), tc = +(d['--tracking-caps'] ?? 0.06);
+      const lb = +(d['--leading-body'] ?? 1.5), kc = +(d['--tracking-curve'] ?? 0), tc = +(d['--tracking-caps'] ?? 0.06);
       const B = m.s0.size;
       // the reference formulas, from the sizes the browser actually gave: the body's gap between lines at every larger size,
-      // the body ratio below, never under 1.05; tracking 0 at body, tightening up to 3 × body and loosening down to 0.625 × body
+      // the body ratio below, never under 1.05; tracking 0 at body, 0.015em per doubling of size times the strength, held within -0.08em and +0.04em
       const leadRatio = (s) => Math.max(1.05, Math.min(lb, 1 + (lb - 1) * B / s));
       const c01 = (x) => Math.min(1, Math.max(0, x));
-      const trackEm = (s) => kc * (0.012 * c01(Math.log(B / s) / Math.log(1.6)) - 0.025 * c01(Math.log(s / B) / Math.log(3)));
+      const trackEm = (s) => Math.min(0.04, Math.max(-0.08, kc * -0.015 * Math.log2(s / B)));
       const ids = PROBES.map(x => x[0]);
       const ratio = (id) => num(m[id].lh) / m[id].size, em = (id) => num(m[id].ls) / m[id].size;
       // Firefox keeps lengths in 1/60px and rounds an element's font size (up to 1/64px) while calc() uses the exact --size-0
@@ -289,14 +289,20 @@ try {
     // line length is left to the layout: --line-length (no longer a dial) caps nothing
     r = await base('/__base', { '--line-length': '30ch' });
     expect(name, r.p.max === 'none' && r.fc.max === 'none', `--line-length is no longer a dial: paragraphs and captions keep no max inline size (${r.p.max}, ${r.fc.max})`);
-    // with no dials set: body 1.6 and the same gap above, no letter spacing, strong 600
+    // paragraph spacing: one body line after a paragraph by default, following leading and --paragraph-spacing
+    const mb = async (d) => { await p.goto(`${server.url}/__base?d=${encodeURIComponent(JSON.stringify(d))}`, { waitUntil: 'load' }); return p.evaluate(() => { const cs = getComputedStyle(document.getElementById('p')); return { mb: parseFloat(cs.marginBlockEnd), lh: parseFloat(cs.lineHeight), h3t: parseFloat(getComputedStyle(document.getElementById('h3')).marginBlockStart) }; }); };
+    for (const d of [{}, { '--leading-body': '1.8' }, { '--paragraph-spacing': '1.5' }]) {
+      const q = await mb(d), want = (+(d['--paragraph-spacing'] ?? 1)) * q.lh;
+      expect(name, Math.abs(q.mb - want) < 0.05 && Math.abs(q.h3t - 2 * want) < 0.1, `paragraph spacing ${JSON.stringify(d)}: after a paragraph ${q.mb.toFixed(2)}px, want ${want.toFixed(2)}px (body line ${q.lh.toFixed(2)}px); above an h3 ${q.h3t.toFixed(2)}px, want two of them`);
+    }
+    // with no dials set: body 1.5 and the same gap above, no letter spacing, strong 600
     r = await base('/__base', {});
-    expect(name, Math.abs(num(r.h1.lh) / r.h1.size - gapRatio(1.6, r.h1)) < 0.003 && Math.abs(num(r.h3.lh) / r.h3.size - gapRatio(1.6, r.h3)) < 0.003,
-      `no dials set: h1 ${(num(r.h1.lh) / r.h1.size).toFixed(3)} and h3 ${(num(r.h3.lh) / r.h3.size).toFixed(3)} keep body's gap (want ${gapRatio(1.6, r.h1).toFixed(3)}, ${gapRatio(1.6, r.h3).toFixed(3)})`);
+    expect(name, Math.abs(num(r.h1.lh) / r.h1.size - gapRatio(1.5, r.h1)) < 0.003 && Math.abs(num(r.h3.lh) / r.h3.size - gapRatio(1.5, r.h3)) < 0.003,
+      `no dials set: h1 ${(num(r.h1.lh) / r.h1.size).toFixed(3)} and h3 ${(num(r.h3.lh) / r.h3.size).toFixed(3)} keep body's gap (want ${gapRatio(1.5, r.h1).toFixed(3)}, ${gapRatio(1.5, r.h3).toFixed(3)})`);
     expect(name, num(r.h1.ls) === 0 && num(r.sm.ls) === 0 && r.st.w === 600 && r.p.max === 'none', `no dials set: no letter spacing (${r.h1.ls}, ${r.sm.ls}), strong ${r.st.w}, no max inline size (${r.p.max})`);
     // a [data-dials] scope applies its dials inside it only
-    expect(name, Math.abs(num(r.sh1.lh) / r.sh1.size - gapRatio(1.6, r.sh1)) > 0.01 && num(r.sh1.ls) < 0, `a [data-dials] scope with leading and tracking dials applies them inside it (h1 ${r.sh1.lh} at ${r.sh1.size}px, ${r.sh1.ls})`);
-    expect(name, Math.abs(num(r.h1.lh) / r.h1.size - gapRatio(1.6, r.h1)) < 0.003 && num(r.h1.ls) === 0, `outside the scope nothing changes (h1 ${r.h1.lh}, ${r.h1.ls})`);
+    expect(name, Math.abs(num(r.sh1.lh) / r.sh1.size - gapRatio(1.5, r.sh1)) > 0.01 && num(r.sh1.ls) < 0, `a [data-dials] scope with leading and tracking dials applies them inside it (h1 ${r.sh1.lh} at ${r.sh1.size}px, ${r.sh1.ls})`);
+    expect(name, Math.abs(num(r.h1.lh) / r.h1.size - gapRatio(1.5, r.h1)) < 0.003 && num(r.h1.ls) === 0, `outside the scope nothing changes (h1 ${r.h1.lh}, ${r.h1.ls})`);
     // .is-typeset opts in
     expect(name, r.tsp.kern === 'normal' && r.p.kern === 'auto', `.is-typeset turns kerning on inside it only (${r.tsp.kern} vs ${r.p.kern})`);
     expect(name, r.tstd.fvn === 'tabular-nums', `.is-typeset gives tables tabular figures (${r.tstd.fvn})`);

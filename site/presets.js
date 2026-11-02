@@ -594,6 +594,7 @@ window.DIALS = {
   "--border-width-l",
   "--leading-body",
   "--tracking-curve",
+  "--paragraph-spacing",
   "--tracking-caps",
   "--weight-body",
   "--weight-heading",
