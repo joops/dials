@@ -47,10 +47,10 @@
 .base-demo :where(.is-typeset) :where(p, li, dd, blockquote, figcaption) { text-wrap: pretty; }
 .base-demo :where(.is-typeset) :where(table) { font-variant-numeric: tabular-nums; }
 @layer dials-type {
+  .base-demo :where(*) { line-height: var(--leading); }
   .base-demo :where(strong, b) { font-weight: var(--weight-strong); }
   .base-demo :where(h1, h2, h3, h4, h5, h6) :where(strong, b) { font-weight: revert-layer; }
-  .base-demo :where(figcaption, caption, pre) { line-height: var(--leading); }
   @supports (width: calc(1px * tan(atan2(1px, 1px)) * log(2))) {
-    .base-demo :where(h1, h2, h3, h4, h5, h6, small, figcaption, caption, button, input[type=submit], input[type=button], input[type=reset]) { letter-spacing: var(--tracking); }
+    .base-demo :where(*) { letter-spacing: var(--tracking); }
   }
 }

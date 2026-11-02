@@ -85,10 +85,13 @@
    Letter spacing follows a curve in size that needs log() (Chrome 120, Firefox 118, Safari 15.4);
    without it these elements inherit letter spacing, as they would without Dials. */
 @layer dials-type {
+  /* Every element works out its own leading and tracking from its own size, so a component only
+     sets font-size. To change them for a section, set the dials on it: <section data-dials
+     style="--leading-body: 1.3">. Any rule of your own still wins, as the layer is lowest. */
+  :where(*) { line-height: var(--leading); }
   :where(strong, b) { font-weight: var(--weight-strong); }
   :where(h1, h2, h3, h4, h5, h6) :where(strong, b) { font-weight: revert-layer; }   /* bold in a heading stays bolder than the heading */
-  :where(figcaption, caption, pre) { line-height: var(--leading); }
   @supports (width: calc(1px * tan(atan2(1px, 1px)) * log(2))) {
-    :where(h1, h2, h3, h4, h5, h6, small, figcaption, caption, button, input[type=submit], input[type=button], input[type=reset]) { letter-spacing: var(--tracking); }
+    :where(*) { letter-spacing: var(--tracking); }
   }
 }
