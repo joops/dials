@@ -29,7 +29,7 @@ const TYPE_PROPS = ['font-size', 'line-height', 'font-weight', 'letter-spacing',
   'font-kerning', 'font-variant-numeric', 'font-feature-settings', 'font-optical-sizing', 'text-wrap-mode', 'text-wrap-style', 'text-transform'];
 // Every type dial at its default: the values docs/tokens.md gives. Setting them must change nothing.
 const DEFAULT_DIALS = { '--leading-body': '1.6', '--tracking-curve': '0',
-  '--tracking-caps': '0', '--weight-body': '400', '--weight-heading': '600', '--font-accent': 'var(--font-body)' };
+  '--tracking-caps': '0.06', '--weight-body': '400', '--weight-heading': '600', '--font-accent': 'var(--font-body)' };
 // What the defaults now apply that v0.2.0 didn't: the leading curve, letter spacing (0px rather than normal), the weight of strong,
 // and the sizes that follow from the line heights.
 const V02_CHANGED = new Set(['line-height', 'letter-spacing', 'font-weight', 'height', 'block-size', 'width', 'inline-size', 'perspective-origin', 'transform-origin']);
@@ -220,7 +220,7 @@ try {
         return o;
       }, PROBES.map(x => x[0]));
       const tag = `set ${si}${si ? '' : ' (no dials)'} ${JSON.stringify(d)} at ${width}px`;
-      const lb = +(d['--leading-body'] ?? 1.6), kc = +(d['--tracking-curve'] ?? 0), tc = +(d['--tracking-caps'] ?? 0);
+      const lb = +(d['--leading-body'] ?? 1.6), kc = +(d['--tracking-curve'] ?? 0), tc = +(d['--tracking-caps'] ?? 0.06);
       const B = m.s0.size;
       // the reference formulas, from the sizes the browser actually gave: the body's gap between lines at every larger size,
       // the body ratio below, never under 1.05; tracking 0 at body, tightening up to 3 × body and loosening down to 0.625 × body

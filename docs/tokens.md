@@ -70,7 +70,7 @@ This is the reference for Dials v0.3.0. Names can change between versions: for a
 |---|---|---|
 | `--leading-body` | `1.6` | line height at body size (--size-0), unitless; every larger size keeps the same gap between lines, so it gets proportionally tighter |
 | `--tracking-curve` | `0` | how strongly letter spacing follows size: 0 is flat; 1 loosens the smallest text by about 0.012em and tightens large text by up to 0.025em; body text stays at 0 |
-| `--tracking-caps` | `0` | extra letter spacing for all caps and small caps, in em without the unit (0.05 to 0.12 is usual) |
+| `--tracking-caps` | `0.06` | extra letter spacing for all caps and small caps, in em without the unit (0.05 to 0.12 is usual) |
 | `--weight-body` | `400` | body text weight |
 | `--weight-heading` | `600` | heading weight |
 | `--font-accent` | `var(--font-body)` | a third face, for ledes, pull quotes or buttons; read it as var(--font-accent, var(--font-body)) |
