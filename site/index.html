@@ -376,7 +376,7 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
       <div class="type-ctl" id="type-ctl"></div>
       <details class="more" id="type-optional"><summary>Leading, tracking and weight (optional)</summary>
         <div class="more-body">
-          <p class="ctl-note">Optional dials for line height, letter spacing and weight. Each always applies, at the default shown until you move it, and the whole page follows them. Leading is set once, for body text: every larger size keeps the same gap between lines, so headings get proportionally tighter. Tracking sets how strongly letter spacing follows size: large text tightens and small text loosens, while body text keeps the typeface's own spacing. Defaults: leading 1.6, tracking 0, weights 400 and 600.</p>
+          <p class="ctl-note">Optional dials for line height, letter spacing and weight. Each always applies, at the default shown until you move it, and the whole page follows them. Leading is set once, for body text: every larger size keeps the same gap between lines, so headings get proportionally tighter. Tracking strength sets how strongly letter spacing follows size: large text tightens and small text loosens, while body text keeps the typeface's own spacing. Defaults: leading 1.6, tracking 0, weights 400 and 600.</p>
           <div class="type-ctl" id="type-ctl2"></div>
         </div>
       </details>
@@ -921,7 +921,7 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
   tfont('--font-body', 'b', 'Body face', 'Any Google Font for body text and controls.');
   /* two per row: leading and tracking, then the weights, then capitals */
   topt('--leading-body', 'Leading', 1, 2.2, 0.01, '', 1.6, 'Line height at body size, unitless. Every larger size keeps the same gap between its lines, so bigger text gets proportionally tighter lines; smaller text keeps this ratio. Default: 1.6.');
-  topt('--tracking-curve', 'Tracking', 0, 2, 0.05, '', 0, 'How strongly letter spacing follows size. At 0 it is flat. Higher values tighten large text (by up to 0.025em at 1) and loosen small text (up to 0.012em at 1), the way well-made type does; body text keeps the typeface\'s own spacing. Default: 0.');
+  topt('--tracking-curve', 'Tracking strength', 0, 2, 0.05, '', 0, 'How strongly letter spacing follows size: a magnitude, not a direction. At 0 it is flat. Higher values tighten large text (by up to 0.025em at 1) and loosen small text (up to 0.012em at 1), the way well-made type does; body text keeps the typeface\'s own spacing. Default: 0.');
   topt('--weight-body', 'Weight · body', 100, 900, 10, '', 400, 'Body text weight. Bold text, buttons and labels take this plus 200 (--weight-strong). Default: 400.');
   topt('--weight-heading', 'Weight · headings', 100, 900, 10, '', 600, 'Heading weight. A face needs that weight to show it: the playground loads every weight a Google Font has. Default: 600.');
   topt('--tracking-caps', 'Tracking · capitals', 0, 0.2, 0.005, '', 0, 'Extra letter spacing for text in capitals, in em, added to the tracking for its size. Default: 0. The Light and Dark captions in the preview and the kicker above the article show it.');
