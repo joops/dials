@@ -4,10 +4,6 @@
    presets/space/square.css). Load after dials.css. This file doesn't set
    color-scheme: the theme works in light and dark, and follows the page's setting.
    Faces: <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;700&family=IBM+Plex+Mono:wght@400;700&display=swap">
-   Type, opt-in: this theme sets none of the leading, tracking, weight or line-length dials,
-   so it renders as it did in v0.2. For the Compact type preset's, add this to your own
-   file, loaded after this one:
-     :root { --leading-body: 1.45; --leading-display: 1.15; --tracking-small: 0.015; --tracking-display: -0.015; }
 */
 :root, :host {
   /* colour: Monochrome */
@@ -39,6 +35,10 @@
   --font-heading: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   --font-body: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --leading-body: 1.45;
+  --leading-display: 1.15;
+  --tracking-small: 0.015;
+  --tracking-display: -0.015;
   /* space: Square */
   --space-min: var(--size-min);
   --space-max: var(--size-max);

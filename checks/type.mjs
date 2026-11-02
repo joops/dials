@@ -1,20 +1,22 @@
 // Type checks for the shipped files, in Chromium and Firefox:
-// 1. With no type dials set, every element dials-base.css styles renders exactly as it did with
-//    v0.2.0's files (checks/fixtures/v0.2.0/): every computed property and every box, at a phone and
-//    a desktop width. Alone, with each shipped theme against v0.2.0's copy of it, after a site reset
-//    loaded before dials-base.css, and in the playground's scoped demo under the page's own rules.
-//    And dials.css alone sets no type on any element, even with every type dial set.
+// 1. The type dials always apply, with their defaults: every element dials-base.css styles renders
+//    exactly the same with every type dial set to its default as with none set (a theme's own type
+//    dials kept), in every computed property and every box, at a phone and a desktop width. Alone, with each shipped theme, after a
+//    site reset loaded before dials-base.css, and in the playground's scoped demo under the page's
+//    own rules. Against v0.2.0's files (checks/fixtures/v0.2.0/), only the type the defaults now
+//    apply differs: line height, letter spacing and the weight of strong. And dials.css alone sets no
+//    type on any element, even with every type dial set.
 // 2. --leading, --tracking and --tracking-caps-total, across seeded random dial sets and three
 //    widths: exact at their end points (--size--2, --size-0 and --size-5, the h1 step), monotonic between them,
 //    held at the end values beyond them, and on the formula in between. --weight-strong follows
 //    --weight-body, and --size-7 and --size-8 continue the scale.
-// 3. dials-base.css with dials set: each family of dials engages only its own rules, a
-//    [data-dials] scope engages them inside it only, .is-typeset opts in, and a browser without
+// 3. dials-base.css with dials set: each family of dials moves only its own properties, a
+//    [data-dials] scope applies its dials inside it only, .is-typeset opts in, and a browser without
 //    tan(), atan2() and log() (emulated) keeps headings at --leading-display, flat.
 // Exits 1 on failure.
 //
 //   node checks/type.mjs [--browser=chromium|firefox] [--random=30] [--seed=1] [--verbose]
-import { readFileSync, readdirSync } from 'node:fs';
+import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { serve, launch, ROOT } from './lib.mjs';
 
@@ -25,18 +27,26 @@ const WIDTHS = [360, 1280];             // the defaults check: a phone and a des
 const FORMULA_WIDTHS = [360, 800, 1280]; // the formulas: both ends of the screen range and between
 const TYPE_PROPS = ['font-size', 'line-height', 'font-weight', 'letter-spacing', 'font-family', 'font-style', 'max-inline-size',
   'font-kerning', 'font-variant-numeric', 'font-feature-settings', 'font-optical-sizing', 'text-wrap-mode', 'text-wrap-style', 'text-transform'];
+// Every type dial at its default: the values docs/tokens.md gives. Setting them must change nothing.
+const DEFAULT_DIALS = { '--leading-body': '1.6', '--leading-display': '1.15', '--tracking-small': '0', '--tracking-display': '0',
+  '--tracking-caps': '0', '--weight-body': '400', '--weight-heading': '600', '--line-length': 'none', '--font-accent': 'var(--font-body)' };
+// What the defaults now apply that v0.2.0 didn't: the leading curve, letter spacing (0px rather than normal), the weight of strong,
+// and the sizes that follow from the line heights.
+const V02_CHANGED = new Set(['line-height', 'letter-spacing', 'font-weight', 'height', 'block-size', 'width', 'inline-size', 'perspective-origin', 'transform-origin']);
 const ALL_DIALS = { '--leading-body': '1.45', '--leading-display': '0.98', '--tracking-small': '0.04', '--tracking-display': '-0.05',
   '--tracking-caps': '0.1', '--weight-body': '300', '--weight-heading': '800', '--line-length': '40ch' };
 
-// The supports test that guards the leading and tracking gates in dials.css. Emulating a browser
-// without tan(), atan2() and log() swaps it for one that's always false.
-const dialsText = readFileSync(join(ROOT, 'dials.css'), 'utf8');
+// The supports test that guards the leading curve in dials.css and dials-base.css. Emulating a browser
+// without tan(), atan2() and log() swaps it for one that's always false, in both.
 const SUPPORTS = '@supports (width: calc(1px * tan(atan2(1px, 1px)) * log(2)))';
-const noTrig = dialsText.split(SUPPORTS).join('@supports (not-a-property: 0)');
-if (noTrig === dialsText) { console.error(`type.mjs: dials.css has no "${SUPPORTS}" block to emulate without`); process.exit(1); }
+const [noTrig, noTrigBase] = ['dials.css', 'dials-base.css'].map(f => {
+  const text = readFileSync(join(ROOT, f), 'utf8'), out = text.split(SUPPORTS).join('@supports (not-a-property: 0)');
+  if (out === text) { console.error(`type.mjs: ${f} has no "${SUPPORTS}" block to emulate without`); process.exit(1); }
+  return out;
+});
 
-// Every element dials-base.css styles, plus the cases where v0.2 left a property alone: inside a
-// parent that sets letter spacing, leading and weight, an element must still inherit them.
+// Every element dials-base.css styles, plus the same elements inside a parent that sets letter
+// spacing, leading and weight.
 const ELEMENTS = `
 <h1>Heading one</h1><h2>Heading two with <strong>strong</strong> and <b>b</b></h2><h3>Heading three</h3><h4>Heading four</h4><h5>Heading five</h5><h6>Heading six</h6>
 <p>A paragraph with <strong>strong</strong>, <b>b</b>, <em>em</em>, <small>small</small>, <a href="#x">a link</a>, <mark>mark</mark>, <code>code</code>, <kbd>kbd</kbd> and <samp>samp</samp>.</p>
@@ -55,12 +65,12 @@ const ELEMENTS = `
   <table><caption>Caption</caption><tr><th>Head</th><td>1</td></tr></table><button>Button</button><label>Label</label><summary>Summary</summary><legend>Legend</legend>
 </div>`;
 
-// A site's reset loaded before dials-base.css, at zero specificity like base: v0.2.0 left these
-// properties to it, so base must still step aside for it.
+// A site's reset loaded before dials-base.css, at zero specificity like base: base sets these
+// properties in a cascade layer, so the reset still wins over it.
 const RESET = `<style>* { letter-spacing: 0.01em; } :where(p, li, figcaption) { max-inline-size: 30em; } :where(strong, b) { font-weight: 800; } :where(pre, figcaption, caption) { line-height: 1.9; }</style>`;
 // The playground's own page rules, which its scoped demo (.base-demo …, specificity 0,1,0) outranks.
 const PAGE_RULES = `<style>p { margin: 0; max-width: 68ch; } h3 { letter-spacing: 0.02em; } small { letter-spacing: 0.03em; } strong { font-weight: 500; }</style>`;
-const THEMES = readdirSync(join(ROOT, 'checks/fixtures/v0.2.0/themes')).filter(f => f.endsWith('.css')).map(f => f.slice(0, -4)).sort();
+const THEMES = readdirSync(join(ROOT, 'themes')).filter(f => f.endsWith('.css')).map(f => f.slice(0, -4)).sort();
 const page = (head, body) => `<!doctype html><html lang="en"><head><meta charset="utf-8">${head}</head><body>${body}</body></html>`;
 const sheet = (href) => `<link rel="stylesheet" href="${href}">`;
 const dialStyle = (dials, sel = ':root') => `<style>${sel} { ${Object.entries(dials).map(([k, v]) => `${k}: ${v};`).join(' ')} }</style>`;
@@ -83,18 +93,21 @@ const BASE_DIALS = `<p id="p">Body text with <strong id="st">strong</strong> and
 <h1 id="tok-lead">x</h1><h1 id="tok-trk">x</h1>`;
 
 const pages = {
-  // the defaults cases: ?v=old uses v0.2.0's files, ?v=new this release's
+  // the defaults cases: ?v=set sets every type dial to its default after the other files, ?v=none sets none,
+  // ?v=old is nothing set with v0.2.0's files
   '/__defaults': (url) => {
-    const old = url.searchParams.get('v') === 'old', theme = url.searchParams.get('theme'), kind = url.searchParams.get('kind');
-    const F = (f) => old ? `/checks/fixtures/v0.2.0/${f}` : `/${f}`;
-    if (kind === 'demo') return page(sheet('/dials.css') + PAGE_RULES + sheet(old ? F('dials-base-demo.css') : '/site/dials-base-demo.css'), `<div class="base-demo">${ELEMENTS}</div>`);
-    return page(sheet('/dials.css') + (kind === 'reset' ? RESET : '') + sheet(F('dials-base.css')) + (theme ? sheet(F(`themes/${theme}.css`)) : ''), ELEMENTS);
+    const v = url.searchParams.get('v'), old = v === 'old', theme = url.searchParams.get('theme'), kind = url.searchParams.get('kind');
+    // a theme's own type dials stay: only the ones it leaves out are set to their defaults
+    const own = theme ? readFileSync(join(ROOT, `themes/${theme}.css`), 'utf8') : '';
+    const F = (f) => old ? `/checks/fixtures/v0.2.0/${f}` : `/${f}`, dials = v === 'set' ? dialStyle(Object.fromEntries(Object.entries(DEFAULT_DIALS).filter(([k]) => !own.includes(`${k}:`)))) : '';
+    if (kind === 'demo') return page(sheet('/dials.css') + PAGE_RULES + sheet(old ? F('dials-base-demo.css') : '/site/dials-base-demo.css') + dials, `<div class="base-demo">${ELEMENTS}</div>`);
+    return page(sheet('/dials.css') + (kind === 'reset' ? RESET : '') + sheet(F('dials-base.css')) + (theme ? sheet(F(`themes/${theme}.css`)) : '') + dials, ELEMENTS);
   },
   '/__bare': () => page('', ELEMENTS),
   '/__dials-only': () => page(sheet('/dials.css') + dialStyle(ALL_DIALS), ELEMENTS),
   '/__formula': (url) => page(sheet('/dials.css') + dialStyle(JSON.parse(url.searchParams.get('d') || '{}')), FORMULA_BODY),
   '/__base': (url) => page(sheet('/dials.css') + sheet('/dials-base.css') + dialStyle(JSON.parse(url.searchParams.get('d') || '{}')), BASE_DIALS),
-  '/__notrig': (url) => page(`<style>${noTrig}</style>` + sheet('/dials-base.css') + dialStyle(JSON.parse(url.searchParams.get('d') || '{}')), BASE_DIALS),
+  '/__notrig': (url) => page(`<style>${noTrig}</style><style>${noTrigBase}</style>` + dialStyle(JSON.parse(url.searchParams.get('d') || '{}')), BASE_DIALS),
 };
 
 // Reads every computed property (custom properties aside) and the box of every element, keyed by
@@ -126,7 +139,7 @@ function randomSets(n, seed) {
   const r = mulberry32(seed), between = (a, b, d = 3) => +(a + (b - a) * r()).toFixed(d), sets = [{}, { '--weight-body': 800 }];   // no dials (Dials' own values), and a body weight that --weight-strong caps at 900
   for (let i = 0; i < n; i++) {
     const d = { '--size-min': between(12, 22, 1), '--size-max': between(14, 26, 1), '--ratio-min': between(1.05, 1.5), '--ratio-max': between(1.05, 1.618) };
-    // each type dial is left unset now and then, so the values Dials uses for unset dials are tested too
+    // each type dial is left out now and then, so its default is tested too
     const maybe = (k, v) => { if (r() < 0.8) d[k] = v; };
     maybe('--leading-body', between(1.2, 2));
     maybe('--leading-display', between(0.85, 1.5));
@@ -151,30 +164,42 @@ try {
     const errors = []; p.on('pageerror', e => errors.push(String(e)));
     const read = async (path, width) => { await p.setViewportSize({ width, height: 800 }); await p.goto(`${server.url}${path}`, { waitUntil: 'load' }); return p.evaluate(READ_ALL, TYPE_PROPS); };
 
-    // ---- 1. no type dials set: v0.2.0's computed values and boxes, element by element ----
+    // ---- 1. every type dial at its default renders as nothing set; against v0.2.0 only the type the defaults apply moved ----
     const CASES = [['no theme', ''], ...THEMES.map(t => [`theme ${t}`, `&theme=${t}`]), ['a site reset before dials-base.css', '&kind=reset'], ["the playground's scoped demo", '&kind=demo']];
     const full = async (q, width) => { await p.setViewportSize({ width, height: 800 }); await p.goto(`${server.url}/__defaults?${q}`, { waitUntil: 'load' }); return p.evaluate(READ_FULL); };
     for (const width of WIDTHS) {
-      const tally = [];
+      const tally = [], since = {};
       for (const [label, q] of CASES) {
-        const old = await full('v=old' + q, width), now = await full('v=new' + q, width);
-        expect(name, old.length === now.length && old.length > 60, `${width}px, ${label}: the two pages have the same elements (${old.length} vs ${now.length})`);
+        const none = await full('v=none' + q, width), set = await full('v=set' + q, width);
+        expect(name, none.length === set.length && none.length > 60, `${width}px, ${label}: the two pages have the same elements (${none.length} vs ${set.length})`);
         let props = 0, boxes = 0;
         const msgs = [], report = (msg) => msgs.push(msg);
-        for (let i = 0; i < Math.min(old.length, now.length); i++) {
-          const o = old[i], n = now[i];
-          for (const k of new Set([...Object.keys(o.props), ...Object.keys(n.props)])) if (o.props[k] !== n.props[k]) { props++; report(`${n.el} ${k} is ${n.props[k]}, v0.2.0 gives ${o.props[k]}`); }
-          if (o.box.some((v, j) => Math.abs(v - n.box[j]) > 0.01)) { boxes++; report(`${n.el} box is ${n.box.map(v => +v.toFixed(3)).join(', ')}, v0.2.0 gives ${o.box.map(v => +v.toFixed(3)).join(', ')} (x, y, width, height)`); }
+        for (let i = 0; i < Math.min(none.length, set.length); i++) {
+          const o = none[i], n = set[i];
+          for (const k of new Set([...Object.keys(o.props), ...Object.keys(n.props)])) if (o.props[k] !== n.props[k]) { props++; report(`${n.el} ${k} is ${n.props[k]} with the defaults set, ${o.props[k]} with none set`); }
+          if (o.box.some((v, j) => Math.abs(v - n.box[j]) > 0.01)) { boxes++; report(`${n.el} box is ${n.box.map(v => +v.toFixed(3)).join(', ')} with the defaults set, ${o.box.map(v => +v.toFixed(3)).join(', ')} with none set (x, y, width, height)`); }
         }
         // html and body grow with whatever changed inside them: list the elements that changed first
         msgs.sort((a, b) => /^[01]:(html|body)/.test(a) - /^[01]:(html|body)/.test(b));
-        for (const m of msgs.slice(0, 12)) failures.push(`[${name}] ${width}px, ${label}, no type dials: ${m}`);
+        for (const m of msgs.slice(0, 12)) failures.push(`[${name}] ${width}px, ${label}: ${m}`);
         if (msgs.length > 12) failures.push(`[${name}] ${width}px, ${label}: … ${msgs.length - 12} more differences`);
-        expect(name, !props && !boxes, `${width}px, ${label}: every computed property and box matches v0.2.0 (${props} properties and ${boxes} boxes differ)`);
+        expect(name, !props && !boxes, `${width}px, ${label}: every type dial set to its default renders as none set (${props} properties and ${boxes} boxes differ)`);
         tally.push(props + boxes ? `${label}: ${props} properties, ${boxes} boxes differ` : null);
-        if (label === 'no theme') { const h1 = now.find(e => /:h1$/.test(e.el)); summary[`${name} ${width}px no theme`] = `${now.length} elements, ${Object.keys(now[1].props).length} computed properties each, plus boxes (body ${now[1].props['font-size']}/${now[1].props['line-height']}, h1 ${h1.props['font-size']}/${h1.props['line-height']} weight ${h1.props['font-weight']})`; }
+        if (label === 'no theme') { const h1 = none.find(e => /:h1$/.test(e.el)), h3 = none.find(e => /:h3$/.test(e.el)); summary[`${name} ${width}px no theme`] = `${none.length} elements, ${Object.keys(none[1].props).length} computed properties each, plus boxes (body ${none[1].props['font-size']}/${none[1].props['line-height']}, h1 ${h1.props['font-size']}/${h1.props['line-height']}, h3 ${h3.props['font-size']}/${h3.props['line-height']}, weight ${h1.props['font-weight']})`; }
+        // against v0.2.0 (no dials set in either): only the type the defaults now apply differs. Themes that set type dials
+        // now are left out: they're meant to look different
+        if (label.startsWith('theme') && (!existsSync(join(ROOT, `checks/fixtures/v0.2.0/themes/${label.slice(6)}.css`))
+          || Object.keys(DEFAULT_DIALS).some(k => readFileSync(join(ROOT, `themes/${label.slice(6)}.css`), 'utf8').includes(`${k}:`)))) continue;
+        const old = await full('v=old' + q, width);
+        for (let i = 0; i < Math.min(old.length, none.length); i++) for (const k of new Set([...Object.keys(old[i].props), ...Object.keys(none[i].props)])) {
+          if (old[i].props[k] === none[i].props[k]) continue;
+          const strong = /:(strong|b)$/.test(none[i].el);
+          if (V02_CHANGED.has(k) && (k !== 'font-weight' || strong)) { since[k] = (since[k] || 0) + 1; continue; }
+          failures.push(`[${name}] ${width}px, ${label}: ${none[i].el} ${k} is ${none[i].props[k]}, v0.2.0 gives ${old[i].props[k]}, and the defaults shouldn't move it`);
+        }
       }
-      summary[`${name} ${width}px`] = `${CASES.length} cases (no theme, ${THEMES.length} themes, a reset, the playground demo): ` + (tally.filter(Boolean).join('; ') || 'all match v0.2.0');
+      summary[`${name} ${width}px`] = `${CASES.length} cases (no theme, ${THEMES.length} themes, a reset, the playground demo): ` + (tally.filter(Boolean).join('; ') || 'the defaults set render as none set') +
+        `; since v0.2.0: ${Object.entries(since).map(([k, n]) => `${k} ×${n}`).join(', ')}`;
       // dials.css alone, with every type dial set, sets no type on any element
       const bare = await read('/__bare', width), only = await read('/__dials-only', width);
       let set = 0;
@@ -263,11 +288,11 @@ try {
     const near = (a, b, tol = 0.02) => Math.abs(num(a) - num(b)) <= tol;
     // leading only: headings and captions follow --leading; body stays a number, so it inherits as one; tracking stays off
     let r = await base('/__base', { '--leading-display': '1.05' });
-    expect(name, near(r.h1.lh, r['tok-lead'].lh) && Math.abs(num(r.h1.lh) / r.h1.size - 1.15) > 0.005, `--leading-display alone: h1 line height ${r.h1.lh} follows --leading (${r['tok-lead'].lh}), not v0.2's 1.15`);
+    expect(name, near(r.h1.lh, r['tok-lead'].lh) && Math.abs(num(r.h1.lh) / r.h1.size - 1.15) > 0.005, `--leading-display alone: h1 line height ${r.h1.lh} follows --leading (${r['tok-lead'].lh}), not the default 1.15`);
     expect(name, Math.abs(num(r.h6.lh) / r.h6.size - 1.6) < 0.002 && Math.abs(num(r.p.lh) / r.p.size - 1.6) < 0.002, `--leading-display alone: body and an h6 below body size keep 1.6 (p ${r.p.lh} at ${r.p.size}px, h6 ${r.h6.lh} at ${r.h6.size}px)`);
     expect(name, num(r.h3.lh) / r.h3.size > 1.15 && num(r.h3.lh) / r.h3.size < 1.6, `--leading-display alone: h3 sits between the ends (${(num(r.h3.lh) / r.h3.size).toFixed(3)})`);
     expect(name, num(r.h1.ls) === 0 && num(r.sm.ls) === 0, `--leading-display alone: no letter spacing (h1 ${r.h1.ls}, small ${r.sm.ls})`);
-    expect(name, r.st.w === 700 && r.h1.w === 600 && r.btn.w === 600, `--leading-display alone: weights unchanged (strong ${r.st.w}, h1 ${r.h1.w}, button ${r.btn.w})`);
+    expect(name, r.st.w === 600 && r.h1.w === 600 && r.btn.w === 600, `--leading-display alone: weights at their defaults (strong ${r.st.w}, h1 ${r.h1.w}, button ${r.btn.w})`);
     // tracking only
     r = await base('/__base', { '--tracking-display': '-0.04', '--tracking-small': '0.03' });
     expect(name, num(r.h1.ls) < 0 && near(r.h1.ls, r['tok-trk'].ls, 0.01), `--tracking-*: h1 letter spacing ${r.h1.ls} follows --tracking (${r['tok-trk'].ls})`);
@@ -280,9 +305,13 @@ try {
     // line length
     r = await base('/__base', { '--line-length': '30ch' });
     expect(name, r.p.max !== 'none' && r.h1.max === 'none', `--line-length: paragraphs get a max inline size (${r.p.max}), headings don't (${r.h1.max})`);
-    // a [data-dials] scope engages the formulas inside it only
+    // with no dials set, the curve applies with its defaults: h1 1.15, an h3 between it and body's 1.6, no letter spacing, strong 600
     r = await base('/__base', {});
-    expect(name, Math.abs(num(r.sh1.lh) / r.sh1.size - 1.15) > 0.005 && num(r.sh1.ls) < 0, `a [data-dials] scope with leading and tracking dials engages them inside it (h1 ${r.sh1.lh} at ${r.sh1.size}px, ${r.sh1.ls})`);
+    expect(name, Math.abs(num(r.h1.lh) / r.h1.size - 1.15) < 0.002 && num(r.h3.lh) / r.h3.size > 1.16 && num(r.h3.lh) / r.h3.size < 1.59,
+      `no dials set: h1 1.15 (${(num(r.h1.lh) / r.h1.size).toFixed(3)}), h3 on the curve between 1.15 and 1.6 (${(num(r.h3.lh) / r.h3.size).toFixed(3)})`);
+    expect(name, num(r.h1.ls) === 0 && num(r.sm.ls) === 0 && r.st.w === 600 && r.p.max === 'none', `no dials set: no letter spacing (${r.h1.ls}, ${r.sm.ls}), strong ${r.st.w}, no line-length cap (${r.p.max})`);
+    // a [data-dials] scope applies its dials inside it only
+    expect(name, Math.abs(num(r.sh1.lh) / r.sh1.size - 1.15) > 0.005 && num(r.sh1.ls) < 0, `a [data-dials] scope with leading and tracking dials applies them inside it (h1 ${r.sh1.lh} at ${r.sh1.size}px, ${r.sh1.ls})`);
     expect(name, Math.abs(num(r.h1.lh) / r.h1.size - 1.15) < 0.002 && num(r.h1.ls) === 0, `outside the scope nothing changes (h1 ${r.h1.lh}, ${r.h1.ls})`);
     // .is-typeset opts in
     expect(name, r.tsp.kern === 'normal' && r.p.kern === 'auto', `.is-typeset turns kerning on inside it only (${r.tsp.kern} vs ${r.p.kern})`);
