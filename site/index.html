@@ -178,7 +178,28 @@ section { display: grid; gap: 14px; min-width: 0; }
 .type-ctl .lbl { color: var(--text-muted); font-weight: 600; font-size: 13.5px; display: inline-flex; align-items: center; }
 .type-ctl .lbl label { cursor: pointer; }
 .type-ctl .dial { grid-template-columns: 150px minmax(0, 1fr) 52px; }
-.more .type-ctl .dial { max-width: none; }   /* the type dials in their disclosure keep the Type tab's layout */
+.more .type-ctl .dial { max-width: none; }
+/* trial: leading and tracking as one two-handle range each, Body to Display, with a live ladder of what each step gets */
+.trange { grid-column: 1 / -1; display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 4px 10px; align-items: center; font-size: 13.5px; }
+.trange > .lbl { grid-row: span 2; align-self: start; padding-top: 18px; }
+.tr-track { position: relative; height: 46px; margin: 0 8px; }
+.tr-rail, .tr-fill { position: absolute; top: 30px; height: 4px; border-radius: 2px; }
+.tr-rail { left: 0; right: 0; background: var(--border); }
+.tr-fill { background: var(--brand-solid); }
+.tr-track input { position: absolute; left: -8px; right: -8px; width: calc(100% + 16px); top: 22px; height: 20px; margin: 0; background: none; pointer-events: none; -webkit-appearance: none; appearance: none; direction: rtl; }
+.tr-track input::-webkit-slider-runnable-track { background: none; height: 20px; }
+.tr-track input::-moz-range-track { background: none; }
+.tr-track input::-webkit-slider-thumb { -webkit-appearance: none; pointer-events: auto; width: 18px; height: 18px; margin-top: 1px; border-radius: 50%; background: var(--surface-raised); border: 3px solid var(--brand-solid); cursor: grab; }
+.tr-track input::-moz-range-thumb { pointer-events: auto; width: 12px; height: 12px; border-radius: 50%; background: var(--surface-raised); border: 3px solid var(--brand-solid); cursor: grab; }
+.tr-track input:focus-visible { outline: none; }
+.tr-track input:focus-visible::-webkit-slider-thumb { outline: 3px solid var(--focus); outline-offset: 2px; }
+.tr-track input:focus-visible::-moz-range-thumb { outline: 3px solid var(--focus); outline-offset: 2px; }
+.tr-tag { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; font: 600 12px/1.4 var(--page-body); color: var(--text-muted); }
+.tr-tag b { color: var(--text-strong); font-family: var(--page-mono); font-weight: 600; margin-left: 4px; }
+.tr-ladder { display: flex; flex-wrap: wrap; gap: 4px 6px; font: 12px/1.4 var(--page-body); color: var(--text-quiet); }
+.tr-ladder span { padding: 1px 7px; border-radius: var(--radius-s); background: var(--surface-lowered); white-space: nowrap; }
+.tr-ladder b { color: var(--text-strong); font-family: var(--page-mono); font-weight: 500; margin-left: 3px; }
+.tr-probe { position: absolute; visibility: hidden; white-space: nowrap; line-height: var(--leading); letter-spacing: var(--tracking); }   /* the type dials in their disclosure keep the Type tab's layout */
 .type-ctl label.fontrow, .type-ctl div.fontrow { display: grid; align-items: center; gap: 10px; grid-template-columns: 150px minmax(0, 1fr); position: relative; }
 .info { display: inline-grid; place-items: center; width: 16px; height: 16px; margin-left: 5px; padding: 0; border-radius: 50%; border: 1px solid var(--border-strong); background: var(--surface-raised); color: var(--text-quiet); font: 700 10px/1 var(--page-body); cursor: help; position: relative; vertical-align: 1px; }
 .info:hover, .info:focus-visible { color: var(--text-strong); border-color: var(--text-muted); }
@@ -375,7 +396,7 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
       <div class="type-ctl" id="type-ctl"></div>
       <details class="more" id="type-optional"><summary>Leading, tracking and weight (optional)</summary>
         <div class="more-body">
-          <p class="ctl-note">Optional dials for line height, weight and letter spacing. Each always applies, at the default shown until you move it: leading 1.6 at body size to 1.15 at h1, weights 400 and 600, no extra letter spacing. A preset, a theme or Randomise sets them all again. Leading and tracking are set at two ends, body text and the h1 step (<code>--size-5</code>), and every size in between slides along a curve; the sizes above h1 keep the display values. The preview below and the scale beside the article show them. Tracking is in em.</p>
+          <p class="ctl-note">Optional dials for line height, weight and letter spacing, each always applied at the default shown until you move it. Leading and tracking each run from Body (body text) to Display (h1 and up): drag either end and every size between follows the line, as the chips under each show. Defaults: leading 1.6 to 1.15, tracking 0 to 0, weights 400 and 600.</p>
           <div class="type-ctl" id="type-ctl2"></div>
         </div>
       </details>
@@ -518,7 +539,7 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
     '--paper-lightness', '--paper-dark-lightness', '--ink-lightness', '--ink-dark-lightness'];
   var TYPE_DIALS = ['--screen-min', '--screen-max', '--size-min', '--size-max', '--ratio-min', '--ratio-max', '--font-heading', '--font-body', '--font-mono'];
   /* not declared by dials.css: exported only once set, since each one's default needs no line */
-  var TYPE_OPTIONAL = ['--leading-body', '--leading-display', '--tracking-small', '--tracking-display', '--tracking-caps', '--weight-body', '--weight-heading', '--font-accent'];
+  var TYPE_OPTIONAL = ['--leading-body', '--leading-display', '--tracking-body', '--tracking-display', '--tracking-caps', '--weight-body', '--weight-heading', '--font-accent'];
   function setOptional() { return TYPE_OPTIONAL.filter(function (v) { return root.style.getPropertyValue(v).trim(); }); }
   var SPACE_DIALS = ['--space-min', '--space-max', '--space-density', '--radius-base'];
   var SRC = { colour: '', scale: '', base: '' };   /* the dist files' text, fetched below */
@@ -793,7 +814,7 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
     document.getElementById('export-note').textContent = NOTES[exportMode]; pre.textContent = cssText();
   }); });
   document.getElementById('export-note').textContent = NOTES.theme;
-  function refresh() { contrast(); pre.textContent = cssText(); if (typeof renderScale === 'function') renderScale(); }
+  function refresh() { contrast(); pre.textContent = cssText(); if (typeof renderScale === 'function') renderScale(); renderTypeLadders(); }
   document.getElementById('copy').addEventListener('click', function () {
     var t = cssText(), ok = document.getElementById('copied');
     function done() { ok.hidden = false; setTimeout(function () { ok.hidden = true; }, 1800); }
@@ -864,6 +885,46 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
     inp.addEventListener('input', function () { set(v, inp.value); show(); markTPreset('type', null); refresh(); });
     tIn[v] = show;
   }
+  /* trial: one two-handle range for a pair of dials, Body at one handle and Display at the other. The axis runs high to low,
+     left to right, so the usual settings (looser body, tighter display) put Body on the left. */
+  var LADDER = [['small', '--size--2'], ['body', '--size-0'], ['h3', '--size-2'], ['h2', '--size-3'], ['h1', '--size-5'], ['display', '--size-7']];
+  var ladders = [];
+  function trange(vb, vd, label, min, max, step, defb, defd, tip, kind) {
+    var l = document.createElement('div'); l.className = 'trange';
+    l.innerHTML = '<span class="lbl">' + label + info(label, tip) + '</span>' +
+      '<div class="tr-track"><span class="tr-rail"></span><span class="tr-fill"></span>' +
+      '<input type="range" id="' + idOf(vb) + '" aria-label="' + label + ' · Body" min="' + min + '" max="' + max + '" step="' + step + '">' +
+      '<input type="range" id="' + idOf(vd) + '" aria-label="' + label + ' · Display" min="' + min + '" max="' + max + '" step="' + step + '">' +
+      '<span class="tr-tag" data-for="b">Body<b></b></span><span class="tr-tag" data-for="d">Display<b></b></span></div>' +
+      '<div class="tr-ladder" aria-live="polite"></div>';
+    tc2.appendChild(l);
+    var ib = l.querySelector('#' + idOf(vb)), id = l.querySelector('#' + idOf(vd)), tb = l.querySelector('[data-for=b]'), td = l.querySelector('[data-for=d]'), fill = l.querySelector('.tr-fill');
+    function pos(x) { return (max - x) / (max - min) * 100; }   /* high to low, left to right */
+    function show() {
+      var xb = root.style.getPropertyValue(vb).trim(), xd = root.style.getPropertyValue(vd).trim();
+      var b = xb ? parseFloat(xb) : defb, d = xd ? parseFloat(xd) : defd;
+      ib.value = b; id.value = d;
+      tb.querySelector('b').textContent = xb || String(defb); td.querySelector('b').textContent = xd || String(defd);
+      tb.style.left = pos(b) + '%'; td.style.left = pos(d) + '%';
+      var lo = Math.min(pos(b), pos(d)), hi = Math.max(pos(b), pos(d)); fill.style.left = lo + '%'; fill.style.width = (hi - lo) + '%';
+      if (Math.abs(pos(b) - pos(d)) < 14) { tb.style.transform = 'translateX(-100%)'; td.style.transform = 'translateX(0)'; if (pos(b) > pos(d)) { tb.style.transform = 'translateX(0)'; td.style.transform = 'translateX(-100%)'; } }
+      else { tb.style.transform = td.style.transform = 'translateX(-50%)'; }
+    }
+    [[ib, vb], [id, vd]].forEach(function (p) { p[0].addEventListener('input', function () { set(p[1], p[0].value); show(); markTPreset('type', null); refresh(); }); });
+    tIn[vb] = show; tIn[vd] = show;
+    var lad = l.querySelector('.tr-ladder');
+    var probes = LADDER.map(function (st) { var p = document.createElement('span'); p.className = 'tr-probe'; p.style.fontSize = 'var(' + st[1] + ')'; p.textContent = 'Ag'; l.appendChild(p); return p; });
+    ladders.push(function () {
+      lad.innerHTML = LADDER.map(function (st, i) {
+        var cs = getComputedStyle(probes[i]), fs = parseFloat(cs.fontSize);
+        var v = kind === 'leading' ? (parseFloat(cs.lineHeight) / fs).toFixed(2) : ((cs.letterSpacing === 'normal' ? 0 : parseFloat(cs.letterSpacing)) / fs);
+        if (kind !== 'leading') { v = +v.toFixed(3); v = (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(3); }
+        return '<span>' + st[0] + '<b>' + v + '</b></span>';
+      }).join('');
+    });
+  }
+  function renderTypeLadders() { (ladders || []).forEach(function (f) { f(); }); }
+  window.addEventListener('resize', renderTypeLadders);
   function tratio(v, label, tip) {
     var l = document.createElement('label'); l.className = 'fontrow';
     l.innerHTML = '<span>' + label + info(label, tip) + '</span><select id="' + idOf(v) + '">' + RATIOS.map(function (r) { return '<option value="' + r[0] + '">' + r[0] + ' · ' + r[1] + '</option>'; }).join('') + '</select>';
@@ -918,13 +979,11 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
   tdial('--screen-max', 'Wide screen', 960, 1600, 20, 'px', null, 'The screen width where the wide sizes apply. Above it, sizes stay at their wide values. Space uses the same widths.');
   tfont('--font-heading', 'h', 'Heading face', 'Any Google Font for headings. Type to search the 500 most popular and every monospace family, or type any family name to load it.');
   tfont('--font-body', 'b', 'Body face', 'Any Google Font for body text and controls.');
-  /* two per row: leading, then weights, then tracking */
-  topt('--leading-body', 'Leading · body', 1, 2.2, 0.01, '', 1.6, 'Line height at body size, unitless. Default: 1.6.');
-  topt('--leading-display', 'Leading · h1 and up', 0.8, 1.6, 0.01, '', 1.15, 'Line height at the h1 size (--size-5) and the display sizes above it. Sizes between body and h1 slide from the body value to this one in a straight line, so headings get proportionally tighter as they grow. Default: 1.15.');
+  /* leading as one range, then the weights side by side, then tracking as one range, then capitals */
+  trange('--leading-body', '--leading-display', 'Leading', 0.8, 2.2, 0.01, 1.6, 1.15, 'Line height, unitless. Body sets it at body size (--size-0), Display at h1 (--size-5) and up; every size between follows a straight line, and smaller text keeps the body value. The chips show what each step gets. Defaults: 1.6 and 1.15.', 'leading');
   topt('--weight-body', 'Weight · body', 100, 900, 10, '', 400, 'Body text weight. Bold text, buttons and labels take this plus 200 (--weight-strong). Default: 400.');
   topt('--weight-heading', 'Weight · headings', 100, 900, 10, '', 600, 'Heading weight. The face needs that weight: the playground loads every weight a Google Font has. Default: 600.');
-  topt('--tracking-small', 'Tracking · smallest size', -0.05, 0.15, 0.005, '', 0, 'Letter spacing at the smallest size (--size--2), in em. Body text stays at 0, and the sizes between slide from 0 to this, so --size--1 gets half. Positive opens up captions and small print. Default: 0.');
-  topt('--tracking-display', 'Tracking · h1 and up', -0.1, 0.05, 0.005, '', 0, 'Letter spacing at the h1 size (--size-5) and the display sizes above it, in em. Body text stays at 0, and the sizes between slide from 0 to this evenly per step, so an h3 gets two fifths. Negative tightens display type. Default: 0.');
+  trange('--tracking-body', '--tracking-display', 'Tracking', -0.1, 0.15, 0.005, 0, 0, 'Letter spacing, in em. Body sets it at body size, Display at h1 and up; every step between follows the line, and smaller text continues it down to --size--2, so a tighter display loosens captions a little. The chips show what each step gets. Defaults: 0 and 0.', 'tracking');
   topt('--tracking-caps', 'Tracking · capitals', 0, 0.2, 0.005, '', 0, 'Extra letter spacing for text in capitals, in em, added to the tracking for its size. Default: 0. The Light and Dark captions in the preview and the kicker above the article show it.');
   tfont('--font-accent', 'a', 'Accent face', 'Optional: a third face, for ledes, pull quotes or buttons. By default they use the body face. The lede under the article\'s title shows it.');
   tfont('--font-mono', 'm', 'Mono face', 'A monospace face for code, kbd, samp and pre. The list holds every monospace family on Google Fonts; clear it in your CSS to use the system monospace.', true);
@@ -1013,7 +1072,7 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
     applyPreset(c); applyTPreset(t); applySPreset(sp); if (scheme) setScheme(scheme);
   }
   /* Randomise's type dials, in ranges that read well */
-  var TYPE_RANDOM = [['--leading-body', 1.35, 1.8, 0.01], ['--leading-display', 1, 1.3, 0.01], ['--tracking-small', 0, 0.04, 0.005], ['--tracking-display', -0.04, 0.01, 0.005],
+  var TYPE_RANDOM = [['--leading-body', 1.35, 1.8, 0.01], ['--leading-display', 1, 1.3, 0.01], ['--tracking-body', -0.01, 0.02, 0.005], ['--tracking-display', -0.04, 0.01, 0.005],
     ['--tracking-caps', 0, 0.12, 0.005], ['--weight-body', 300, 500, 50], ['--weight-heading', 500, 800, 50]];   /* [dial, lowest, highest, step] */
   function randomTypeDials() {
     TYPE_RANDOM.forEach(function (r) {

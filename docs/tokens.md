@@ -70,7 +70,7 @@ This is the reference for Dials v0.3.0. Names can change between versions: for a
 |---|---|---|
 | `--leading-body` | `1.6` | line height at body size (--size-0), unitless |
 | `--leading-display` | `1.15` | line height at the h1 step (--size-5) and above, unitless; sizes in between slide in a straight line |
-| `--tracking-small` | `0` | letter spacing at the smallest size (--size--2), in em without the unit: positive loosens captions |
+| `--tracking-body` | `0` | letter spacing at body size (--size-0), in em without the unit; sizes up to h1 slide to --tracking-display, smaller ones continue the line |
 | `--tracking-display` | `0` | letter spacing at the h1 step (--size-5) and above, in em without the unit: negative tightens display type |
 | `--tracking-caps` | `0` | extra letter spacing for all caps and small caps, in em without the unit (0.05 to 0.12 is usual) |
 | `--weight-body` | `400` | body text weight |
@@ -226,7 +226,7 @@ Old names that still work in this release. Rename them: they'll be removed in a 
 | Name | Default | What it is |
 |---|---|---|
 | `--leading` | `derived: see tokens.json` | line height for the size it's on, from --leading-body at body size to --leading-display at --size-5 (h1) and above |
-| `--tracking` | `derived: see tokens.json` | letter spacing for the size it's on: 0 at body size, --tracking-small at --size--2 and below, --tracking-display at --size-5 (h1) and above |
+| `--tracking` | `derived: see tokens.json` | letter spacing for the size it's on: --tracking-body at body size, --tracking-display at --size-5 (h1) and above, the line continued below body down to --size--2 |
 | `--tracking-caps-total` | `derived: see tokens.json` | letter spacing for text in capitals: --tracking plus --tracking-caps |
 | `--weight-strong` | `min(900, var(--weight-body, 400) + 200)` | bold within body text, buttons and labels: the body weight plus 200 |
 
@@ -328,7 +328,7 @@ Each group's line is strong on purpose: it holds 3:1, for borders that must be s
 
 ### Type
 
-Dials works out leading, tracking and the strong weight for you, from a few type dials, which always apply with their defaults (leading 1.6 at body size to 1.15 at h1, tracking 0, weights 400 and 600, no line-length cap) until you set them. `--leading` and `--tracking` work out a value for the size of the element they're on: the leading slides from `--leading-body` at body size to `--leading-display` at the h1 step (`--size-5`), so bigger text gets proportionally tighter lines, and the tracking slides from `--tracking-small` at `--size--2` through 0 at body size to `--tracking-display` at `--size-5`. The display sizes above h1 keep the display values, so `--leading-display` and `--tracking-display` are what your main heading gets. Both are lengths, so an element that inherits them gets its parent's value, not its own: **set them on every element that sets its own font size**, and never on a wrapper or on `body`.
+Dials works out leading, tracking and the strong weight for you, from a few type dials, which always apply with their defaults (leading 1.6 at body size to 1.15 at h1, tracking 0, weights 400 and 600) until you set them. `--leading` and `--tracking` work out a value for the size of the element they're on: the leading slides from `--leading-body` at body size to `--leading-display` at the h1 step (`--size-5`), so bigger text gets proportionally tighter lines, and the tracking slides from `--tracking-body` at body size to `--tracking-display` at `--size-5`, continuing the same line below body down to `--size--2`. The display sizes above h1 keep the display values, so `--leading-display` and `--tracking-display` are what your main heading gets. Both are lengths, so an element that inherits them gets its parent's value, not its own: **set them on every element that sets its own font size**, and never on a wrapper or on `body`.
 
 ```css
 .card-title {

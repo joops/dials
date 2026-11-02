@@ -28,12 +28,12 @@ const FORMULA_WIDTHS = [360, 800, 1280]; // the formulas: both ends of the scree
 const TYPE_PROPS = ['font-size', 'line-height', 'font-weight', 'letter-spacing', 'font-family', 'font-style', 'max-inline-size',
   'font-kerning', 'font-variant-numeric', 'font-feature-settings', 'font-optical-sizing', 'text-wrap-mode', 'text-wrap-style', 'text-transform'];
 // Every type dial at its default: the values docs/tokens.md gives. Setting them must change nothing.
-const DEFAULT_DIALS = { '--leading-body': '1.6', '--leading-display': '1.15', '--tracking-small': '0', '--tracking-display': '0',
+const DEFAULT_DIALS = { '--leading-body': '1.6', '--leading-display': '1.15', '--tracking-body': '0', '--tracking-display': '0',
   '--tracking-caps': '0', '--weight-body': '400', '--weight-heading': '600', '--font-accent': 'var(--font-body)' };
 // What the defaults now apply that v0.2.0 didn't: the leading curve, letter spacing (0px rather than normal), the weight of strong,
 // and the sizes that follow from the line heights.
 const V02_CHANGED = new Set(['line-height', 'letter-spacing', 'font-weight', 'height', 'block-size', 'width', 'inline-size', 'perspective-origin', 'transform-origin']);
-const ALL_DIALS = { '--leading-body': '1.45', '--leading-display': '0.98', '--tracking-small': '0.04', '--tracking-display': '-0.05',
+const ALL_DIALS = { '--leading-body': '1.45', '--leading-display': '0.98', '--tracking-body': '0.01', '--tracking-display': '-0.05',
   '--tracking-caps': '0.1', '--weight-body': '300', '--weight-heading': '800' };
 
 // The supports test that guards the leading curve in dials.css and dials-base.css. Emulating a browser
@@ -143,7 +143,7 @@ function randomSets(n, seed) {
     const maybe = (k, v) => { if (r() < 0.8) d[k] = v; };
     maybe('--leading-body', between(1.2, 2));
     maybe('--leading-display', between(0.85, 1.5));
-    maybe('--tracking-small', between(-0.03, 0.1, 4));
+    maybe('--tracking-body', between(-0.03, 0.06, 4));
     maybe('--tracking-display', between(-0.1, 0.05, 4));
     maybe('--tracking-caps', between(0, 0.15, 4));
     maybe('--weight-body', Math.round(between(100, 800, 0)));
@@ -223,11 +223,12 @@ try {
       }, PROBES.map(x => x[0]));
       const tag = `set ${si}${si ? '' : ' (no dials)'} ${JSON.stringify(d)} at ${width}px`;
       const lb = +(d['--leading-body'] ?? 1.6), ld = +(d['--leading-display'] ?? 1.15);
-      const ts = +(d['--tracking-small'] ?? 0), td = +(d['--tracking-display'] ?? 0), tc = +(d['--tracking-caps'] ?? 0);
+      const tb = +(d['--tracking-body'] ?? 0), td = +(d['--tracking-display'] ?? 0), tc = +(d['--tracking-caps'] ?? 0);
       const B = m.s0.size, S = m['s-2'].size, D = m.s5.size;   // the display end is the h1 step
       // the reference formula, from the sizes the browser actually gave
       const leadRatio = (s) => { const k = D / B, mm = (ld * k - lb) / Math.max(k - 1, 1e-6), g = B * (lb - mm); return Math.min(Math.max(lb, ld), Math.max(Math.min(lb, ld), mm + g / s)); };
-      const trackEm = (s) => { const c = (x) => Math.min(1, Math.max(0, x)); return td * c(Math.log(s / B) / Math.max(Math.log(D / B), 1e-6)) + ts * c(Math.log(B / s) / Math.max(Math.log(B / S), 1e-6)); };
+      const tMin = Math.log(S / B) / Math.max(Math.log(D / B), 1e-6);   // the line continued below body, held at --size--2
+      const trackEm = (s) => tb + (td - tb) * Math.min(1, Math.max(tMin, Math.log(s / B) / Math.max(Math.log(D / B), 1e-6)));
       const ids = PROBES.map(x => x[0]);
       const ratio = (id) => num(m[id].lh) / m[id].size, em = (id) => num(m[id].ls) / m[id].size;
       // Firefox keeps lengths in 1/60px, and rounds an element's font size (up to 1/64px) while calc() works
@@ -239,12 +240,12 @@ try {
       // end points, exactly
       at('s0', lb * B, num(m.s0.lh), 'line height');
       at('s5', ld * D, num(m.s5.lh), 'line height');
-      at('s0', 0, num(m.s0.ls), 'letter spacing');
-      at('s-2', ts * S, num(m['s-2'].ls), 'letter spacing');
+      at('s0', tb * B, num(m.s0.ls), 'letter spacing');
+      at('s-2', trackEm(S) * S, num(m['s-2'].ls), 'letter spacing');
       at('s5', td * D, num(m.s5.ls), 'letter spacing');
       // held at the end values beyond the ends: the display steps above h1 keep the display values
       for (const id of ['s6', 's7', 's8']) { at(id, ld * m[id].size, num(m[id].lh), 'line height (above the h1 step)'); at(id, td * m[id].size, num(m[id].ls), 'letter spacing (above the h1 step)'); }
-      at('below', ts * m.below.size, num(m.below.ls), 'letter spacing (past the small end)');
+      at('below', trackEm(S) * m.below.size, num(m.below.ls), 'letter spacing (past the small end)');
       at('above', td * m.above.size, num(m.above.ls), 'letter spacing (past the display end)');
       at('above', ld * m.above.size, num(m.above.lh), 'line height (past the display end)');
       at('below', lb * m.below.size, num(m.below.lh), 'line height (below body size)');
@@ -263,11 +264,10 @@ try {
         const dr = ratio(b) - ratio(a);
         if (lb >= ld ? dr > eps : dr < -eps) leadOk = false;
         const ea = em(a), eb = em(b);
-        if (m[b].size <= B + 0.01) { if (ts >= 0 ? eb - ea > eps : ea - eb > eps) trkOk = false; }   // from ts down to 0
-        else if (m[a].size >= B - 0.01) { if (td >= 0 ? ea - eb > eps : eb - ea > eps) trkOk = false; }   // from 0 out to td
+        if (td >= tb ? ea - eb > eps : eb - ea > eps) trkOk = false;   // one straight line in log size, from the small end to td
       }
       expect(name, leadOk, `${tag}: the leading ratio is monotonic in size (${bySize.map(id => ratio(id).toFixed(3)).join(' ')})`);
-      expect(name, trkOk, `${tag}: tracking is monotonic on each side of body size (${bySize.map(id => em(id).toFixed(4)).join(' ')})`);
+      expect(name, trkOk, `${tag}: tracking is monotonic in size (${bySize.map(id => em(id).toFixed(4)).join(' ')})`);
       // weight and the scale
       const wb = d['--weight-body'] ?? 400;
       expect(name, m.weight === Math.min(900, wb + 200), `${tag}: --weight-strong is ${m.weight}, want min(900, ${wb} + 200)`);
@@ -294,9 +294,9 @@ try {
     expect(name, num(r.h1.ls) === 0 && num(r.sm.ls) === 0, `--leading-display alone: no letter spacing (h1 ${r.h1.ls}, small ${r.sm.ls})`);
     expect(name, r.st.w === 600 && r.h1.w === 600 && r.btn.w === 600, `--leading-display alone: weights at their defaults (strong ${r.st.w}, h1 ${r.h1.w}, button ${r.btn.w})`);
     // tracking only
-    r = await base('/__base', { '--tracking-display': '-0.04', '--tracking-small': '0.03' });
+    r = await base('/__base', { '--tracking-display': '-0.04', '--tracking-body': '0' });
     expect(name, num(r.h1.ls) < 0 && near(r.h1.ls, r['tok-trk'].ls, 0.01), `--tracking-*: h1 letter spacing ${r.h1.ls} follows --tracking (${r['tok-trk'].ls})`);
-    expect(name, num(r.sm.ls) > 0 && num(r.fc.ls) > 0 && num(r.btn.ls) > 0, `--tracking-small: small, figcaption and button text loosen (${r.sm.ls}, ${r.fc.ls}, ${r.btn.ls})`);
+    expect(name, num(r.sm.ls) > 0 && num(r.fc.ls) > 0 && num(r.btn.ls) > 0, `--tracking-display tighter than body: small, figcaption and button text loosen a little (${r.sm.ls}, ${r.fc.ls}, ${r.btn.ls})`);
     expect(name, Math.abs(num(r.h1.lh) / r.h1.size - 1.15) < 0.002, `--tracking-* alone: h1 keeps 1.15 (${r.h1.lh})`);
     // weight
     r = await base('/__base', { '--weight-body': '300', '--weight-heading': '750' });

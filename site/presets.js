@@ -342,7 +342,6 @@ window.DIALS = {
     "--font-mono": "\"IBM Plex Mono\", ui-monospace, \"SF Mono\", Menlo, Consolas, monospace",
     "--leading-body": "1.45",
     "--leading-display": "1.15",
-    "--tracking-small": "0.015",
     "--tracking-display": "-0.015"
    },
    "fonts": "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;700&family=IBM+Plex+Mono:wght@400;700&display=swap\">"
@@ -382,7 +381,6 @@ window.DIALS = {
     "--font-mono": "ui-monospace, \"SF Mono\", Menlo, Consolas, monospace",
     "--leading-body": "1.65",
     "--leading-display": "1.08",
-    "--tracking-small": "0.01",
     "--tracking-display": "-0.02",
     "--tracking-caps": "0.06",
     "--weight-heading": "400"
@@ -403,8 +401,7 @@ window.DIALS = {
     "--font-body": "\"Atkinson Hyperlegible\", ui-sans-serif, system-ui, sans-serif",
     "--font-mono": "ui-monospace, \"SF Mono\", Menlo, Consolas, monospace",
     "--leading-body": "1.65",
-    "--leading-display": "1.2",
-    "--tracking-small": "0.02"
+    "--leading-display": "1.2"
    },
    "fonts": "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap\">"
   },
@@ -602,7 +599,7 @@ window.DIALS = {
   "--border-width-l",
   "--leading-body",
   "--leading-display",
-  "--tracking-small",
+  "--tracking-body",
   "--tracking-display",
   "--tracking-caps",
   "--weight-body",
@@ -612,7 +609,7 @@ window.DIALS = {
  "typeOptional": [
   "--leading-body",
   "--leading-display",
-  "--tracking-small",
+  "--tracking-body",
   "--tracking-display",
   "--tracking-caps",
   "--weight-body",
