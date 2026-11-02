@@ -10,11 +10,13 @@
    Logical properties throughout, so right-to-left pages work.
    No component classes: a link that should look like a button is
    your own component, built from --solid and --on-solid.
-   Type: until you set a leading, tracking, weight or line-length
-   dial, every element renders exactly as in v0.2. Rules for
-   properties v0.2 left alone sit in the dials-type cascade layer at
-   the end: any rule of your own wins over a layer, and while their
-   dial is unset they fall back to revert-layer, which removes them.
+   Type: the leading, tracking and weight dials always apply, with
+   their defaults when you set none (leading 1.6 to 1.15, tracking 0,
+   weights 400 and 600). Setting a dial to its default changes
+   nothing. Rules for letter spacing, the leading of captions and the
+   weight of strong sit in the dials-type cascade layer at the end:
+   any rule of your own wins over a layer, whatever its specificity
+   or order.
    ============================================================ */
 :where(html) { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 :where(body) { margin: 0; background: var(--surface); color: var(--text); font: var(--weight-body, 400) var(--size-0)/var(--leading-body, 1.6) var(--font-body); }
@@ -22,7 +24,7 @@
 :where(:focus-visible) { outline: var(--border-width-l) solid var(--focus); outline-offset: var(--border-width-m); }
 
 /* Text */
-:where(h1, h2, h3, h4, h5, h6) { font-family: var(--font-heading); font-weight: var(--weight-heading, 600); color: var(--text-strong); line-height: var(--dl-leading-on, var(--leading-display, 1.15)); text-wrap: balance; margin-block: var(--space-l) var(--space-xs); margin-inline: 0; }
+:where(h1, h2, h3, h4, h5, h6) { font-family: var(--font-heading); font-weight: var(--weight-heading, 600); color: var(--text-strong); line-height: var(--leading-display, 1.15); text-wrap: balance; margin-block: var(--space-l) var(--space-xs); margin-inline: 0; }
 :where(h1) { font-size: var(--size-5); }
 :where(h2) { font-size: var(--size-3); }
 :where(h3) { font-size: var(--size-2); }
@@ -78,13 +80,22 @@
 :where(.is-typeset) :where(p, li, dd, blockquote, figcaption) { text-wrap: pretty; }
 :where(.is-typeset) :where(table) { font-variant-numeric: tabular-nums; }
 
-/* Type that only a set dial turns on. v0.2 had no rule for these properties, so they sit in a
-   cascade layer: any rule of your own wins over them, whatever its specificity or order, and while
-   their dial is unset revert-layer removes them, so the element gets what it would without them. */
+/* Headings follow the leading curve, --leading for their own size: 1.6 at body size to 1.15 at h1
+   with the defaults. It needs tan(), atan2() and log() (Chrome 120, Firefox 118, Safari 15.4);
+   without them headings keep --leading-display, flat, from the rule above. */
+@supports (width: calc(1px * tan(atan2(1px, 1px)) * log(2))) {
+  :where(h1, h2, h3, h4, h5, h6) { line-height: var(--leading); }
+}
+
+/* Letter spacing, the leading of captions and pre, and the weight of strong. They sit
+   in a cascade layer, so any rule of your own wins over them, whatever its specificity or order.
+   Letter spacing and the leading of captions follow the curves, so they need the maths functions too;
+   without them these elements inherit both, as they would without Dials. */
 @layer dials-type {
-  :where(h1, h2, h3, h4, h5, h6, small, figcaption, caption, button, input[type=submit], input[type=button], input[type=reset]) { letter-spacing: var(--dl-tracking-on, revert-layer); }
-  :where(figcaption, caption, pre) { line-height: var(--dl-leading-on, revert-layer); }
-  :where(p, li, dt, dd, blockquote, figcaption) { max-inline-size: var(--line-length, revert-layer); }
-  :where(strong, b) { font-weight: var(--dl-weight-strong-on, revert-layer); }
+  :where(strong, b) { font-weight: var(--weight-strong); }
   :where(h1, h2, h3, h4, h5, h6) :where(strong, b) { font-weight: revert-layer; }   /* bold in a heading stays bolder than the heading */
+  @supports (width: calc(1px * tan(atan2(1px, 1px)) * log(2))) {
+    :where(h1, h2, h3, h4, h5, h6, small, figcaption, caption, button, input[type=submit], input[type=button], input[type=reset]) { letter-spacing: var(--tracking); }
+    :where(figcaption, caption, pre) { line-height: var(--leading); }
+  }
 }

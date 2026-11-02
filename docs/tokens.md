@@ -62,19 +62,20 @@ This is the reference for Dials v0.3.0. Names can change between versions: for a
 | `--border-width-m` | `2px` | emphasis; outline offsets |
 | `--border-width-l` | `3px` | focus rings, quote bars, active tabs |
 
-### Leading, tracking, weight and line length: unset by default
+### Leading, tracking and weight
+
+`dials.css` doesn't declare these at `:root`, but Dials always applies them, with the default shown when you set none: setting a dial to its default changes nothing. In your own CSS, read one with its default as the fallback: `var(--weight-heading, 600)`.
 
 | Name | Default | What it is |
 |---|---|---|
-| `--leading-body` | `(unset: 1.6)` | line height at body size (--size-0), unitless |
-| `--leading-display` | `(unset: 1.15)` | line height at the h1 step (--size-5) and above, unitless; sizes in between slide in a straight line |
-| `--tracking-small` | `(unset: 0)` | letter spacing at the smallest size (--size--2), in em without the unit: positive loosens captions |
-| `--tracking-display` | `(unset: 0)` | letter spacing at the h1 step (--size-5) and above, in em without the unit: negative tightens display type |
-| `--tracking-caps` | `(unset: 0)` | extra letter spacing for all caps and small caps, in em without the unit (0.05 to 0.12 is usual) |
-| `--weight-body` | `(unset: 400)` | body text weight |
-| `--weight-heading` | `(unset: 600)` | heading weight |
-| `--line-length` | `(unset: none)` | the longest line of running text, e.g. 65ch; unset, lines run the full width |
-| `--font-accent` | `(unset: var(--font-body))` | a third face, for ledes, pull quotes or buttons; read it as var(--font-accent, var(--font-body)) |
+| `--leading-body` | `1.6` | line height at body size (--size-0), unitless |
+| `--leading-display` | `1.15` | line height at the h1 step (--size-5) and above, unitless; sizes in between slide in a straight line |
+| `--tracking-small` | `0` | letter spacing at the smallest size (--size--2), in em without the unit: positive loosens captions |
+| `--tracking-display` | `0` | letter spacing at the h1 step (--size-5) and above, in em without the unit: negative tightens display type |
+| `--tracking-caps` | `0` | extra letter spacing for all caps and small caps, in em without the unit (0.05 to 0.12 is usual) |
+| `--weight-body` | `400` | body text weight |
+| `--weight-heading` | `600` | heading weight |
+| `--font-accent` | `var(--font-body)` | a third face, for ledes, pull quotes or buttons; read it as var(--font-accent, var(--font-body)) |
 
 ## Optional exact colours
 
@@ -327,7 +328,7 @@ Each group's line is strong on purpose: it holds 3:1, for borders that must be s
 
 ### Type
 
-Dials works out leading, tracking and the strong weight for you, from a few type dials, all unset by default. `--leading` and `--tracking` work out a value for the size of the element they're on: the leading slides from `--leading-body` at body size to `--leading-display` at the h1 step (`--size-5`), so bigger text gets proportionally tighter lines, and the tracking slides from `--tracking-small` at `--size--2` through 0 at body size to `--tracking-display` at `--size-5`. The display sizes above h1 keep the display values, so `--leading-display` and `--tracking-display` are what your main heading gets. Both are lengths, so an element that inherits them gets its parent's value, not its own: **set them on every element that sets its own font size**, and never on a wrapper or on `body`.
+Dials works out leading, tracking and the strong weight for you, from a few type dials, which always apply with their defaults (leading 1.6 at body size to 1.15 at h1, tracking 0, weights 400 and 600, no line-length cap) until you set them. `--leading` and `--tracking` work out a value for the size of the element they're on: the leading slides from `--leading-body` at body size to `--leading-display` at the h1 step (`--size-5`), so bigger text gets proportionally tighter lines, and the tracking slides from `--tracking-small` at `--size--2` through 0 at body size to `--tracking-display` at `--size-5`. The display sizes above h1 keep the display values, so `--leading-display` and `--tracking-display` are what your main heading gets. Both are lengths, so an element that inherits them gets its parent's value, not its own: **set them on every element that sets its own font size**, and never on a wrapper or on `body`.
 
 ```css
 .card-title {
@@ -336,8 +337,8 @@ Dials works out leading, tracking and the strong weight for you, from a few type
 }
 ```
 
-- The weight dials are unset by default, so read them with Dials' value as the fallback: `var(--weight-heading, 600)`, `var(--weight-body, 400)`. `--weight-strong` (the body weight plus 200) needs no fallback.
-- `dials-base.css` applies all of this to plain headings, captions and small print once you set a leading or tracking dial. Until then it keeps v0.2's type: body 1.6, headings 1.15, no letter spacing.
+- `dials.css` doesn't declare the weight dials, so read them with their defaults as the fallback: `var(--weight-heading, 600)`, `var(--weight-body, 400)`. `--weight-strong` (the body weight plus 200) needs no fallback.
+- `dials-base.css` applies all of this to plain headings, captions and small print, with the defaults when you set no dial: a heading below h1 gets the curve's leading for its size, looser than h1's 1.15. Setting a dial to its default changes nothing.
 
 **An eyebrow or label in capitals** takes the tracking for its size plus `--tracking-caps`, which together are `--tracking-caps-total`:
 
@@ -360,9 +361,9 @@ The same goes for small caps (`font-variant-caps: all-small-caps`).
 
 **Display type**, such as a hero title or a big numeral, uses the top steps, `--size-6` to `--size-8`. They keep `--leading-display` and `--tracking-display`, the values set for h1.
 
-**Line length.** `--line-length` caps running text in `dials-base.css` (paragraphs, list items, quotes, captions). A component that holds running text reads it with no cap as the fallback: `max-inline-size: var(--line-length, none)`.
+**Line length.** Dials has no line-length dial: the measure depends on the layout, so set it where the layout is decided, on the component that holds running text: `max-inline-size: 65ch` (in `ch`, so it follows the face and size). `dials-base.css` leaves line length to the container.
 
-**A third face**, for ledes, pull quotes or buttons, is the `--font-accent` dial. It's unset by default, so read it with the body face as the fallback:
+**A third face**, for ledes, pull quotes or buttons, is the `--font-accent` dial. Its default is the body face, and `dials.css` doesn't declare it, so read it with the body face as the fallback:
 
 ```css
 .pull-quote { font-family: var(--font-accent, var(--font-body)); font-size: var(--size-3); line-height: var(--leading); letter-spacing: var(--tracking); }

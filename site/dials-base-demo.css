@@ -3,7 +3,7 @@
 .base-demo { margin: 0; background: var(--surface); color: var(--text); font: var(--weight-body, 400) var(--size-0)/var(--leading-body, 1.6) var(--font-body); }
 .base-demo ::selection { background: var(--selection); }
 .base-demo :where(:focus-visible) { outline: var(--border-width-l) solid var(--focus); outline-offset: var(--border-width-m); }
-.base-demo :where(h1, h2, h3, h4, h5, h6) { font-family: var(--font-heading); font-weight: var(--weight-heading, 600); color: var(--text-strong); line-height: var(--dl-leading-on, var(--leading-display, 1.15)); text-wrap: balance; margin-block: var(--space-l) var(--space-xs); margin-inline: 0; }
+.base-demo :where(h1, h2, h3, h4, h5, h6) { font-family: var(--font-heading); font-weight: var(--weight-heading, 600); color: var(--text-strong); line-height: var(--leading-display, 1.15); text-wrap: balance; margin-block: var(--space-l) var(--space-xs); margin-inline: 0; }
 .base-demo :where(h1) { font-size: var(--size-5); }
 .base-demo :where(h2) { font-size: var(--size-3); }
 .base-demo :where(h3) { font-size: var(--size-2); }
@@ -46,10 +46,14 @@
 .base-demo :where(.is-typeset) { font-kerning: normal; }
 .base-demo :where(.is-typeset) :where(p, li, dd, blockquote, figcaption) { text-wrap: pretty; }
 .base-demo :where(.is-typeset) :where(table) { font-variant-numeric: tabular-nums; }
+@supports (width: calc(1px * tan(atan2(1px, 1px)) * log(2))) {
+  .base-demo :where(h1, h2, h3, h4, h5, h6) { line-height: var(--leading); }
+}
 @layer dials-type {
-  .base-demo :where(h1, h2, h3, h4, h5, h6, small, figcaption, caption, button, input[type=submit], input[type=button], input[type=reset]) { letter-spacing: var(--dl-tracking-on, revert-layer); }
-  .base-demo :where(figcaption, caption, pre) { line-height: var(--dl-leading-on, revert-layer); }
-  .base-demo :where(p, li, dt, dd, blockquote, figcaption) { max-inline-size: var(--line-length, revert-layer); }
-  .base-demo :where(strong, b) { font-weight: var(--dl-weight-strong-on, revert-layer); }
+  .base-demo :where(strong, b) { font-weight: var(--weight-strong); }
   .base-demo :where(h1, h2, h3, h4, h5, h6) :where(strong, b) { font-weight: revert-layer; }
+  @supports (width: calc(1px * tan(atan2(1px, 1px)) * log(2))) {
+    .base-demo :where(h1, h2, h3, h4, h5, h6, small, figcaption, caption, button, input[type=submit], input[type=button], input[type=reset]) { letter-spacing: var(--tracking); }
+    .base-demo :where(figcaption, caption, pre) { line-height: var(--leading); }
+  }
 }

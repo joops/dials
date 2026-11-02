@@ -178,11 +178,7 @@ section { display: grid; gap: 14px; min-width: 0; }
 .type-ctl .lbl { color: var(--text-muted); font-weight: 600; font-size: 13.5px; display: inline-flex; align-items: center; }
 .type-ctl .lbl label { cursor: pointer; }
 .type-ctl .dial { grid-template-columns: 150px minmax(0, 1fr) 52px; }
-.type-ctl .dial.opt { grid-template-columns: 150px minmax(0, 1fr) 64px 24px; }
-.type-ctl .dial.opt.unset output { color: var(--text-quiet); font-style: italic; }
-.type-ctl .dial .unset-btn { font: 600 14px/1 var(--page-body); color: var(--text-muted); background: none; border: 1px solid var(--border); border-radius: var(--radius-s); width: 24px; height: 24px; padding: 0; cursor: pointer; }
-.type-ctl .dial.unset .unset-btn { visibility: hidden; }
-.ctl-sub { font: 600 13.5px var(--page-body); color: var(--text-muted); margin: 14px 0 8px; }
+.more .type-ctl .dial { max-width: none; }   /* the type dials in their disclosure keep the Type tab's layout */
 .type-ctl label.fontrow, .type-ctl div.fontrow { display: grid; align-items: center; gap: 10px; grid-template-columns: 150px minmax(0, 1fr); position: relative; }
 .info { display: inline-grid; place-items: center; width: 16px; height: 16px; margin-left: 5px; padding: 0; border-radius: 50%; border: 1px solid var(--border-strong); background: var(--surface-raised); color: var(--text-quiet); font: 700 10px/1 var(--page-body); cursor: help; position: relative; vertical-align: 1px; }
 .info:hover, .info:focus-visible { color: var(--text-strong); border-color: var(--text-muted); }
@@ -201,7 +197,6 @@ section { display: grid; gap: 14px; min-width: 0; }
 @media (max-width: 860px) { .specimen { grid-template-columns: 1fr; } }
 .article { background: var(--surface-raised); border: 1px solid var(--border); border-radius: var(--radius-l); padding: var(--space-l); font-family: var(--font-body); font-size: var(--size-0); font-weight: var(--weight-body, 400); line-height: var(--leading); color: var(--text); min-width: 0; }
 .article > * + * { margin-top: var(--space-s); }
-.article p { max-width: var(--line-length, none); }
 .article .kicker { display: block; font-size: var(--size--1); line-height: var(--leading); letter-spacing: var(--tracking-caps-total); text-transform: uppercase; color: var(--brand-on-soft); font-weight: var(--weight-strong); }
 .article h3, .article h4, .article h5 { font-family: var(--font-heading); font-weight: var(--weight-heading, 600); line-height: var(--leading); letter-spacing: var(--tracking); color: var(--text-strong); }
 .article h3 { font-size: var(--size-4); margin-top: var(--space-2xs); }
@@ -242,23 +237,31 @@ section { display: grid; gap: 14px; min-width: 0; }
 .alert .ic { grid-row: span 2; width: 22px; height: 22px; border-radius: 50%; background: var(--solid); color: var(--on-solid); display: grid; place-items: center; font-size: 13px; font-weight: 800; }
 .alert b { color: var(--on-soft); }
 
-/* preview panes */
+/* preview panes: their type comes from the type tokens, so every type dial shows here. Each element
+   that sets a font size sets --leading and --tracking too, as the rules ask. */
 .pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 @media (max-width: 860px) { .pair { grid-template-columns: 1fr; } }
-.pane { background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: var(--radius-l); padding: var(--space-m); display: grid; gap: var(--space-s); align-content: start; min-width: 0; font-family: var(--font-body); font-size: var(--size-0); }
-.pane .btn { font: 650 var(--size--1) var(--font-body); padding: var(--space-2xs) var(--space-s); border-radius: var(--radius-s); }
+.pane { background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: var(--radius-l); padding: var(--space-m); display: grid; gap: var(--space-s); align-content: start; min-width: 0;
+  font-family: var(--font-body); font-size: var(--size-0); font-weight: var(--weight-body, 400); line-height: var(--leading); }
+.pane .btn { font: var(--weight-strong) var(--size--1)/var(--leading) var(--font-body); letter-spacing: var(--tracking); padding: var(--space-2xs) var(--space-s); border-radius: var(--radius-s); }
 .pane .row { gap: var(--space-2xs); }
-.pane .badge { font-size: var(--size--2); }
-.pane .alert { padding: var(--space-xs) var(--space-s); border-radius: var(--radius-m); font-size: var(--size--1); }
-.pane .field { font-size: var(--size--1); }
-.pane .field input { font: var(--size-0) var(--font-body); border-radius: var(--radius-s); padding: var(--space-2xs) var(--space-xs); }
-.pane .well { border-radius: var(--radius-m); font-size: var(--size--1); padding: var(--space-xs) var(--space-s); }
-.pane .cap { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-quiet); }
+.pane .badge { font-size: var(--size--2); font-weight: var(--weight-strong); line-height: var(--leading); letter-spacing: var(--tracking); }
+.pane .alert { padding: var(--space-xs) var(--space-s); border-radius: var(--radius-m); font-size: var(--size--1); line-height: var(--leading); letter-spacing: var(--tracking); }
+.pane .alert b, .pane .wash b { font-weight: var(--weight-strong); }
+.pane .field { font-size: var(--size--1); font-weight: var(--weight-strong); line-height: var(--leading); letter-spacing: var(--tracking); }
+.pane .field input { font: var(--weight-body, 400) var(--size-0)/var(--leading) var(--font-body); border-radius: var(--radius-s); padding: var(--space-2xs) var(--space-xs); }
+.pane .field .hint { font-size: inherit; font-weight: var(--weight-body, 400); }
+.pane .well { border-radius: var(--radius-m); font-size: var(--size--1); line-height: var(--leading); letter-spacing: var(--tracking); padding: var(--space-xs) var(--space-s); }
+.pane .wash { line-height: var(--leading); letter-spacing: var(--tracking); }
+.pane .cap { font-size: var(--size--2); font-weight: var(--weight-strong); line-height: var(--leading); letter-spacing: var(--tracking-caps-total); text-transform: uppercase; color: var(--text-quiet); }
+.pane .card h4 { font: var(--weight-heading, 600) var(--size-2)/var(--leading) var(--font-heading); letter-spacing: var(--tracking); }
+.pane .card p { line-height: var(--leading); }
+.pane .modal-demo div { font-size: var(--size--1); line-height: var(--leading); letter-spacing: var(--tracking); }
 .card { background: var(--surface-raised); border: 1px solid var(--border); border-radius: var(--radius-l); padding: var(--space-s-m); display: grid; gap: var(--space-2xs); box-shadow: 0 4px 14px var(--shadow-color); }
 .card h4 { margin: 0; font: 600 var(--size-2)/1.2 var(--font-heading); color: var(--text-strong); }
 .card p { font-size: var(--size-0); }
 .t-muted { color: var(--text-muted); } .t-quiet { color: var(--text-quiet); font-size: 13px; } .t-dis { color: var(--text-disabled); font-size: 13px; }
-.pane .t-quiet, .pane .t-dis { font-size: var(--size--1); }
+.pane .t-quiet, .pane .t-dis { font-size: var(--size--1); line-height: var(--leading); letter-spacing: var(--tracking); }
 .field { display: grid; gap: 4px; font-size: 13.5px; font-weight: 600; color: var(--text-strong); }
 .field input { font: 15px var(--page-body); color: var(--text); background: var(--surface-raised); border: 1px solid var(--border-strong); border-radius: var(--radius-s); padding: 8px 10px; }
 .field input:focus { outline: 3px solid var(--focus); outline-offset: 1px; border-color: var(--focus); }
@@ -309,7 +312,7 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
     <div class="floatbar">
       <div class="fb-group">
         <label class="combo"><span class="sr-only">Theme</span><select id="combo" aria-label="Theme"></select></label>
-        <span class="tipwrap"><button class="btn soft is-neutral" type="button" id="shuffle" aria-describedby="shuffle-tip"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-15.4 6.4L3 16"/><path d="M3 21v-5h5"/><path d="M3 12a9 9 0 0 1 15.4-6.4L21 8"/><path d="M21 3v5h-5"/></svg><span class="lbl">Randomise</span></button><span class="tip" role="tooltip" id="shuffle-tip">Mixes a random colour, type and space preset into a new combination. It doesn't choose one of the themes: press it again for another.</span></span>
+        <span class="tipwrap"><button class="btn soft is-neutral" type="button" id="shuffle" aria-describedby="shuffle-tip"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-15.4 6.4L3 16"/><path d="M3 21v-5h5"/><path d="M3 12a9 9 0 0 1 15.4-6.4L21 8"/><path d="M21 3v5h-5"/></svg><span class="lbl">Randomise</span></button><span class="tip" role="tooltip" id="shuffle-tip">Mixes a random colour, type and space preset into a new combination, with random leading, tracking and weights in ranges that read well. It doesn't choose one of the themes: press it again for another.</span></span>
       </div>
       <span class="fb-sep" aria-hidden="true"></span>
       <div class="seg fb-scheme" role="group" aria-label="Colour scheme">
@@ -370,9 +373,12 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
     <div class="tabpanel" id="tab-type" role="tabpanel" aria-labelledby="t-type" hidden>
       <div class="row"><span class="label">Presets</span><span id="tpresets" class="row"></span></div>
       <div class="type-ctl" id="type-ctl"></div>
-      <h3 class="ctl-sub">Leading, tracking and weight</h3>
-      <div class="type-ctl" id="type-ctl2"></div>
-      <p class="ctl-note">These start unset, so <code>dials-base.css</code> keeps the type it has always had. Move one to set it; × unsets it. Leading and tracking are set at two ends, body text and the h1 step (<code>--size-5</code>), and every size in between slides along a curve; the display sizes above h1 keep the display values: watch the scale beside the article. Tracking dials are in em, and any you leave unset count as shown.</p>
+      <details class="more" id="type-optional"><summary>Leading, tracking and weight (optional)</summary>
+        <div class="more-body">
+          <p class="ctl-note">Optional dials for line height, weight and letter spacing. Each always applies, at the default shown until you move it: leading 1.6 at body size to 1.15 at h1, weights 400 and 600, no extra letter spacing. A preset, a theme or Randomise sets them all again. Leading and tracking are set at two ends, body text and the h1 step (<code>--size-5</code>), and every size in between slides along a curve; the sizes above h1 keep the display values. The preview below and the scale beside the article show them. Tracking is in em.</p>
+          <div class="type-ctl" id="type-ctl2"></div>
+        </div>
+      </details>
       <p class="ctl-note">Body size and ratio are set at the narrowest and widest screens, and every size runs in a straight line between them; the screen range is shared with space. A bigger ratio gives more drama between headings and body text: 1.2 is a minor third, 1.333 a perfect fourth, 1.618 the golden ratio. Faces load from Google Fonts: choose one, or type any family name. The mono face is for code; its list holds every monospace family on Google Fonts.</p>
     </div>
     <div class="tabpanel" id="tab-space" role="tabpanel" aria-labelledby="t-space" hidden>
@@ -511,8 +517,8 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
   var NUMBER_DIALS = ['--balance', '--fill-lightness', '--dark-lift', '--tint-strength', '--tint-vividness', '--text-contrast', '--white-text-until',
     '--paper-lightness', '--paper-dark-lightness', '--ink-lightness', '--ink-dark-lightness'];
   var TYPE_DIALS = ['--screen-min', '--screen-max', '--size-min', '--size-max', '--ratio-min', '--ratio-max', '--font-heading', '--font-body', '--font-mono'];
-  /* unset by default: exported only once set */
-  var TYPE_OPTIONAL = ['--leading-body', '--leading-display', '--tracking-small', '--tracking-display', '--tracking-caps', '--weight-body', '--weight-heading', '--line-length', '--font-accent'];
+  /* not declared by dials.css: exported only once set, since each one's default needs no line */
+  var TYPE_OPTIONAL = ['--leading-body', '--leading-display', '--tracking-small', '--tracking-display', '--tracking-caps', '--weight-body', '--weight-heading', '--font-accent'];
   function setOptional() { return TYPE_OPTIONAL.filter(function (v) { return root.style.getPropertyValue(v).trim(); }); }
   var SPACE_DIALS = ['--space-min', '--space-max', '--space-density', '--radius-base'];
   var SRC = { colour: '', scale: '', base: '' };   /* the dist files' text, fetched below */
@@ -633,7 +639,7 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
 
   /* preview panes */
   var PANE = '<span class="cap">{cap}</span>' +
-    '<div class="card"><h4>Finish the mix</h4><p>Body text is ink blended into paper.</p><p class="t-muted">Muted text, a step quieter.</p><p class="t-quiet">Quiet text · captions and dates</p><p class="t-dis">Disabled text</p><p><a href="#css">A link in the brand colour</a></p></div>' +
+    '<div class="card"><h4>Finish the mix</h4><p>Body text is ink blended into paper. A paragraph long enough to wrap shows the body leading between its lines.</p><p class="t-muted">Muted text, a step quieter.</p><p class="t-quiet">Quiet text · captions and dates</p><p class="t-dis">Disabled text</p><p><a href="#css">A link in the brand colour</a></p></div>' +
     '<div class="wash"><b>A wash, built from two soft tints</b><span>A pattern, not a token: body text keeps 4.5:1 anywhere on it.</span></div>' +
     '<div class="row">' + GROUP_NAMES.map(function (g) { return '<button class="btn is-' + g + '" type="button">' + g[0].toUpperCase() + g.slice(1) + '</button>'; }).join('') + '</div>' +
     '<div class="row">' + GROUP_NAMES.map(function (g) { return '<button class="btn soft is-' + g + '" type="button">' + g[0].toUpperCase() + g.slice(1) + '</button>'; }).join('') + '<button class="btn ghost" type="button">Ghost</button><button class="btn" type="button" disabled>Disabled</button></div>' +
@@ -850,13 +856,12 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
     tIn[v] = function () { var x = spaceVal(v); inp.value = x; out.textContent = x + (unit || ''); inp.disabled = /^--space-(min|max)$/.test(v) && follow.checked; };
   }
   var tc2 = document.getElementById('type-ctl2');
-  function topt(v, label, min, max, step, unit, def, tip) {   /* a dial that starts unset: the slider rests on the value Dials uses for it */
+  function topt(v, label, min, max, step, unit, def, tip) {   /* a dial dials.css doesn't declare: until moved, the slider shows its default */
     var l = document.createElement('div'); l.className = 'dial opt';
-    l.innerHTML = '<span><label for="' + idOf(v) + '">' + label + '</label>' + info(label, tip) + '</span><input type="range" id="' + idOf(v) + '" min="' + min + '" max="' + max + '" step="' + step + '"><output></output><button type="button" class="unset-btn" aria-label="Unset ' + label + '" title="Unset">×</button>';
+    l.innerHTML = '<span><label for="' + idOf(v) + '">' + label + '</label>' + info(label, tip) + '</span><input type="range" id="' + idOf(v) + '" min="' + min + '" max="' + max + '" step="' + step + '"><output></output>';
     tc2.appendChild(l); var inp = l.querySelector('input'), out = l.querySelector('output');
-    function show() { var x = root.style.getPropertyValue(v).trim(); l.classList.toggle('unset', !x); inp.value = x ? parseFloat(x) : def; out.textContent = x ? x : 'unset'; }
-    inp.addEventListener('input', function () { set(v, inp.value + (unit === 'ch' ? 'ch' : '')); show(); markTPreset('type', null); refresh(); });
-    l.querySelector('.unset-btn').addEventListener('click', function () { root.style.removeProperty(v); show(); markTPreset('type', null); refresh(); });
+    function show() { var x = root.style.getPropertyValue(v).trim(); inp.value = x ? parseFloat(x) : def; out.textContent = x || String(def); }   /* the value in use: the default until moved */
+    inp.addEventListener('input', function () { set(v, inp.value); show(); markTPreset('type', null); refresh(); });
     tIn[v] = show;
   }
   function tratio(v, label, tip) {
@@ -870,7 +875,7 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
     var wrap = document.createElement('div'); wrap.className = 'fontrow';
     var lb = 'fonts-' + key, list0 = mono ? MONO : GF;
     wrap.innerHTML = '<span class="lbl"><label for="' + idOf(v) + '">' + label + '</label>' + info(label, tip) + '</span>' +
-      '<div class="fontbox"><input type="text" id="' + idOf(v) + '" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="' + lb + '" spellcheck="false" autocomplete="off" placeholder="' + (mono ? 'Search monospace fonts' : TYPE_OPTIONAL.indexOf(v) >= 0 ? 'Unset: the body face' : 'Search Google Fonts') + '"><ul role="listbox" id="' + lb + '" class="fontlist" hidden></ul></div>';
+      '<div class="fontbox"><input type="text" id="' + idOf(v) + '" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="' + lb + '" spellcheck="false" autocomplete="off" placeholder="' + (mono ? 'Search monospace fonts' : TYPE_OPTIONAL.indexOf(v) >= 0 ? 'Default: the body face' : 'Search Google Fonts') + '"><ul role="listbox" id="' + lb + '" class="fontlist" hidden></ul></div>';
     tc.appendChild(wrap);
     var inp = wrap.querySelector('input'), list = wrap.querySelector('ul'), items = [], active = -1;
     function render(q) {
@@ -889,7 +894,7 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
     }
     function choose(name) {
       name = (name || '').trim();
-      if (!name) { if (TYPE_OPTIONAL.indexOf(v) >= 0) { root.style.removeProperty(v); inp.value = ''; open(false); markTPreset('type', null); refresh(); } return; }   /* clearing an optional face unsets it */
+      if (!name) { if (TYPE_OPTIONAL.indexOf(v) >= 0) { root.style.removeProperty(v); inp.value = ''; open(false); markTPreset('type', null); refresh(); } return; }   /* clearing the accent face puts it back to its default, the body face */
       var f = gfInfo(name); if (f) name = f[0];
       inp.value = name; open(false); loadFont(name); set(v, fontStack(name, mono ? 'mono' : null)); markTPreset('type', null); refresh();
     }
@@ -913,15 +918,15 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
   tdial('--screen-max', 'Wide screen', 960, 1600, 20, 'px', null, 'The screen width where the wide sizes apply. Above it, sizes stay at their wide values. Space uses the same widths.');
   tfont('--font-heading', 'h', 'Heading face', 'Any Google Font for headings. Type to search the 500 most popular and every monospace family, or type any family name to load it.');
   tfont('--font-body', 'b', 'Body face', 'Any Google Font for body text and controls.');
-  topt('--leading-body', 'Leading · body', 1, 2.2, 0.01, '', 1.6, 'Line height at body size, unitless. Unset, body text keeps 1.6.');
-  topt('--leading-display', 'Leading · display', 0.8, 1.6, 0.01, '', 1.15, 'Line height for the h1 step (--size-5) and the display sizes above it. Sizes between body and h1 slide in a straight line, so headings get proportionally tighter as they grow. Unset, headings keep 1.15.');
-  topt('--tracking-small', 'Tracking · small', -0.05, 0.15, 0.005, '', 0, 'Letter spacing at the smallest size (--size--2), in em. Positive opens up captions and small print. Body text stays at 0.');
-  topt('--tracking-display', 'Tracking · display', -0.1, 0.05, 0.005, '', 0, 'Letter spacing for the h1 step (--size-5) and the display sizes above it, in em. Negative tightens display type. Sizes in between slide evenly per step.');
-  topt('--tracking-caps', 'Tracking · capitals', 0, 0.2, 0.005, '', 0, 'Extra letter spacing for text in capitals, in em, added to the tracking for its size. The kicker above the article shows it.');
-  topt('--weight-body', 'Weight · body', 100, 900, 10, '', 400, 'Body text weight. Bold text, buttons and labels take this plus 200 (--weight-strong).');
-  topt('--weight-heading', 'Weight · headings', 100, 900, 10, '', 600, 'Heading weight. The face needs that weight: the playground loads every weight a Google Font has.');
-  topt('--line-length', 'Line length', 30, 100, 1, 'ch', 66, 'The longest line of running text, in characters. Unset, lines run the full width.');
-  tfont('--font-accent', 'a', 'Accent face', 'Optional: a third face, for ledes, pull quotes or buttons. Unset, those use the body face. The lede under the article\'s title shows it.');
+  /* two per row: leading, then weights, then tracking */
+  topt('--leading-body', 'Leading · body', 1, 2.2, 0.01, '', 1.6, 'Line height at body size, unitless. Default: 1.6.');
+  topt('--leading-display', 'Leading · h1 and up', 0.8, 1.6, 0.01, '', 1.15, 'Line height at the h1 size (--size-5) and the display sizes above it. Sizes between body and h1 slide from the body value to this one in a straight line, so headings get proportionally tighter as they grow. Default: 1.15.');
+  topt('--weight-body', 'Weight · body', 100, 900, 10, '', 400, 'Body text weight. Bold text, buttons and labels take this plus 200 (--weight-strong). Default: 400.');
+  topt('--weight-heading', 'Weight · headings', 100, 900, 10, '', 600, 'Heading weight. The face needs that weight: the playground loads every weight a Google Font has. Default: 600.');
+  topt('--tracking-small', 'Tracking · smallest size', -0.05, 0.15, 0.005, '', 0, 'Letter spacing at the smallest size (--size--2), in em. Body text stays at 0, and the sizes between slide from 0 to this, so --size--1 gets half. Positive opens up captions and small print. Default: 0.');
+  topt('--tracking-display', 'Tracking · h1 and up', -0.1, 0.05, 0.005, '', 0, 'Letter spacing at the h1 size (--size-5) and the display sizes above it, in em. Body text stays at 0, and the sizes between slide from 0 to this evenly per step, so an h3 gets two fifths. Negative tightens display type. Default: 0.');
+  topt('--tracking-caps', 'Tracking · capitals', 0, 0.2, 0.005, '', 0, 'Extra letter spacing for text in capitals, in em, added to the tracking for its size. Default: 0. The Light and Dark captions in the preview and the kicker above the article show it.');
+  tfont('--font-accent', 'a', 'Accent face', 'Optional: a third face, for ledes, pull quotes or buttons. By default they use the body face. The lede under the article\'s title shows it.');
   tfont('--font-mono', 'm', 'Mono face', 'A monospace face for code, kbd, samp and pre. The list holds every monospace family on Google Fonts; clear it in your CSS to use the system monospace.', true);
   var sc = document.getElementById('space-ctl'), follow = document.getElementById('k_spfollow');
   function spaceVal(v) { var x = get(v); if (/^var\(/.test(x)) x = get(x.slice(4, -1)); return x; }
@@ -940,10 +945,10 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
     document.querySelectorAll('[data-' + kind + 'preset]').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-' + kind + 'preset') === n); });
     document.getElementById(kind + 'preset-note').textContent = n ? D[kind][n].note : 'Custom.';
   }
-  function applyTPreset(n, asTheme) {   /* asTheme: as themes/*.css apply it, without the type dials that are unset by default */
+  function applyTPreset(n) {   /* every dial the preset sets, its optional type dials included; the optional ones it leaves out go back to their defaults */
     var p = D.type[n].dials;
-    TYPE_OPTIONAL.forEach(function (k) { if (asTheme || !(k in p)) root.style.removeProperty(k); });
-    Object.keys(p).forEach(function (k) { if (!asTheme || TYPE_OPTIONAL.indexOf(k) < 0) set(k, p[k]); });
+    TYPE_OPTIONAL.forEach(function (k) { if (!(k in p)) root.style.removeProperty(k); });
+    Object.keys(p).forEach(function (k) { set(k, p[k]); });
     ['--font-heading', '--font-body', '--font-mono', '--font-accent'].forEach(function (k) { loadFont(fontName(p[k])); });
     Object.keys(tIn).forEach(function (k) { tIn[k](); }); markTPreset('type', n); refresh();
   }
@@ -1005,13 +1010,22 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
   var combo = document.getElementById('combo');
   combo.innerHTML = '<option value="" disabled>Custom</option><option value="_shuffle" disabled hidden></option>' + Object.keys(D.themes).map(function (n) { var c = D.themes[n]; return '<option value="' + n + '" title="' + D.colour[c.colour].name + ' colours, ' + D.type[c.type].name + ' type, ' + D.space[c.space].name + ' space">' + c.name + '</option>'; }).join('');
   function applyAll(c, t, sp, scheme) {
-    applyPreset(c); applyTPreset(t, true); applySPreset(sp); if (scheme) setScheme(scheme);
+    applyPreset(c); applyTPreset(t); applySPreset(sp); if (scheme) setScheme(scheme);
+  }
+  /* Randomise's type dials, in ranges that read well */
+  var TYPE_RANDOM = [['--leading-body', 1.35, 1.8, 0.01], ['--leading-display', 1, 1.3, 0.01], ['--tracking-small', 0, 0.04, 0.005], ['--tracking-display', -0.04, 0.01, 0.005],
+    ['--tracking-caps', 0, 0.12, 0.005], ['--weight-body', 300, 500, 50], ['--weight-heading', 500, 800, 50]];   /* [dial, lowest, highest, step] */
+  function randomTypeDials() {
+    TYPE_RANDOM.forEach(function (r) {
+      set(r[0], String(+(r[1] + Math.round(Math.random() * (r[2] - r[1]) / r[3]) * r[3]).toFixed(3)));
+    });
+    Object.keys(tIn).forEach(function (k) { tIn[k](); }); markTPreset('type', null); refresh();
   }
   combo.addEventListener('change', function () { var c = D.themes[combo.value]; if (c) applyAll(c.colour, c.type, c.space, c.preview); });
   function randomKey(o) { var k = Object.keys(o); return k[Math.floor(Math.random() * k.length)]; }
   document.getElementById('shuffle').addEventListener('click', function () {
     var c = randomKey(D.colour), t = randomKey(D.type), sp = randomKey(D.space);
-    applyAll(c, t, sp);
+    applyAll(c, t, sp); randomTypeDials();
     var o = combo.querySelector('option[value="_shuffle"]'); o.textContent = D.colour[c].name + ' · ' + D.type[t].name + ' · ' + D.space[sp].name; o.hidden = false; combo.value = '_shuffle';
   });
   /* touching any control by hand makes it a custom theme */

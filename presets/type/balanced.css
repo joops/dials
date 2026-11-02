@@ -1,5 +1,5 @@
 /* Dials type preset: Balanced
-   Body 16 to 19px, minor third to major third, serif headings. Slightly tightened display type and a 70-character line. */
+   Body 16 to 19px, minor third to major third, serif headings. Slightly tightened display type. */
 :root, :host {
   --screen-min: 360;
   --screen-max: 1240;
@@ -13,5 +13,4 @@
   --leading-body: 1.6;
   --leading-display: 1.1;
   --tracking-display: -0.02;
-  --line-length: 70ch;
 }

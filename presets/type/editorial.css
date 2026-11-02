@@ -1,5 +1,5 @@
 /* Dials type preset: Editorial
-   Long reading: serif throughout, a perfect fourth on desktop. Loose body leading on a 66-character line, regular-weight display type set close, letterspaced small caps. */
+   Long reading: serif throughout, a perfect fourth on desktop. Loose body leading, regular-weight display type set close, letterspaced small caps. */
 :root, :host {
   --screen-min: 360;
   --screen-max: 1240;
@@ -16,5 +16,4 @@
   --tracking-display: -0.02;
   --tracking-caps: 0.06;
   --weight-heading: 400;
-  --line-length: 66ch;
 }
