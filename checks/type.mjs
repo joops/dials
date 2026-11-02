@@ -29,12 +29,12 @@ const TYPE_PROPS = ['font-size', 'line-height', 'font-weight', 'letter-spacing',
   'font-kerning', 'font-variant-numeric', 'font-feature-settings', 'font-optical-sizing', 'text-wrap-mode', 'text-wrap-style', 'text-transform'];
 // Every type dial at its default: the values docs/tokens.md gives. Setting them must change nothing.
 const DEFAULT_DIALS = { '--leading-body': '1.6', '--leading-display': '1.15', '--tracking-small': '0', '--tracking-display': '0',
-  '--tracking-caps': '0', '--weight-body': '400', '--weight-heading': '600', '--line-length': 'none', '--font-accent': 'var(--font-body)' };
+  '--tracking-caps': '0', '--weight-body': '400', '--weight-heading': '600', '--font-accent': 'var(--font-body)' };
 // What the defaults now apply that v0.2.0 didn't: the leading curve, letter spacing (0px rather than normal), the weight of strong,
 // and the sizes that follow from the line heights.
 const V02_CHANGED = new Set(['line-height', 'letter-spacing', 'font-weight', 'height', 'block-size', 'width', 'inline-size', 'perspective-origin', 'transform-origin']);
 const ALL_DIALS = { '--leading-body': '1.45', '--leading-display': '0.98', '--tracking-small': '0.04', '--tracking-display': '-0.05',
-  '--tracking-caps': '0.1', '--weight-body': '300', '--weight-heading': '800', '--line-length': '40ch' };
+  '--tracking-caps': '0.1', '--weight-body': '300', '--weight-heading': '800' };
 
 // The supports test that guards the leading curve in dials.css and dials-base.css. Emulating a browser
 // without tan(), atan2() and log() swaps it for one that's always false, in both.
@@ -302,14 +302,14 @@ try {
     r = await base('/__base', { '--weight-body': '300', '--weight-heading': '750' });
     expect(name, r.p.w === 300 && r.st.w === 500 && r.btn.w === 500 && r.lb.w === 500 && r.h1.w === 750, `--weight-body 300, --weight-heading 750: body ${r.p.w}, strong ${r.st.w}, button ${r.btn.w}, label ${r.lb.w}, h1 ${r.h1.w}`);
     expect(name, r.hst.w > r.h3.w, `--weight-body: strong inside a heading stays bolder than the heading (${r.hst.w} vs ${r.h3.w})`);
-    // line length
+    // line length is left to the layout: --line-length (no longer a dial) caps nothing
     r = await base('/__base', { '--line-length': '30ch' });
-    expect(name, r.p.max !== 'none' && r.h1.max === 'none', `--line-length: paragraphs get a max inline size (${r.p.max}), headings don't (${r.h1.max})`);
+    expect(name, r.p.max === 'none' && r.fc.max === 'none', `--line-length is no longer a dial: paragraphs and captions keep no max inline size (${r.p.max}, ${r.fc.max})`);
     // with no dials set, the curve applies with its defaults: h1 1.15, an h3 between it and body's 1.6, no letter spacing, strong 600
     r = await base('/__base', {});
     expect(name, Math.abs(num(r.h1.lh) / r.h1.size - 1.15) < 0.002 && num(r.h3.lh) / r.h3.size > 1.16 && num(r.h3.lh) / r.h3.size < 1.59,
       `no dials set: h1 1.15 (${(num(r.h1.lh) / r.h1.size).toFixed(3)}), h3 on the curve between 1.15 and 1.6 (${(num(r.h3.lh) / r.h3.size).toFixed(3)})`);
-    expect(name, num(r.h1.ls) === 0 && num(r.sm.ls) === 0 && r.st.w === 600 && r.p.max === 'none', `no dials set: no letter spacing (${r.h1.ls}, ${r.sm.ls}), strong ${r.st.w}, no line-length cap (${r.p.max})`);
+    expect(name, num(r.h1.ls) === 0 && num(r.sm.ls) === 0 && r.st.w === 600 && r.p.max === 'none', `no dials set: no letter spacing (${r.h1.ls}, ${r.sm.ls}), strong ${r.st.w}, no max inline size (${r.p.max})`);
     // a [data-dials] scope applies its dials inside it only
     expect(name, Math.abs(num(r.sh1.lh) / r.sh1.size - 1.15) > 0.005 && num(r.sh1.ls) < 0, `a [data-dials] scope with leading and tracking dials applies them inside it (h1 ${r.sh1.lh} at ${r.sh1.size}px, ${r.sh1.ls})`);
     expect(name, Math.abs(num(r.h1.lh) / r.h1.size - 1.15) < 0.002 && num(r.h1.ls) === 0, `outside the scope nothing changes (h1 ${r.h1.lh}, ${r.h1.ls})`);

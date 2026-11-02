@@ -45,7 +45,6 @@
   --tracking-display: -0.02;
   --tracking-caps: 0.06;
   --weight-heading: 400;
-  --line-length: 66ch;
   /* space: Roomy */
   --space-min: var(--size-min);
   --space-max: var(--size-max);

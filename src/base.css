@@ -9,13 +9,13 @@
    Logical properties throughout, so right-to-left pages work.
    No component classes: a link that should look like a button is
    your own component, built from --solid and --on-solid.
-   Type: the leading, tracking, weight and line-length dials always
-   apply, with their defaults when you set none (leading 1.6 to 1.15,
-   tracking 0, weights 400 and 600, no line-length cap). Setting a
-   dial to its default changes nothing. Rules for letter spacing,
-   line length, the leading of captions and the weight of strong sit
-   in the dials-type cascade layer at the end: any rule of your own
-   wins over a layer, whatever its specificity or order.
+   Type: the leading, tracking and weight dials always apply, with
+   their defaults when you set none (leading 1.6 to 1.15, tracking 0,
+   weights 400 and 600). Setting a dial to its default changes
+   nothing. Rules for letter spacing, the leading of captions and the
+   weight of strong sit in the dials-type cascade layer at the end:
+   any rule of your own wins over a layer, whatever its specificity
+   or order.
    ============================================================ */
 :where(html) { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 :where(body) { margin: 0; background: var(--surface); color: var(--text); font: var(--weight-body, 400) var(--size-0)/var(--leading-body, 1.6) var(--font-body); }
@@ -86,12 +86,11 @@
   :where(h1, h2, h3, h4, h5, h6) { line-height: var(--leading); }
 }
 
-/* Letter spacing, line length, the leading of captions and pre, and the weight of strong. They sit
+/* Letter spacing, the leading of captions and pre, and the weight of strong. They sit
    in a cascade layer, so any rule of your own wins over them, whatever its specificity or order.
    Letter spacing and the leading of captions follow the curves, so they need the maths functions too;
    without them these elements inherit both, as they would without Dials. */
 @layer dials-type {
-  :where(p, li, dt, dd, blockquote, figcaption) { max-inline-size: var(--line-length, none); }
   :where(strong, b) { font-weight: var(--weight-strong); }
   :where(h1, h2, h3, h4, h5, h6) :where(strong, b) { font-weight: revert-layer; }   /* bold in a heading stays bolder than the heading */
   @supports (width: calc(1px * tan(atan2(1px, 1px)) * log(2))) {

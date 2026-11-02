@@ -310,7 +310,7 @@ window.DIALS = {
   },
   "balanced": {
    "name": "Balanced",
-   "note": "Body 16 to 19px, minor third to major third, serif headings. Slightly tightened display type and a 70-character line.",
+   "note": "Body 16 to 19px, minor third to major third, serif headings. Slightly tightened display type.",
    "dials": {
     "--screen-min": "360",
     "--screen-max": "1240",
@@ -323,8 +323,7 @@ window.DIALS = {
     "--font-mono": "ui-monospace, \"SF Mono\", Menlo, Consolas, monospace",
     "--leading-body": "1.6",
     "--leading-display": "1.1",
-    "--tracking-display": "-0.02",
-    "--line-length": "70ch"
+    "--tracking-display": "-0.02"
    },
    "fonts": "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700&family=Figtree:wght@400;700&display=swap\">"
   },
@@ -370,7 +369,7 @@ window.DIALS = {
   },
   "editorial": {
    "name": "Editorial",
-   "note": "Long reading: serif throughout, a perfect fourth on desktop. Loose body leading on a 66-character line, regular-weight display type set close, letterspaced small caps.",
+   "note": "Long reading: serif throughout, a perfect fourth on desktop. Loose body leading, regular-weight display type set close, letterspaced small caps.",
    "dials": {
     "--screen-min": "360",
     "--screen-max": "1240",
@@ -386,8 +385,7 @@ window.DIALS = {
     "--tracking-small": "0.01",
     "--tracking-display": "-0.02",
     "--tracking-caps": "0.06",
-    "--weight-heading": "400",
-    "--line-length": "66ch"
+    "--weight-heading": "400"
    },
    "fonts": "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700&family=Source+Serif+4:wght@400;700&display=swap\">"
   },
@@ -406,8 +404,7 @@ window.DIALS = {
     "--font-mono": "ui-monospace, \"SF Mono\", Menlo, Consolas, monospace",
     "--leading-body": "1.65",
     "--leading-display": "1.2",
-    "--tracking-small": "0.02",
-    "--line-length": "70ch"
+    "--tracking-small": "0.02"
    },
    "fonts": "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap\">"
   },
@@ -610,7 +607,6 @@ window.DIALS = {
   "--tracking-caps",
   "--weight-body",
   "--weight-heading",
-  "--line-length",
   "--font-accent"
  ],
  "typeOptional": [
@@ -621,7 +617,6 @@ window.DIALS = {
   "--tracking-caps",
   "--weight-body",
   "--weight-heading",
-  "--line-length",
   "--font-accent"
  ]
 };

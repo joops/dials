@@ -197,7 +197,6 @@ section { display: grid; gap: 14px; min-width: 0; }
 @media (max-width: 860px) { .specimen { grid-template-columns: 1fr; } }
 .article { background: var(--surface-raised); border: 1px solid var(--border); border-radius: var(--radius-l); padding: var(--space-l); font-family: var(--font-body); font-size: var(--size-0); font-weight: var(--weight-body, 400); line-height: var(--leading); color: var(--text); min-width: 0; }
 .article > * + * { margin-top: var(--space-s); }
-.article p { max-width: var(--line-length, none); }
 .article .kicker { display: block; font-size: var(--size--1); line-height: var(--leading); letter-spacing: var(--tracking-caps-total); text-transform: uppercase; color: var(--brand-on-soft); font-weight: var(--weight-strong); }
 .article h3, .article h4, .article h5 { font-family: var(--font-heading); font-weight: var(--weight-heading, 600); line-height: var(--leading); letter-spacing: var(--tracking); color: var(--text-strong); }
 .article h3 { font-size: var(--size-4); margin-top: var(--space-2xs); }
@@ -239,7 +238,7 @@ section { display: grid; gap: 14px; min-width: 0; }
 .alert b { color: var(--on-soft); }
 
 /* preview panes: their type comes from the type tokens, so every type dial shows here. Each element
-   that sets a font size sets --leading and --tracking too, as the rules ask; running text takes --line-length. */
+   that sets a font size sets --leading and --tracking too, as the rules ask. */
 .pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 @media (max-width: 860px) { .pair { grid-template-columns: 1fr; } }
 .pane { background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: var(--radius-l); padding: var(--space-m); display: grid; gap: var(--space-s); align-content: start; min-width: 0;
@@ -257,7 +256,6 @@ section { display: grid; gap: 14px; min-width: 0; }
 .pane .cap { font-size: var(--size--2); font-weight: var(--weight-strong); line-height: var(--leading); letter-spacing: var(--tracking-caps-total); text-transform: uppercase; color: var(--text-quiet); }
 .pane .card h4 { font: var(--weight-heading, 600) var(--size-2)/var(--leading) var(--font-heading); letter-spacing: var(--tracking); }
 .pane .card p { line-height: var(--leading); }
-.pane .card p, .pane .wash span, .pane .alert span, .pane .well { max-inline-size: var(--line-length, none); }
 .pane .modal-demo div { font-size: var(--size--1); line-height: var(--leading); letter-spacing: var(--tracking); }
 .card { background: var(--surface-raised); border: 1px solid var(--border); border-radius: var(--radius-l); padding: var(--space-s-m); display: grid; gap: var(--space-2xs); box-shadow: 0 4px 14px var(--shadow-color); }
 .card h4 { margin: 0; font: 600 var(--size-2)/1.2 var(--font-heading); color: var(--text-strong); }
@@ -314,7 +312,7 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
     <div class="floatbar">
       <div class="fb-group">
         <label class="combo"><span class="sr-only">Theme</span><select id="combo" aria-label="Theme"></select></label>
-        <span class="tipwrap"><button class="btn soft is-neutral" type="button" id="shuffle" aria-describedby="shuffle-tip"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-15.4 6.4L3 16"/><path d="M3 21v-5h5"/><path d="M3 12a9 9 0 0 1 15.4-6.4L21 8"/><path d="M21 3v5h-5"/></svg><span class="lbl">Randomise</span></button><span class="tip" role="tooltip" id="shuffle-tip">Mixes a random colour, type and space preset into a new combination, with random leading, tracking, weights and line length in ranges that read well. It doesn't choose one of the themes: press it again for another.</span></span>
+        <span class="tipwrap"><button class="btn soft is-neutral" type="button" id="shuffle" aria-describedby="shuffle-tip"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-15.4 6.4L3 16"/><path d="M3 21v-5h5"/><path d="M3 12a9 9 0 0 1 15.4-6.4L21 8"/><path d="M21 3v5h-5"/></svg><span class="lbl">Randomise</span></button><span class="tip" role="tooltip" id="shuffle-tip">Mixes a random colour, type and space preset into a new combination, with random leading, tracking and weights in ranges that read well. It doesn't choose one of the themes: press it again for another.</span></span>
       </div>
       <span class="fb-sep" aria-hidden="true"></span>
       <div class="seg fb-scheme" role="group" aria-label="Colour scheme">
@@ -377,7 +375,7 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
       <div class="type-ctl" id="type-ctl"></div>
       <details class="more" id="type-optional"><summary>Leading, tracking and weight (optional)</summary>
         <div class="more-body">
-          <p class="ctl-note">Optional dials for line height, letter spacing, weight and line length. Each always applies, at the default shown until you move it: leading 1.6 at body size to 1.15 at h1, no extra letter spacing, weights 400 and 600, no line-length cap. A preset, a theme or Randomise sets them all again. Leading and tracking are set at two ends, body text and the h1 step (<code>--size-5</code>), and every size in between slides along a curve; the sizes above h1 keep the display values. The preview below and the scale beside the article show them. Tracking is in em.</p>
+          <p class="ctl-note">Optional dials for line height, weight and letter spacing. Each always applies, at the default shown until you move it: leading 1.6 at body size to 1.15 at h1, weights 400 and 600, no extra letter spacing. A preset, a theme or Randomise sets them all again. Leading and tracking are set at two ends, body text and the h1 step (<code>--size-5</code>), and every size in between slides along a curve; the sizes above h1 keep the display values. The preview below and the scale beside the article show them. Tracking is in em.</p>
           <div class="type-ctl" id="type-ctl2"></div>
         </div>
       </details>
@@ -520,7 +518,7 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
     '--paper-lightness', '--paper-dark-lightness', '--ink-lightness', '--ink-dark-lightness'];
   var TYPE_DIALS = ['--screen-min', '--screen-max', '--size-min', '--size-max', '--ratio-min', '--ratio-max', '--font-heading', '--font-body', '--font-mono'];
   /* not declared by dials.css: exported only once set, since each one's default needs no line */
-  var TYPE_OPTIONAL = ['--leading-body', '--leading-display', '--tracking-small', '--tracking-display', '--tracking-caps', '--weight-body', '--weight-heading', '--line-length', '--font-accent'];
+  var TYPE_OPTIONAL = ['--leading-body', '--leading-display', '--tracking-small', '--tracking-display', '--tracking-caps', '--weight-body', '--weight-heading', '--font-accent'];
   function setOptional() { return TYPE_OPTIONAL.filter(function (v) { return root.style.getPropertyValue(v).trim(); }); }
   var SPACE_DIALS = ['--space-min', '--space-max', '--space-density', '--radius-base'];
   var SRC = { colour: '', scale: '', base: '' };   /* the dist files' text, fetched below */
@@ -641,7 +639,7 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
 
   /* preview panes */
   var PANE = '<span class="cap">{cap}</span>' +
-    '<div class="card"><h4>Finish the mix</h4><p>Body text is ink blended into paper. A paragraph long enough to wrap shows the body leading between its lines, and the line length where it breaks.</p><p class="t-muted">Muted text, a step quieter.</p><p class="t-quiet">Quiet text · captions and dates</p><p class="t-dis">Disabled text</p><p><a href="#css">A link in the brand colour</a></p></div>' +
+    '<div class="card"><h4>Finish the mix</h4><p>Body text is ink blended into paper. A paragraph long enough to wrap shows the body leading between its lines.</p><p class="t-muted">Muted text, a step quieter.</p><p class="t-quiet">Quiet text · captions and dates</p><p class="t-dis">Disabled text</p><p><a href="#css">A link in the brand colour</a></p></div>' +
     '<div class="wash"><b>A wash, built from two soft tints</b><span>A pattern, not a token: body text keeps 4.5:1 anywhere on it.</span></div>' +
     '<div class="row">' + GROUP_NAMES.map(function (g) { return '<button class="btn is-' + g + '" type="button">' + g[0].toUpperCase() + g.slice(1) + '</button>'; }).join('') + '</div>' +
     '<div class="row">' + GROUP_NAMES.map(function (g) { return '<button class="btn soft is-' + g + '" type="button">' + g[0].toUpperCase() + g.slice(1) + '</button>'; }).join('') + '<button class="btn ghost" type="button">Ghost</button><button class="btn" type="button" disabled>Disabled</button></div>' +
@@ -858,12 +856,12 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
     tIn[v] = function () { var x = spaceVal(v); inp.value = x; out.textContent = x + (unit || ''); inp.disabled = /^--space-(min|max)$/.test(v) && follow.checked; };
   }
   var tc2 = document.getElementById('type-ctl2');
-  function topt(v, label, min, max, step, unit, def, tip, defShown) {   /* a dial dials.css doesn't declare: until moved, the slider shows its default */
+  function topt(v, label, min, max, step, unit, def, tip) {   /* a dial dials.css doesn't declare: until moved, the slider shows its default */
     var l = document.createElement('div'); l.className = 'dial opt';
     l.innerHTML = '<span><label for="' + idOf(v) + '">' + label + '</label>' + info(label, tip) + '</span><input type="range" id="' + idOf(v) + '" min="' + min + '" max="' + max + '" step="' + step + '"><output></output>';
     tc2.appendChild(l); var inp = l.querySelector('input'), out = l.querySelector('output');
-    function show() { var x = root.style.getPropertyValue(v).trim(); inp.value = x ? parseFloat(x) : def; out.textContent = x || String(defShown || def); }   /* the value in use: the default until moved */
-    inp.addEventListener('input', function () { set(v, inp.value + (unit === 'ch' ? 'ch' : '')); show(); markTPreset('type', null); refresh(); });
+    function show() { var x = root.style.getPropertyValue(v).trim(); inp.value = x ? parseFloat(x) : def; out.textContent = x || String(def); }   /* the value in use: the default until moved */
+    inp.addEventListener('input', function () { set(v, inp.value); show(); markTPreset('type', null); refresh(); });
     tIn[v] = show;
   }
   function tratio(v, label, tip) {
@@ -920,14 +918,14 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
   tdial('--screen-max', 'Wide screen', 960, 1600, 20, 'px', null, 'The screen width where the wide sizes apply. Above it, sizes stay at their wide values. Space uses the same widths.');
   tfont('--font-heading', 'h', 'Heading face', 'Any Google Font for headings. Type to search the 500 most popular and every monospace family, or type any family name to load it.');
   tfont('--font-body', 'b', 'Body face', 'Any Google Font for body text and controls.');
+  /* two per row: leading, then weights, then tracking */
   topt('--leading-body', 'Leading · body', 1, 2.2, 0.01, '', 1.6, 'Line height at body size, unitless. Default: 1.6.');
-  topt('--leading-display', 'Leading · display', 0.8, 1.6, 0.01, '', 1.15, 'Line height for the h1 step (--size-5) and the display sizes above it. Sizes between body and h1 slide in a straight line, so headings get proportionally tighter as they grow. Default: 1.15.');
-  topt('--tracking-small', 'Tracking · small', -0.05, 0.15, 0.005, '', 0, 'Letter spacing at the smallest size (--size--2), in em. Positive opens up captions and small print. Body text stays at 0. Default: 0.');
-  topt('--tracking-display', 'Tracking · display', -0.1, 0.05, 0.005, '', 0, 'Letter spacing for the h1 step (--size-5) and the display sizes above it, in em. Negative tightens display type. Sizes in between slide evenly per step. Default: 0.');
-  topt('--tracking-caps', 'Tracking · capitals', 0, 0.2, 0.005, '', 0, 'Extra letter spacing for text in capitals, in em, added to the tracking for its size. Default: 0. The Light and Dark captions in the preview and the kicker above the article show it.');
+  topt('--leading-display', 'Leading · h1 and up', 0.8, 1.6, 0.01, '', 1.15, 'Line height at the h1 size (--size-5) and the display sizes above it. Sizes between body and h1 slide from the body value to this one in a straight line, so headings get proportionally tighter as they grow. Default: 1.15.');
   topt('--weight-body', 'Weight · body', 100, 900, 10, '', 400, 'Body text weight. Bold text, buttons and labels take this plus 200 (--weight-strong). Default: 400.');
   topt('--weight-heading', 'Weight · headings', 100, 900, 10, '', 600, 'Heading weight. The face needs that weight: the playground loads every weight a Google Font has. Default: 600.');
-  topt('--line-length', 'Line length', 30, 100, 1, 'ch', 66, 'The longest line of running text, in characters. Default: none, so lines run the full width.', 'none');
+  topt('--tracking-small', 'Tracking · smallest size', -0.05, 0.15, 0.005, '', 0, 'Letter spacing at the smallest size (--size--2), in em. Body text stays at 0, and the sizes between slide from 0 to this, so --size--1 gets half. Positive opens up captions and small print. Default: 0.');
+  topt('--tracking-display', 'Tracking · h1 and up', -0.1, 0.05, 0.005, '', 0, 'Letter spacing at the h1 size (--size-5) and the display sizes above it, in em. Body text stays at 0, and the sizes between slide from 0 to this evenly per step, so an h3 gets two fifths. Negative tightens display type. Default: 0.');
+  topt('--tracking-caps', 'Tracking · capitals', 0, 0.2, 0.005, '', 0, 'Extra letter spacing for text in capitals, in em, added to the tracking for its size. Default: 0. The Light and Dark captions in the preview and the kicker above the article show it.');
   tfont('--font-accent', 'a', 'Accent face', 'Optional: a third face, for ledes, pull quotes or buttons. By default they use the body face. The lede under the article\'s title shows it.');
   tfont('--font-mono', 'm', 'Mono face', 'A monospace face for code, kbd, samp and pre. The list holds every monospace family on Google Fonts; clear it in your CSS to use the system monospace.', true);
   var sc = document.getElementById('space-ctl'), follow = document.getElementById('k_spfollow');
@@ -1014,13 +1012,12 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
   function applyAll(c, t, sp, scheme) {
     applyPreset(c); applyTPreset(t); applySPreset(sp); if (scheme) setScheme(scheme);
   }
-  /* Randomise's type dials: [dial, lowest, highest, step, unit], ranges that read well; line length stays at its default (none) half the time */
+  /* Randomise's type dials, in ranges that read well */
   var TYPE_RANDOM = [['--leading-body', 1.35, 1.8, 0.01], ['--leading-display', 1, 1.3, 0.01], ['--tracking-small', 0, 0.04, 0.005], ['--tracking-display', -0.04, 0.01, 0.005],
-    ['--tracking-caps', 0, 0.12, 0.005], ['--weight-body', 300, 500, 50], ['--weight-heading', 500, 800, 50], ['--line-length', 55, 80, 1, 'ch']];
+    ['--tracking-caps', 0, 0.12, 0.005], ['--weight-body', 300, 500, 50], ['--weight-heading', 500, 800, 50]];   /* [dial, lowest, highest, step] */
   function randomTypeDials() {
     TYPE_RANDOM.forEach(function (r) {
-      if (r[0] === '--line-length' && Math.random() < 0.5) { root.style.removeProperty(r[0]); return; }
-      set(r[0], +(r[1] + Math.round(Math.random() * (r[2] - r[1]) / r[3]) * r[3]).toFixed(3) + (r[4] || ''));
+      set(r[0], String(+(r[1] + Math.round(Math.random() * (r[2] - r[1]) / r[3]) * r[3]).toFixed(3)));
     });
     Object.keys(tIn).forEach(function (k) { tIn[k](); }); markTPreset('type', null); refresh();
   }

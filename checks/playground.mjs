@@ -64,21 +64,19 @@ try {
     // randomise, schemes, format, export, tables
     await p.click('#shuffle');
     expect(name, await p.$eval('#combo', el => el.value) === '_shuffle', 'Randomise did not set a random combination');
-    // Randomise sets the type dials too, within ranges that read well (line length may stay at its default)
+    // Randomise sets the type dials too, within ranges that read well
     const RANGES = { '--leading-body': [1.35, 1.8], '--leading-display': [1, 1.3], '--tracking-small': [0, 0.04], '--tracking-display': [-0.04, 0.01],
-      '--tracking-caps': [0, 0.12], '--weight-body': [300, 500], '--weight-heading': [500, 800], '--line-length': [55, 80] };
-    const outOfRange = [], lineLengths = new Set();
+      '--tracking-caps': [0, 0.12], '--weight-body': [300, 500], '--weight-heading': [500, 800] };
+    const outOfRange = [];
     for (let i = 0; i < 12; i++) {
       if (i) await p.click('#shuffle');
       const got = await p.evaluate(K => Object.fromEntries(K.map(k => [k, document.documentElement.style.getPropertyValue(k).trim()])), Object.keys(RANGES));
       for (const [k, [lo, hi]] of Object.entries(RANGES)) {
         const v = got[k];
-        if (k === '--line-length') { lineLengths.add(v ? 'set' : 'default'); if (!v) continue; if (!/^\d+ch$/.test(v)) { outOfRange.push(`${k}: ${v}`); continue; } }
         if (!v || !(parseFloat(v) >= lo - 1e-9 && parseFloat(v) <= hi + 1e-9)) outOfRange.push(`${k}: ${v || 'default'}`);
       }
     }
     expect(name, !outOfRange.length, `Randomise sets every type dial within its range (outside: ${[...new Set(outOfRange)].join(', ')})`);
-    expect(name, lineLengths.has('set'), 'Randomise sets a line length some of the time');
     for (const s of ['dark', 'light', 'system']) {
       await p.click(`button[data-scheme="${s}"]`);
       const attr = await p.evaluate(() => document.documentElement.getAttribute('data-scheme'));
@@ -104,7 +102,7 @@ try {
     await p.click('[role=tab][aria-controls=tab-type]');
     await p.click('[data-typepreset="editorial"]');
     await p.click('[data-typepreset="hi-fi"]');
-    const left = await p.evaluate(() => ['--leading-body', '--leading-display', '--tracking-small', '--tracking-display', '--tracking-caps', '--weight-body', '--weight-heading', '--line-length'].filter(k => document.documentElement.style.getPropertyValue(k)));
+    const left = await p.evaluate(() => ['--leading-body', '--leading-display', '--tracking-small', '--tracking-display', '--tracking-caps', '--weight-body', '--weight-heading'].filter(k => document.documentElement.style.getPropertyValue(k)));
     expect(name, !left.length, `Hi-Fi after Editorial leaves no type dials behind (left: ${left.join(', ')})`);
     const disc = await p.$eval('#type-optional', el => ({ tag: el.tagName, open: el.open, summary: el.querySelector('summary').textContent, holds: !!el.querySelector('#k__leading_body') }));
     expect(name, disc.tag === 'DETAILS' && !disc.open && /\(optional\)/.test(disc.summary) && disc.holds, `the type dials are in a closed <details> titled "(optional)" (${JSON.stringify(disc)})`);
@@ -113,8 +111,8 @@ try {
     expect(name, await p.$eval('#type-optional', el => el.open), 'Enter on the summary opens the type dials');
     // each slider shows the value in use, its default until moved, like the other dials: no label, no reset button
     const outs = await p.$$eval('#type-ctl2 output', els => els.map(e => e.textContent));
-    const extras = await p.$$eval('#type-ctl2 button', els => els.length);
-    expect(name, outs.join(' ') === '1.6 1.15 0 0 0 400 600 none' && !extras, `the sliders show their defaults as plain values, with no extra buttons (${outs.join(', ')}; ${extras} buttons)`);
+    const extras = await p.$$eval('#type-ctl2 button:not(.info)', els => els.length);   // each label keeps its ? info button, like the other dials
+    expect(name, outs.join(' ') === '1.6 1.15 400 600 0 0 0' && !extras, `the sliders show their defaults as plain values, with no reset buttons (${outs.join(', ')}; ${extras} other buttons)`);
     // a dial set to its default changes nothing anywhere on the page: the preview panes, the article and the base demo
     const typeSnap = () => p.evaluate(() => [...document.querySelectorAll('#pair *, .article, .article *, .base-demo, .base-demo *')].map(el => { const cs = getComputedStyle(el); return [cs.lineHeight, cs.letterSpacing, cs.fontWeight, cs.maxInlineSize].join('|'); }).join('\n'));
     const plain = await typeSnap();
@@ -145,7 +143,7 @@ try {
     const PROBES = [['--leading-body', '2', '.card p', 'lineHeight'], ['--leading-display', '1.5', '.card h4', 'lineHeight'],
       ['--tracking-small', '0.1', '.badge', 'letterSpacing'], ['--tracking-display', '-0.08', '.card h4', 'letterSpacing'],
       ['--tracking-caps', '0.2', '.cap', 'letterSpacing'], ['--weight-body', '300', '.card p', 'fontWeight'],
-      ['--weight-heading', '800', '.card h4', 'fontWeight'], ['--line-length', '30', '.card p', 'maxInlineSize']];
+      ['--weight-heading', '800', '.card h4', 'fontWeight']];
     for (const [dial, value, sel, prop] of PROBES) {
       const read = () => p.$$eval('#pair .pane ' + sel, (els, prop) => els.map(el => getComputedStyle(el)[prop]).join(' / '), prop);
       const before = await read();

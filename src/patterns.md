@@ -76,7 +76,7 @@ The same goes for small caps (`font-variant-caps: all-small-caps`).
 
 **Display type**, such as a hero title or a big numeral, uses the top steps, `--size-6` to `--size-8`. They keep `--leading-display` and `--tracking-display`, the values set for h1.
 
-**Line length.** `--line-length` caps running text in `dials-base.css` (paragraphs, list items, quotes, captions). A component that holds running text reads it with no cap as the fallback: `max-inline-size: var(--line-length, none)`.
+**Line length.** Dials has no line-length dial: the measure depends on the layout, so set it where the layout is decided, on the component that holds running text: `max-inline-size: 65ch` (in `ch`, so it follows the face and size). `dials-base.css` leaves line length to the container.
 
 **A third face**, for ledes, pull quotes or buttons, is the `--font-accent` dial. Its default is the body face, and `dials.css` doesn't declare it, so read it with the body face as the fallback:
 

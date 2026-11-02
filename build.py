@@ -102,7 +102,7 @@ TYPE_REQUIRED = ["--screen-min", "--screen-max", "--size-min", "--size-max", "--
 # Not declared in dials.css: src/scale.css documents them in comments with their defaults, which Dials
 # always applies (dials-base.css reads each with its default as the fallback), so a preset may leave any of them out
 TYPE_OPTIONAL = ["--leading-body", "--leading-display", "--tracking-small", "--tracking-display", "--tracking-caps",
-                 "--weight-body", "--weight-heading", "--line-length", "--font-accent"]
+                 "--weight-body", "--weight-heading", "--font-accent"]
 SPACE_REQUIRED = ["--space-min", "--space-max", "--space-density", "--radius-base"]
 REQUIRED = {"colour": (COLOUR_REQUIRED, COLOUR_OPTIONAL), "type": (TYPE_REQUIRED, TYPE_OPTIONAL), "space": (SPACE_REQUIRED, [])}
 
@@ -237,7 +237,7 @@ def flat_stale(flat_src, colour_src):
 
 def theme_file(key, t, presets, table):
     """A theme: its colour, type and space presets' dials, the type preset's leading, tracking,
-    weights and line length included. A dial the type preset leaves out keeps its default."""
+    and weights included. A dial the type preset leaves out keeps its default."""
     parts = [(k, presets[k][t[k]]) for k in KINDS]
     link = fonts_link(presets["type"][t["type"]]["dials"], table)
     names = ", ".join(f"{p['name']} {k}" for k, p in parts)
@@ -335,10 +335,12 @@ DEPRECATED_DIALS = {"--accent": "--secondary"}
 # The type dials dials.css documents in comments. Those comments still say an unset type dial keeps v0.2's
 # type, which is no longer so, but dials.css stays byte-identical in this release (sites have copied it),
 # so the reference states them as they work: each always applies, with the default shown.
-UNDECLARED_SECTION = "Leading, tracking, weight and line length"
+UNDECLARED_SECTION = "Leading, tracking and weight"
 UNDECLARED_NOTE = ("`dials.css` doesn't declare these at `:root`, but Dials always applies them, with the default shown when you set none: "
                    "setting a dial to its default changes nothing. In your own CSS, read one with its default as the fallback: `var(--weight-heading, 600)`.")
-COMMENT_DESCRIPTIONS = {"--line-length": "the longest line of running text, e.g. 65ch; the default, none, lets lines run the full width"}
+# --line-length is still in that comment block but is no longer a dial: Dials worked nothing out from it, so a
+# line length is a pattern in src/patterns.md. The reference leaves it out.
+REMOVED_DIALS = {"--line-length"}
 
 
 def documented(src, file):
@@ -354,8 +356,9 @@ def documented(src, file):
             continue
         u = re.match(r"/\*\s*(--[\w-]+)\s*:\s*(.+?);\s*(.*?)\s*\*/$", s)
         if u and block == "dial":   # a dial dials.css doesn't declare, documented in a comment with its default
+            if u.group(1) in REMOVED_DIALS:
+                continue
             desc = u.group(3).strip()
-            desc = COMMENT_DESCRIPTIONS.get(u.group(1), desc)
             rows.append({"name": u.group(1), "kind": "dial", "file": file, "section": UNDECLARED_SECTION, "declared": False,
                          "default": u.group(2).strip(), "description": desc})
             continue

@@ -50,7 +50,6 @@
   .base-demo :where(h1, h2, h3, h4, h5, h6) { line-height: var(--leading); }
 }
 @layer dials-type {
-  .base-demo :where(p, li, dt, dd, blockquote, figcaption) { max-inline-size: var(--line-length, none); }
   .base-demo :where(strong, b) { font-weight: var(--weight-strong); }
   .base-demo :where(h1, h2, h3, h4, h5, h6) :where(strong, b) { font-weight: revert-layer; }
   @supports (width: calc(1px * tan(atan2(1px, 1px)) * log(2))) {

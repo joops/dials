@@ -62,7 +62,7 @@ This is the reference for Dials v0.3.0. Names can change between versions: for a
 | `--border-width-m` | `2px` | emphasis; outline offsets |
 | `--border-width-l` | `3px` | focus rings, quote bars, active tabs |
 
-### Leading, tracking, weight and line length
+### Leading, tracking and weight
 
 `dials.css` doesn't declare these at `:root`, but Dials always applies them, with the default shown when you set none: setting a dial to its default changes nothing. In your own CSS, read one with its default as the fallback: `var(--weight-heading, 600)`.
 
@@ -75,7 +75,6 @@ This is the reference for Dials v0.3.0. Names can change between versions: for a
 | `--tracking-caps` | `0` | extra letter spacing for all caps and small caps, in em without the unit (0.05 to 0.12 is usual) |
 | `--weight-body` | `400` | body text weight |
 | `--weight-heading` | `600` | heading weight |
-| `--line-length` | `none` | the longest line of running text, e.g. 65ch; the default, none, lets lines run the full width |
 | `--font-accent` | `var(--font-body)` | a third face, for ledes, pull quotes or buttons; read it as var(--font-accent, var(--font-body)) |
 
 ## Optional exact colours
@@ -362,7 +361,7 @@ The same goes for small caps (`font-variant-caps: all-small-caps`).
 
 **Display type**, such as a hero title or a big numeral, uses the top steps, `--size-6` to `--size-8`. They keep `--leading-display` and `--tracking-display`, the values set for h1.
 
-**Line length.** `--line-length` caps running text in `dials-base.css` (paragraphs, list items, quotes, captions). A component that holds running text reads it with no cap as the fallback: `max-inline-size: var(--line-length, none)`.
+**Line length.** Dials has no line-length dial: the measure depends on the layout, so set it where the layout is decided, on the component that holds running text: `max-inline-size: 65ch` (in `ch`, so it follows the face and size). `dials-base.css` leaves line length to the container.
 
 **A third face**, for ledes, pull quotes or buttons, is the `--font-accent` dial. Its default is the body face, and `dials.css` doesn't declare it, so read it with the body face as the fallback:
 
