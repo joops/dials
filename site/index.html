@@ -178,12 +178,7 @@ section { display: grid; gap: 14px; min-width: 0; }
 .type-ctl .lbl { color: var(--text-muted); font-weight: 600; font-size: 13.5px; display: inline-flex; align-items: center; }
 .type-ctl .lbl label { cursor: pointer; }
 .type-ctl .dial { grid-template-columns: 150px minmax(0, 1fr) 52px; }
-.type-ctl .dial.opt { grid-template-columns: 150px minmax(0, 1fr) 64px 24px; }
-.type-ctl .dial.opt.unset output { color: var(--text-quiet); }
-.type-ctl .dial.opt output small { display: block; font-size: 11.5px; font-style: italic; }
 .more .type-ctl .dial { max-width: none; }   /* the type dials in their disclosure keep the Type tab's layout */
-.type-ctl .dial .unset-btn { font: 600 14px/1 var(--page-body); color: var(--text-muted); background: none; border: 1px solid var(--border); border-radius: var(--radius-s); width: 24px; height: 24px; padding: 0; cursor: pointer; }
-.type-ctl .dial.unset .unset-btn { visibility: hidden; }
 .type-ctl label.fontrow, .type-ctl div.fontrow { display: grid; align-items: center; gap: 10px; grid-template-columns: 150px minmax(0, 1fr); position: relative; }
 .info { display: inline-grid; place-items: center; width: 16px; height: 16px; margin-left: 5px; padding: 0; border-radius: 50%; border: 1px solid var(--border-strong); background: var(--surface-raised); color: var(--text-quiet); font: 700 10px/1 var(--page-body); cursor: help; position: relative; vertical-align: 1px; }
 .info:hover, .info:focus-visible { color: var(--text-strong); border-color: var(--text-muted); }
@@ -382,7 +377,7 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
       <div class="type-ctl" id="type-ctl"></div>
       <details class="more" id="type-optional"><summary>Leading, tracking and weight (optional)</summary>
         <div class="more-body">
-          <p class="ctl-note">Optional dials for line height, letter spacing, weight and line length. Each always applies, at the default shown until you move it: leading 1.6 at body size to 1.15 at h1, no extra letter spacing, weights 400 and 600, no line-length cap. Setting one to its default changes nothing. Move one to set it; × puts it back to its default. Leading and tracking are set at two ends, body text and the h1 step (<code>--size-5</code>), and every size in between slides along a curve; the sizes above h1 keep the display values. The preview below and the scale beside the article show them. Tracking is in em.</p>
+          <p class="ctl-note">Optional dials for line height, letter spacing, weight and line length. Each always applies, at the default shown until you move it: leading 1.6 at body size to 1.15 at h1, no extra letter spacing, weights 400 and 600, no line-length cap. A preset, a theme or Randomise sets them all again. Leading and tracking are set at two ends, body text and the h1 step (<code>--size-5</code>), and every size in between slides along a curve; the sizes above h1 keep the display values. The preview below and the scale beside the article show them. Tracking is in em.</p>
           <div class="type-ctl" id="type-ctl2"></div>
         </div>
       </details>
@@ -863,13 +858,12 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: 12.5px/1.6 var(--page-
     tIn[v] = function () { var x = spaceVal(v); inp.value = x; out.textContent = x + (unit || ''); inp.disabled = /^--space-(min|max)$/.test(v) && follow.checked; };
   }
   var tc2 = document.getElementById('type-ctl2');
-  function topt(v, label, min, max, step, unit, def, tip, defShown) {   /* a dial dials.css doesn't declare: until moved, the slider rests on its default */
+  function topt(v, label, min, max, step, unit, def, tip, defShown) {   /* a dial dials.css doesn't declare: until moved, the slider shows its default */
     var l = document.createElement('div'); l.className = 'dial opt';
-    l.innerHTML = '<span><label for="' + idOf(v) + '">' + label + '</label>' + info(label, tip) + '</span><input type="range" id="' + idOf(v) + '" min="' + min + '" max="' + max + '" step="' + step + '"><output></output><button type="button" class="unset-btn" aria-label="Reset ' + label + ' to its default" title="Back to the default">×</button>';
+    l.innerHTML = '<span><label for="' + idOf(v) + '">' + label + '</label>' + info(label, tip) + '</span><input type="range" id="' + idOf(v) + '" min="' + min + '" max="' + max + '" step="' + step + '"><output></output>';
     tc2.appendChild(l); var inp = l.querySelector('input'), out = l.querySelector('output');
-    function show() { var x = root.style.getPropertyValue(v).trim(); l.classList.toggle('unset', !x); inp.value = x ? parseFloat(x) : def; if (x) out.textContent = x; else out.innerHTML = (defShown || def) + ' <small>(default)</small>'; }
+    function show() { var x = root.style.getPropertyValue(v).trim(); inp.value = x ? parseFloat(x) : def; out.textContent = x || String(defShown || def); }   /* the value in use: the default until moved */
     inp.addEventListener('input', function () { set(v, inp.value + (unit === 'ch' ? 'ch' : '')); show(); markTPreset('type', null); refresh(); });
-    l.querySelector('.unset-btn').addEventListener('click', function () { root.style.removeProperty(v); show(); markTPreset('type', null); refresh(); });
     tIn[v] = show;
   }
   function tratio(v, label, tip) {

@@ -111,9 +111,10 @@ try {
     await p.focus('#type-optional > summary');
     await p.keyboard.press('Enter');
     expect(name, await p.$eval('#type-optional', el => el.open), 'Enter on the summary opens the type dials');
-    // each slider shows its default, never "unset"
+    // each slider shows the value in use, its default until moved, like the other dials: no label, no reset button
     const outs = await p.$$eval('#type-ctl2 output', els => els.map(e => e.textContent));
-    expect(name, outs.length === 8 && outs.every(t => / \(default\)$/.test(t)) && outs[0] === '1.6 (default)' && outs[7] === 'none (default)', `the sliders show their defaults (${outs.join(', ')})`);
+    const extras = await p.$$eval('#type-ctl2 button', els => els.length);
+    expect(name, outs.join(' ') === '1.6 1.15 0 0 0 400 600 none' && !extras, `the sliders show their defaults as plain values, with no extra buttons (${outs.join(', ')}; ${extras} buttons)`);
     // a dial set to its default changes nothing anywhere on the page: the preview panes, the article and the base demo
     const typeSnap = () => p.evaluate(() => [...document.querySelectorAll('#pair *, .article, .article *, .base-demo, .base-demo *')].map(el => { const cs = getComputedStyle(el); return [cs.lineHeight, cs.letterSpacing, cs.fontWeight, cs.maxInlineSize].join('|'); }).join('\n'));
     const plain = await typeSnap();
@@ -121,8 +122,9 @@ try {
     for (const [k, v] of Object.entries(DEFAULTS)) await p.fill('#k' + k.replace(/-/g, '_'), v);
     const atDefaults = await typeSnap(), setCount = await p.evaluate(K => K.filter(k => document.documentElement.style.getPropertyValue(k)).length, Object.keys(DEFAULTS));
     expect(name, setCount === 7 && atDefaults === plain, `every type dial set to its default leaves the page's type as it was (${setCount} set; ${atDefaults.split('\n').filter((l, i) => l !== plain.split('\n')[i]).length} elements differ)`);
-    for (const k of Object.keys(DEFAULTS)) await p.click(`#k${k.replace(/-/g, '_')} ~ .unset-btn`);
-    // a slider sets its dial, × puts it back, and the exports carry set dials only
+    const reset = () => p.click('[data-typepreset="hi-fi"]');   // a preset sets every type dial again, as it does the others
+    await reset();
+    // a slider sets its dial, a preset puts it back, and the exports carry set dials only
     const h3 = () => p.$eval('.base-demo h3', el => { const cs = getComputedStyle(el); return parseFloat(cs.lineHeight) / parseFloat(cs.fontSize); });
     const before = await h3();
     await p.fill('#k__leading_display', '1.4');
@@ -136,8 +138,9 @@ try {
     await p.click('[data-export="theme"]');
     expect(name, /\n  --leading-display: 1\.4;/.test(themeOut) && !/--leading-body/.test(themeOut) && !/:\s*;/.test(themeOut), 'the theme export lists the set type dial, and no dial left at its default');
     expect(name, /\n  --leading-display: 1\.4;/.test(fullOut) && /\/\* --leading-body: 1\.6;/.test(fullOut), 'the full export declares the set type dial and leaves the others as comments with their defaults');
-    await p.click('#k__leading_display ~ .unset-btn');
-    expect(name, !(await p.evaluate(() => document.documentElement.style.getPropertyValue('--leading-display'))) && Math.abs(await h3() - before) < 0.002, `× puts the dial back to its default, and the h3 back to ${before.toFixed(3)}`);
+    await reset();
+    const shown = await p.$eval('#k__leading_display ~ output', el => el.textContent);
+    expect(name, !(await p.evaluate(() => document.documentElement.style.getPropertyValue('--leading-display'))) && shown === '1.15' && Math.abs(await h3() - before) < 0.002, `the Hi-Fi preset puts the dial back to its default (shown ${shown}), and the h3 back to ${before.toFixed(3)}`);
     // every type dial changes the live preview under the controls: the light and dark panes
     const PROBES = [['--leading-body', '2', '.card p', 'lineHeight'], ['--leading-display', '1.5', '.card h4', 'lineHeight'],
       ['--tracking-small', '0.1', '.badge', 'letterSpacing'], ['--tracking-display', '-0.08', '.card h4', 'letterSpacing'],
@@ -149,8 +152,8 @@ try {
       await p.fill('#k' + dial.replace(/-/g, '_'), value);
       const after = await read();
       expect(name, after !== before, `${dial} = ${value} changes ${sel}'s ${prop} in the preview panes (${before} -> ${after})`);
-      await p.click(`#k${dial.replace(/-/g, '_')} ~ .unset-btn`);
-      expect(name, await read() === before, `× on ${dial} puts ${sel}'s ${prop} back (${before})`);
+      await reset();
+      expect(name, await read() === before, `the Hi-Fi preset after ${dial} puts ${sel}'s ${prop} back (${before})`);
     }
     // the mono picker lists monospace families only
     await p.click('[role=tab][aria-controls=tab-type]');
