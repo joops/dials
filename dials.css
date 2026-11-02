@@ -259,16 +259,8 @@
   --border-width-m: 2px;   /* emphasis; outline offsets */
   --border-width-l: 3px;   /* focus rings, quote bars, active tabs */
 
-  /* ---- Leading, tracking, weight and line length: unset by default ---- */
-  /* While none is set, dials-base.css keeps v0.2's type. Set them in your own file; the value
-     shown is what Dials uses for any you leave unset once you've set another. */
-  /* --leading-body: 1.5;      line height at body size (--size-0), unitless; every larger size keeps the same gap between lines, so it gets proportionally tighter */
-  /* --tracking-curve: 0;      how strongly letter spacing follows size: 0 is flat, the face's own spacing; at 1, text tightens by 0.015em each time it doubles in size and loosens as much each time it halves; body text stays at 0 */
-  /* --paragraph-spacing: 1;   space after paragraphs, lists, quotes and other blocks, in body lines; headings get two above and half a line below */
-  /* --tracking-caps: 0.06;    extra letter spacing for all caps and small caps, in em without the unit (0.05 to 0.12 is usual) */
-  /* --weight-body: 400;       body text weight */
-  /* --weight-heading: 600;    heading weight */
-  /* --line-length: none;      the longest line of running text, e.g. 65ch; unset, lines run the full width */
+  /* ---- Leading: one dial for the rhythm of the type ---- */
+  /* --leading-body: 1.5;      line height at body size (--size-0), unitless. Every larger size keeps the same gap between lines, so it gets proportionally tighter; the space after paragraphs is one body line */
   /* --font-accent: var(--font-body);  a third face, for ledes, pull quotes or buttons; read it as var(--font-accent, var(--font-body)) */
 }
 
@@ -313,22 +305,14 @@
   --size-7: clamp(min(var(--dl-min-7), var(--dl-max-7)) * 1rem, var(--dl-min-7) * 1rem + (var(--dl-max-7) - var(--dl-min-7)) * var(--dl-fluid), max(var(--dl-min-7), var(--dl-max-7)) * 1rem);  /* display type */
   --size-8: clamp(min(var(--dl-min-8), var(--dl-max-8)) * 1rem, var(--dl-min-8) * 1rem + (var(--dl-max-8) - var(--dl-min-8)) * var(--dl-fluid), max(var(--dl-min-8), var(--dl-max-8)) * 1rem);  /* display type: the top of the scale */
 
-  /* ---- Leading, tracking and weight: worked out for the size of the element they're used on ---- */
-  /* --leading and --tracking are lengths: apply them on each element that sets a font size, never
-     on body, where they'd inherit as one fixed length. */
+  /* ---- Leading: worked out for the size of the element it's used on ---- */
+  /* --leading is a length: apply it on each element that sets a font size (dials-base.css applies it to every
+     element), never on a wrapper for its children to inherit, where it would pass on one fixed length. */
   --dl-leading-body: var(--leading-body, 1.5);
-  /* leading keeps the body's gap between lines at every larger size (1em + the body gap), so bigger text gets
-     proportionally tighter lines; smaller text keeps the body ratio; and no size goes below 1.05 */
-  --leading: max(1.05em, min(var(--dl-leading-body) * 1em, 1em + (var(--dl-leading-body) - 1) * var(--size-0)));  /* line height for the size it's on, from --leading-body: the same gap between lines at every larger size */
-  /* tracking follows the size's distance from body size in doublings: log2(size / body). tan(atan2(a, b)) is a / b
-     for two lengths (Firefox has no typed division). Held between -0.08em and +0.04em at the extremes */
-  --tracking: clamp(-0.08em, var(--tracking-curve, 0) * -0.015em * log(tan(atan2(1em, var(--size-0))), 2), 0.04em);  /* letter spacing for the size it's on: 0 at body size, tighter above, looser below, as strongly as --tracking-curve says */
-  /* one body line, times --paragraph-spacing: the gap after a block of text, a length set at the root */
-  --space-paragraph: calc(var(--paragraph-spacing, 1) * var(--dl-leading-body) * var(--size-0));  /* space after paragraphs and other blocks, in body lines; it follows --leading-body */
-  --tracking-caps-total: calc(var(--tracking) + 1em * var(--tracking-caps, 0.06));  /* letter spacing for text in capitals: --tracking plus --tracking-caps */
-  --weight-strong: min(900, var(--weight-body, 400) + 200);  /* bold within body text, buttons and labels: the body weight plus 200 */
-  /* dials-base.css reads these, so an untouched site keeps v0.2's type: each is valid only once one of its dials is set */
-  --dl-weight-strong-on: calc(var(--weight-strong) + 0 * var(--weight-body));
+  /* the body's gap between lines at every larger size (1em + the body gap), so bigger text gets proportionally
+     tighter lines; smaller text keeps the body ratio; no size goes below 1.05 */
+  --leading: max(1.05em, min(var(--dl-leading-body) * 1em, 1em + (var(--dl-leading-body) - 1) * var(--size-0)));  /* line height for the size it's on: the same gap between lines as body text at every larger size */
+  --space-paragraph: calc(var(--dl-leading-body) * var(--size-0));  /* one body line: the space after paragraphs and other blocks; headings take two above and half below */
 
   /* ---- Space: multiples of the space base (Utopia's t-shirt sizes), times the density ---- */
   --dl-space-min: calc(var(--space-min) / 16 * var(--space-density));
@@ -363,16 +347,6 @@
   --radius-m: calc(var(--radius-base) * 1px);
   --radius-l: calc(var(--radius-base) * 1.6px);
   --radius-pill: 999px;
-}
-
-/* The leading and tracking gates need tan(), atan2() and log() (Chrome 120, Firefox 118, Safari 15.4).
-   Without them the gates stay undefined, so dials-base.css keeps headings at --leading-display (or 1.15)
-   and leaves letter spacing alone. */
-@supports (width: calc(1px * tan(atan2(1px, 1px)) * log(2))) {
-  :root, [data-dials], :host {
-    --dl-leading-on: calc(var(--leading) + 0px * var(--leading-body));
-    --dl-tracking-on: calc(var(--tracking) + 0em * var(--tracking-curve));
-  }
 }
 /* ============================================================
    Dials: the fallback (src/fallback.css, built into the end of dials.css)

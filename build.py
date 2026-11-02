@@ -101,8 +101,7 @@ TYPE_REQUIRED = ["--screen-min", "--screen-max", "--size-min", "--size-max", "--
                  "--font-heading", "--font-body", "--font-mono"]
 # Not declared in dials.css: src/scale.css documents them in comments with their defaults, which Dials
 # always applies (dials-base.css reads each with its default as the fallback), so a preset may leave any of them out
-TYPE_OPTIONAL = ["--leading-body", "--tracking-curve", "--tracking-caps",
-                 "--weight-body", "--weight-heading", "--font-accent"]
+TYPE_OPTIONAL = ["--leading-body", "--font-accent"]
 SPACE_REQUIRED = ["--space-min", "--space-max", "--space-density", "--radius-base"]
 REQUIRED = {"colour": (COLOUR_REQUIRED, COLOUR_OPTIONAL), "type": (TYPE_REQUIRED, TYPE_OPTIONAL), "space": (SPACE_REQUIRED, [])}
 
@@ -335,7 +334,7 @@ DEPRECATED_DIALS = {"--accent": "--secondary"}
 # The type dials dials.css documents in comments. Those comments still say an unset type dial keeps v0.2's
 # type, which is no longer so, but dials.css stays byte-identical in this release (sites have copied it),
 # so the reference states them as they work: each always applies, with the default shown.
-UNDECLARED_SECTION = "Leading, tracking and weight"
+UNDECLARED_SECTION = "Leading"
 UNDECLARED_NOTE = ("`dials.css` doesn't declare these at `:root`, but Dials always applies them, with the default shown when you set none: "
                    "setting a dial to its default changes nothing. In your own CSS, read one with its default as the fallback: `var(--weight-heading, 600)`.")
 # --line-length is still in that comment block but is no longer a dial: Dials worked nothing out from it, so a

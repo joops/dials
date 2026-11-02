@@ -62,18 +62,13 @@ This is the reference for Dials v0.3.0. Names can change between versions: for a
 | `--border-width-m` | `2px` | emphasis; outline offsets |
 | `--border-width-l` | `3px` | focus rings, quote bars, active tabs |
 
-### Leading, tracking and weight
+### Leading
 
 `dials.css` doesn't declare these at `:root`, but Dials always applies them, with the default shown when you set none: setting a dial to its default changes nothing. In your own CSS, read one with its default as the fallback: `var(--weight-heading, 600)`.
 
 | Name | Default | What it is |
 |---|---|---|
-| `--leading-body` | `1.5` | line height at body size (--size-0), unitless; every larger size keeps the same gap between lines, so it gets proportionally tighter |
-| `--tracking-curve` | `0` | how strongly letter spacing follows size: 0 is flat, the face's own spacing; at 1, text tightens by 0.015em each time it doubles in size and loosens as much each time it halves; body text stays at 0 |
-| `--paragraph-spacing` | `1` | space after paragraphs, lists, quotes and other blocks, in body lines; headings get two above and half a line below |
-| `--tracking-caps` | `0.06` | extra letter spacing for all caps and small caps, in em without the unit (0.05 to 0.12 is usual) |
-| `--weight-body` | `400` | body text weight |
-| `--weight-heading` | `600` | heading weight |
+| `--leading-body` | `1.5` | line height at body size (--size-0), unitless. Every larger size keeps the same gap between lines, so it gets proportionally tighter; the space after paragraphs is one body line |
 | `--font-accent` | `var(--font-body)` | a third face, for ledes, pull quotes or buttons; read it as var(--font-accent, var(--font-body)) |
 
 ## Optional exact colours
@@ -220,15 +215,12 @@ Old names that still work in this release. Rename them: they'll be removed in a 
 | `--size-7` | `derived: see tokens.json` | display type |
 | `--size-8` | `derived: see tokens.json` | display type: the top of the scale |
 
-### Leading, tracking and weight: worked out for the size of the element they're used on
+### Leading: worked out for the size of the element it's used on
 
 | Name | Default | What it is |
 |---|---|---|
-| `--leading` | `derived: see tokens.json` | line height for the size it's on, from --leading-body: the same gap between lines at every larger size |
-| `--tracking` | `derived: see tokens.json` | letter spacing for the size it's on: 0 at body size, tighter above, looser below, as strongly as --tracking-curve says |
-| `--space-paragraph` | `derived: see tokens.json` | space after paragraphs and other blocks, in body lines; it follows --leading-body |
-| `--tracking-caps-total` | `derived: see tokens.json` | letter spacing for text in capitals: --tracking plus --tracking-caps |
-| `--weight-strong` | `min(900, var(--weight-body, 400) + 200)` | bold within body text, buttons and labels: the body weight plus 200 |
+| `--leading` | `derived: see tokens.json` | line height for the size it's on: the same gap between lines as body text at every larger size |
+| `--space-paragraph` | `calc(var(--dl-leading-body) * var(--size-0))` | one body line: the space after paragraphs and other blocks; headings take two above and half below |
 
 ### Space: multiples of the space base (Utopia's t-shirt sizes), times the density
 

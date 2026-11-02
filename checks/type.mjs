@@ -6,10 +6,10 @@
 //    own rules. Against v0.2.0's files (checks/fixtures/v0.2.0/), only the type the defaults now
 //    apply differs: line height, letter spacing and the weight of strong. And dials.css alone sets no
 //    type on any element, even with every type dial set.
-// 2. --leading, --tracking and --tracking-caps-total, across seeded random dial sets and three
+// 2. --leading, across seeded random dial sets and three
 //    widths: exact at their end points (--size--2, --size-0 and --size-5, the h1 step), monotonic between them,
-//    held at the end values beyond them, and on the formula in between. --weight-strong follows
-//    --weight-body, and --size-7 and --size-8 continue the scale.
+//    held at the end values beyond them, and on the formula in between. --size-7 and --size-8
+//    continue the scale.
 // 3. dials-base.css with dials set: each family of dials moves only its own properties, a
 //    [data-dials] scope applies its dials inside it only, .is-typeset opts in, and a browser without
 //    tan(), atan2() and log() (emulated) keeps headings at --leading-display, flat.
@@ -28,22 +28,12 @@ const FORMULA_WIDTHS = [360, 800, 1280]; // the formulas: both ends of the scree
 const TYPE_PROPS = ['font-size', 'line-height', 'font-weight', 'letter-spacing', 'font-family', 'font-style', 'max-inline-size',
   'font-kerning', 'font-variant-numeric', 'font-feature-settings', 'font-optical-sizing', 'text-wrap-mode', 'text-wrap-style', 'text-transform'];
 // Every type dial at its default: the values docs/tokens.md gives. Setting them must change nothing.
-const DEFAULT_DIALS = { '--leading-body': '1.5', '--paragraph-spacing': '1', '--tracking-curve': '0',
-  '--tracking-caps': '0.06', '--weight-body': '400', '--weight-heading': '600', '--font-accent': 'var(--font-body)' };
+const DEFAULT_DIALS = { '--leading-body': '1.5', '--font-accent': 'var(--font-body)' };
 // What the defaults now apply that v0.2.0 didn't: the leading curve, letter spacing (0px rather than normal), the weight of strong,
 // and the sizes that follow from the line heights.
 const V02_CHANGED = new Set(['line-height', 'letter-spacing', 'font-weight', 'margin-top', 'margin-bottom', 'margin-block-start', 'margin-block-end', 'height', 'block-size', 'width', 'inline-size', 'perspective-origin', 'transform-origin']);
-const ALL_DIALS = { '--leading-body': '1.45', '--tracking-curve': '1.2',
-  '--tracking-caps': '0.1', '--weight-body': '300', '--weight-heading': '800' };
+const ALL_DIALS = { '--leading-body': '1.45' };
 
-// The supports test that guards the leading curve in dials.css and dials-base.css. Emulating a browser
-// without tan(), atan2() and log() swaps it for one that's always false, in both.
-const SUPPORTS = '@supports (width: calc(1px * tan(atan2(1px, 1px)) * log(2)))';
-const [noTrig, noTrigBase] = ['dials.css', 'dials-base.css'].map(f => {
-  const text = readFileSync(join(ROOT, f), 'utf8'), out = text.split(SUPPORTS).join('@supports (not-a-property: 0)');
-  if (out === text) { console.error(`type.mjs: ${f} has no "${SUPPORTS}" block to emulate without`); process.exit(1); }
-  return out;
-});
 
 // Every element dials-base.css styles, plus the same elements inside a parent that sets letter
 // spacing, leading and weight.
@@ -87,7 +77,7 @@ ${PROBES.map(([id, size]) => `<div class="pr" id="${id}" style="font-size: ${siz
 
 const BASE_DIALS = `<p id="p">Body text with <strong id="st">strong</strong> and <small id="sm">small</small></p><h1 id="h1">Heading</h1><h3 id="h3">Heading <strong id="hst">strong</strong></h3><h6 id="h6">Small heading</h6>
 <figcaption id="fc">Caption</figcaption><button id="btn">Button</button><label id="lb">Label</label>
-<div data-dials id="scope" style="--leading-body: 2; --tracking-curve: 2"><h1 id="sh1">Scoped heading</h1><p id="sp">Scoped body</p></div>
+<div data-dials id="scope" style="--leading-body: 2"><h1 id="sh1">Scoped heading</h1><p id="sp">Scoped body</p></div>
 <div class="is-typeset" id="ts"><p id="tsp">Pretty paragraph</p><table><tr><td id="tstd">12.50</td></tr></table></div>
 <style>#tok-lead { line-height: var(--leading); } #tok-trk { letter-spacing: var(--tracking); }</style>
 <h1 id="tok-lead">x</h1><h1 id="tok-trk">x</h1>`;
@@ -107,7 +97,6 @@ const pages = {
   '/__dials-only': () => page(sheet('/dials.css') + dialStyle(ALL_DIALS), ELEMENTS),
   '/__formula': (url) => page(sheet('/dials.css') + dialStyle(JSON.parse(url.searchParams.get('d') || '{}')), FORMULA_BODY),
   '/__base': (url) => page(sheet('/dials.css') + sheet('/dials-base.css') + dialStyle(JSON.parse(url.searchParams.get('d') || '{}')), BASE_DIALS),
-  '/__notrig': (url) => page(`<style>${noTrig}</style><style>${noTrigBase}</style>` + dialStyle(JSON.parse(url.searchParams.get('d') || '{}')), BASE_DIALS),
 };
 
 // Reads every computed property (custom properties aside) and the box of every element, keyed by
@@ -136,15 +125,12 @@ const num = (v) => v === 'normal' ? 0 : parseFloat(v);
 // ---- seeded random dial sets ----
 function mulberry32(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 function randomSets(n, seed) {
-  const r = mulberry32(seed), between = (a, b, d = 3) => +(a + (b - a) * r()).toFixed(d), sets = [{}, { '--weight-body': 800 }];   // no dials (Dials' own values), and a body weight that --weight-strong caps at 900
+  const r = mulberry32(seed), between = (a, b, d = 3) => +(a + (b - a) * r()).toFixed(d), sets = [{}];   // no dials (Dials' own values), and a body weight that --weight-strong caps at 900
   for (let i = 0; i < n; i++) {
     const d = { '--size-min': between(12, 22, 1), '--size-max': between(14, 26, 1), '--ratio-min': between(1.05, 1.5), '--ratio-max': between(1.05, 1.618) };
     // each type dial is left out now and then, so its default is tested too
     const maybe = (k, v) => { if (r() < 0.8) d[k] = v; };
     maybe('--leading-body', between(1.2, 2));
-    maybe('--tracking-curve', between(0, 2, 3));
-    maybe('--tracking-caps', between(0, 0.15, 4));
-    maybe('--weight-body', Math.round(between(100, 800, 0)));
     sets.push(d);
   }
   return sets;
@@ -220,13 +206,12 @@ try {
         return o;
       }, PROBES.map(x => x[0]));
       const tag = `set ${si}${si ? '' : ' (no dials)'} ${JSON.stringify(d)} at ${width}px`;
-      const lb = +(d['--leading-body'] ?? 1.5), kc = +(d['--tracking-curve'] ?? 0), tc = +(d['--tracking-caps'] ?? 0.06);
+      const lb = +(d['--leading-body'] ?? 1.5);
       const B = m.s0.size;
       // the reference formulas, from the sizes the browser actually gave: the body's gap between lines at every larger size,
-      // the body ratio below, never under 1.05; tracking 0 at body, 0.015em per doubling of size times the strength, held within -0.08em and +0.04em
+      // the body ratio below, never under 1.05
       const leadRatio = (s) => Math.max(1.05, Math.min(lb, 1 + (lb - 1) * B / s));
       const c01 = (x) => Math.min(1, Math.max(0, x));
-      const trackEm = (s) => Math.min(0.04, Math.max(-0.08, kc * -0.015 * Math.log2(s / B)));
       const ids = PROBES.map(x => x[0]);
       const ratio = (id) => num(m[id].lh) / m[id].size, em = (id) => num(m[id].ls) / m[id].size;
       // Firefox keeps lengths in 1/60px and rounds an element's font size (up to 1/64px) while calc() uses the exact --size-0
@@ -234,12 +219,9 @@ try {
       const at = (id, want, got, what) => { const err = Math.abs(got - want); expect(name, err <= tolPx, `${tag}: ${what} at ${id} (${m[id].size}px) is ${got.toFixed(4)}px, want ${want.toFixed(4)}px (tolerance ${tolPx.toFixed(4)}px)`); return err; };
       // body size exactly
       at('s0', lb * B, num(m.s0.lh), 'line height');
-      at('s0', 0, num(m.s0.ls), 'letter spacing');
       // on the formula everywhere, caps included
       for (const id of ids) {
         worst.lead = Math.max(worst.lead, at(id, leadRatio(m[id].size) * m[id].size, num(m[id].lh), 'line height'));
-        worst.trk = Math.max(worst.trk, at(id, trackEm(m[id].size) * m[id].size, num(m[id].ls), 'letter spacing'));
-        at(id, (trackEm(m[id].size) + tc) * m[id].size, num(m[id].caps), 'caps letter spacing');
       }
       // monotonic: the leading ratio moves one way from body to display; tracking moves one way on each side of body size
       const bySize = [...ids].sort((a, b) => m[a].size - m[b].size);
@@ -250,13 +232,9 @@ try {
         const dr = ratio(b) - ratio(a);
         if (lb >= 1.05 ? dr > eps : false) leadOk = false;   // the leading ratio only falls as size grows
         const ea = em(a), eb = em(b);
-        if (eb - ea > eps) trkOk = false;   // tracking only tightens as size grows
       }
       expect(name, leadOk, `${tag}: the leading ratio is monotonic in size (${bySize.map(id => ratio(id).toFixed(3)).join(' ')})`);
-      expect(name, trkOk, `${tag}: tracking is monotonic in size (${bySize.map(id => em(id).toFixed(4)).join(' ')})`);
       // weight and the scale
-      const wb = d['--weight-body'] ?? 400;
-      expect(name, m.weight === Math.min(900, wb + 200), `${tag}: --weight-strong is ${m.weight}, want min(900, ${wb} + 200)`);
       expect(name, m.s6.size < m.s7.size && m.s7.size < m.s8.size, `${tag}: --size-6 < --size-7 < --size-8 (${m.s6.size}, ${m.s7.size}, ${m.s8.size})`);
     }
     summary[`${name} formulas`] = `${sets.length} dial sets × ${FORMULA_WIDTHS.length} widths × ${PROBES.length} sizes; furthest from the reference formula: line height ${worst.lead.toFixed(4)}px, letter spacing ${worst.trk.toFixed(4)}px`;
@@ -277,21 +255,15 @@ try {
     let r = await base('/__base', { '--leading-body': '1.4' });
     expect(name, near(r.h1.lh, r['tok-lead'].lh) && Math.abs(num(r.h1.lh) / r.h1.size - gapRatio(1.4, r.h1)) < 0.003, `--leading-body 1.4: h1 keeps the body gap (${(num(r.h1.lh) / r.h1.size).toFixed(3)}, want ${gapRatio(1.4, r.h1).toFixed(3)}) and follows --leading`);
     expect(name, Math.abs(num(r.p.lh) / r.p.size - 1.4) < 0.002 && Math.abs(num(r.h6.lh) / r.h6.size - 1.4) < 0.002, `--leading-body 1.4: body and an h6 below body size keep 1.4 (p ${r.p.lh}, h6 ${r.h6.lh})`);
-    expect(name, num(r.h1.ls) === 0 && num(r.sm.ls) === 0 && r.st.w === 600 && r.h1.w === 600, `--leading-body alone: no letter spacing (${r.h1.ls}, ${r.sm.ls}), weights at their defaults (strong ${r.st.w}, h1 ${r.h1.w})`);
-    // the tracking curve: body stays at 0, larger tightens, smaller loosens
-    r = await base('/__base', { '--tracking-curve': '1' });
-    expect(name, num(r.h1.ls) < 0 && near(r.h1.ls, r['tok-trk'].ls, 0.01) && num(r.p.ls) === 0, `--tracking-curve 1: h1 tightens (${r.h1.ls}) and follows --tracking (${r['tok-trk'].ls}); body stays at 0 (${r.p.ls})`);
-    expect(name, num(r.sm.ls) > 0 && num(r.fc.ls) > 0 && num(r.btn.ls) > 0, `--tracking-curve 1: small, figcaption and button text loosen (${r.sm.ls}, ${r.fc.ls}, ${r.btn.ls})`);
-    // weight
-    r = await base('/__base', { '--weight-body': '300', '--weight-heading': '750' });
-    expect(name, r.p.w === 300 && r.st.w === 500 && r.btn.w === 500 && r.lb.w === 500 && r.h1.w === 750, `--weight-body 300, --weight-heading 750: body ${r.p.w}, strong ${r.st.w}, button ${r.btn.w}, label ${r.lb.w}, h1 ${r.h1.w}`);
-    expect(name, r.hst.w > r.h3.w, `--weight-body: strong inside a heading stays bolder than the heading (${r.hst.w} vs ${r.h3.w})`);
+        // letter spacing and weights are the typeface's and the browser's: base sets no letter spacing, headings 600, strong bolder
+    r = await base('/__base', {});
+    expect(name, r.h1.ls === 'normal' && r.sm.ls === 'normal' && r.btn.ls === 'normal' && r.h1.w === 600 && r.st.w === 700 && r.btn.w === 600, `letter spacing left alone (${r.h1.ls}, ${r.sm.ls}, ${r.btn.ls}); weights h1 ${r.h1.w}, strong ${r.st.w}, button ${r.btn.w}`);
     // line length is left to the layout: --line-length (no longer a dial) caps nothing
     r = await base('/__base', { '--line-length': '30ch' });
     expect(name, r.p.max === 'none' && r.fc.max === 'none', `--line-length is no longer a dial: paragraphs and captions keep no max inline size (${r.p.max}, ${r.fc.max})`);
     // paragraph spacing: one body line after a paragraph by default, following leading and --paragraph-spacing
     const mb = async (d) => { await p.goto(`${server.url}/__base?d=${encodeURIComponent(JSON.stringify(d))}`, { waitUntil: 'load' }); return p.evaluate(() => { const cs = getComputedStyle(document.getElementById('p')); return { mb: parseFloat(cs.marginBlockEnd), lh: parseFloat(cs.lineHeight), h3t: parseFloat(getComputedStyle(document.getElementById('h3')).marginBlockStart) }; }); };
-    for (const d of [{}, { '--leading-body': '1.8' }, { '--paragraph-spacing': '1.5' }]) {
+    for (const d of [{}, { '--leading-body': '1.8' }]) {   // one body line, following leading
       const q = await mb(d), want = (+(d['--paragraph-spacing'] ?? 1)) * q.lh;
       expect(name, Math.abs(q.mb - want) < 0.05 && Math.abs(q.h3t - 2 * want) < 0.1, `paragraph spacing ${JSON.stringify(d)}: after a paragraph ${q.mb.toFixed(2)}px, want ${want.toFixed(2)}px (body line ${q.lh.toFixed(2)}px); above an h3 ${q.h3t.toFixed(2)}px, want two of them`);
     }
@@ -299,18 +271,14 @@ try {
     r = await base('/__base', {});
     expect(name, Math.abs(num(r.h1.lh) / r.h1.size - gapRatio(1.5, r.h1)) < 0.003 && Math.abs(num(r.h3.lh) / r.h3.size - gapRatio(1.5, r.h3)) < 0.003,
       `no dials set: h1 ${(num(r.h1.lh) / r.h1.size).toFixed(3)} and h3 ${(num(r.h3.lh) / r.h3.size).toFixed(3)} keep body's gap (want ${gapRatio(1.5, r.h1).toFixed(3)}, ${gapRatio(1.5, r.h3).toFixed(3)})`);
-    expect(name, num(r.h1.ls) === 0 && num(r.sm.ls) === 0 && r.st.w === 600 && r.p.max === 'none', `no dials set: no letter spacing (${r.h1.ls}, ${r.sm.ls}), strong ${r.st.w}, no max inline size (${r.p.max})`);
+    expect(name, num(r.h1.ls) === 0 && num(r.sm.ls) === 0 && r.st.w === 700 && r.p.max === 'none', `no dials set: no letter spacing (${r.h1.ls}, ${r.sm.ls}), strong ${r.st.w} (the browser's bolder), no max inline size (${r.p.max})`);
     // a [data-dials] scope applies its dials inside it only
-    expect(name, Math.abs(num(r.sh1.lh) / r.sh1.size - gapRatio(1.5, r.sh1)) > 0.01 && num(r.sh1.ls) < 0, `a [data-dials] scope with leading and tracking dials applies them inside it (h1 ${r.sh1.lh} at ${r.sh1.size}px, ${r.sh1.ls})`);
+    expect(name, Math.abs(num(r.sh1.lh) / r.sh1.size - gapRatio(1.5, r.sh1)) > 0.01 , `a [data-dials] scope with a leading dial applies it inside it (h1 ${r.sh1.lh} at ${r.sh1.size}px, ${r.sh1.ls})`);
     expect(name, Math.abs(num(r.h1.lh) / r.h1.size - gapRatio(1.5, r.h1)) < 0.003 && num(r.h1.ls) === 0, `outside the scope nothing changes (h1 ${r.h1.lh}, ${r.h1.ls})`);
     // .is-typeset opts in
     expect(name, r.tsp.kern === 'normal' && r.p.kern === 'auto', `.is-typeset turns kerning on inside it only (${r.tsp.kern} vs ${r.p.kern})`);
     expect(name, r.tstd.fvn === 'tabular-nums', `.is-typeset gives tables tabular figures (${r.tstd.fvn})`);
     if (await p.evaluate(() => CSS.supports('text-wrap-style', 'pretty'))) expect(name, r.tsp.wrap === 'pretty' && r.p.wrap !== 'pretty', `.is-typeset wraps paragraphs pretty inside it only (${r.tsp.wrap} vs ${r.p.wrap})`);
-    // without tan(), atan2() and log() (emulated): headings at --leading-display flat, no tracking, nothing invalid
-    r = await base('/__notrig', { '--leading-body': '1.5', '--tracking-curve': '1' });
-    expect(name, Math.abs(num(r.h1.lh) / r.h1.size - Math.max(1.05, 1 + 0.5 * r.p.size / r.h1.size)) < 0.003 && Math.abs(num(r.p.lh) / r.p.size - 1.5) < 0.002, `no log() (emulated): leading still works, it needs no maths functions (h1 ${(num(r.h1.lh) / r.h1.size).toFixed(3)}, body ${(num(r.p.lh) / r.p.size).toFixed(3)})`);
-    expect(name, num(r.h1.ls) === 0, `no log() (emulated): letter spacing stays normal (${r.h1.ls})`);
 
     for (const e of errors) failures.push(`[${name}] page error: ${e}`);
     console.log(`${name} ${browser.version()}: done`);

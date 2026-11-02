@@ -1,5 +1,5 @@
 /* Dials type preset: Compact
-   Small body text and a gentle scale, for apps and dashboards. Tighter leading, captions opened up a little to stay legible. */
+   Small body text and a gentle scale, for apps and dashboards. Tighter leading. */
 :root, :host {
   --screen-min: 360;
   --screen-max: 1240;
@@ -11,5 +11,4 @@
   --font-body: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --leading-body: 1.45;
-  --tracking-curve: 0.6;
 }

@@ -310,7 +310,7 @@ window.DIALS = {
   },
   "balanced": {
    "name": "Balanced",
-   "note": "Body 16 to 19px, minor third to major third, serif headings. Slightly tightened display type.",
+   "note": "Body 16 to 19px, minor third to major third, serif headings.",
    "dials": {
     "--screen-min": "360",
     "--screen-max": "1240",
@@ -321,14 +321,13 @@ window.DIALS = {
     "--font-heading": "\"Fraunces\", ui-serif, Georgia, serif",
     "--font-body": "\"Figtree\", ui-sans-serif, system-ui, sans-serif",
     "--font-mono": "ui-monospace, \"SF Mono\", Menlo, Consolas, monospace",
-    "--leading-body": "1.6",
-    "--tracking-curve": "0.8"
+    "--leading-body": "1.6"
    },
    "fonts": "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700&family=Figtree:wght@400;700&display=swap\">"
   },
   "compact": {
    "name": "Compact",
-   "note": "Small body text and a gentle scale, for apps and dashboards. Tighter leading, captions opened up a little to stay legible.",
+   "note": "Small body text and a gentle scale, for apps and dashboards. Tighter leading.",
    "dials": {
     "--screen-min": "360",
     "--screen-max": "1240",
@@ -339,14 +338,13 @@ window.DIALS = {
     "--font-heading": "\"IBM Plex Sans\", ui-sans-serif, system-ui, sans-serif",
     "--font-body": "\"IBM Plex Sans\", ui-sans-serif, system-ui, sans-serif",
     "--font-mono": "\"IBM Plex Mono\", ui-monospace, \"SF Mono\", Menlo, Consolas, monospace",
-    "--leading-body": "1.45",
-    "--tracking-curve": "0.6"
+    "--leading-body": "1.45"
    },
    "fonts": "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;700&family=IBM+Plex+Mono:wght@400;700&display=swap\">"
   },
   "terminal": {
    "name": "Terminal",
-   "note": "Compact sizes with monospace headings: IBM Plex Mono over IBM Plex Sans, for tools and dashboards that should feel like a console. Monospace isn't tightened; capitals get extra space.",
+   "note": "Compact sizes with monospace headings: IBM Plex Mono over IBM Plex Sans, for tools and dashboards that should feel like a console.",
    "dials": {
     "--screen-min": "360",
     "--screen-max": "1240",
@@ -357,15 +355,13 @@ window.DIALS = {
     "--font-heading": "\"IBM Plex Mono\", ui-monospace, \"SF Mono\", Menlo, Consolas, monospace",
     "--font-body": "\"IBM Plex Sans\", ui-sans-serif, system-ui, sans-serif",
     "--font-mono": "\"IBM Plex Mono\", ui-monospace, \"SF Mono\", Menlo, Consolas, monospace",
-    "--leading-body": "1.5",
-    "--tracking-caps": "0.08",
-    "--weight-heading": "500"
+    "--leading-body": "1.5"
    },
-   "fonts": "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=IBM+Plex+Sans:wght@400;700&display=swap\">"
+   "fonts": "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&family=IBM+Plex+Sans:wght@400;700&display=swap\">"
   },
   "editorial": {
    "name": "Editorial",
-   "note": "Long reading: serif throughout, a perfect fourth on desktop. Loose body leading, regular-weight display type set close, letterspaced small caps.",
+   "note": "Long reading: serif throughout, a perfect fourth on desktop. Loose leading.",
    "dials": {
     "--screen-min": "360",
     "--screen-max": "1240",
@@ -376,16 +372,13 @@ window.DIALS = {
     "--font-heading": "\"Fraunces\", ui-serif, Georgia, serif",
     "--font-body": "\"Source Serif 4\", ui-serif, Georgia, serif",
     "--font-mono": "ui-monospace, \"SF Mono\", Menlo, Consolas, monospace",
-    "--leading-body": "1.65",
-    "--tracking-caps": "0.06",
-    "--weight-heading": "400",
-    "--tracking-curve": "0.8"
+    "--leading-body": "1.65"
    },
    "fonts": "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700&family=Source+Serif+4:wght@400;700&display=swap\">"
   },
   "friendly": {
    "name": "Friendly",
-   "note": "Large, very legible body text and soft serif headings. Open leading throughout and slightly loosened small text.",
+   "note": "Large, very legible body text and soft serif headings. Open leading throughout.",
    "dials": {
     "--screen-min": "360",
     "--screen-max": "1240",
@@ -396,14 +389,13 @@ window.DIALS = {
     "--font-heading": "\"Lora\", ui-serif, Georgia, serif",
     "--font-body": "\"Atkinson Hyperlegible\", ui-sans-serif, system-ui, sans-serif",
     "--font-mono": "ui-monospace, \"SF Mono\", Menlo, Consolas, monospace",
-    "--leading-body": "1.65",
-    "--tracking-curve": "0.6"
+    "--leading-body": "1.65"
    },
    "fonts": "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap\">"
   },
   "dramatic": {
    "name": "Dramatic",
-   "note": "A perfect fifth on desktop: big display headings over modest body text. With a ratio this large, set page titles a step or two lower. The golden ratio (1.618) goes further still; try it in the ratio menu. Display type is heavy, set solid and tight.",
+   "note": "A perfect fifth on desktop: big display headings over modest body text. With a ratio this large, set page titles a step or two lower. The golden ratio (1.618) goes further still; try it in the ratio menu.",
    "dials": {
     "--screen-min": "360",
     "--screen-max": "1240",
@@ -414,12 +406,9 @@ window.DIALS = {
     "--font-heading": "\"Fraunces\", ui-serif, Georgia, serif",
     "--font-body": "\"Figtree\", ui-sans-serif, system-ui, sans-serif",
     "--font-mono": "ui-monospace, \"SF Mono\", Menlo, Consolas, monospace",
-    "--leading-body": "1.55",
-    "--tracking-caps": "0.1",
-    "--weight-heading": "800",
-    "--tracking-curve": "1.4"
+    "--leading-body": "1.55"
    },
-   "fonts": "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700;800&family=Figtree:wght@400;700&display=swap\">"
+   "fonts": "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700&family=Figtree:wght@400;700&display=swap\">"
   }
  },
  "space": {
@@ -593,19 +582,10 @@ window.DIALS = {
   "--border-width-m",
   "--border-width-l",
   "--leading-body",
-  "--tracking-curve",
-  "--paragraph-spacing",
-  "--tracking-caps",
-  "--weight-body",
-  "--weight-heading",
   "--font-accent"
  ],
  "typeOptional": [
   "--leading-body",
-  "--tracking-curve",
-  "--tracking-caps",
-  "--weight-body",
-  "--weight-heading",
   "--font-accent"
  ]
 };

@@ -40,9 +40,6 @@
   --font-body: "Source Serif 4", ui-serif, Georgia, serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --leading-body: 1.65;
-  --tracking-caps: 0.06;
-  --weight-heading: 400;
-  --tracking-curve: 0.8;
   /* space: Default */
   --space-min: var(--size-min);
   --space-max: var(--size-max);

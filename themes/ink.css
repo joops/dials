@@ -36,7 +36,6 @@
   --font-body: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --leading-body: 1.45;
-  --tracking-curve: 0.6;
   /* space: Square */
   --space-min: var(--size-min);
   --space-max: var(--size-max);
