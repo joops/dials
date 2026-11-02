@@ -75,7 +75,7 @@
   .floatbar .seg { gap: 2px; }
   .wrap { padding-bottom: 96px; }
 }
-body { background: var(--surface); color: var(--text); font: var(--weight-body, 400) 16px/var(--leading) var(--page-body); letter-spacing: var(--tracking); }
+body { background: var(--surface); color: var(--text); font: var(--weight-body, 400) 16px/var(--leading) var(--page-body); }   /* body text keeps the face's own spacing: the page's 16px sits below --size-0, so --tracking here would loosen it, and it would inherit into the demos */
 /* the page's own text follows the type dials, like it follows the faces: each element that sets its own size takes --leading and --tracking for that size */
 ::selection { background: var(--selection); }
 .wrap { max-width: 1040px; margin: 0 auto; padding-block: 40px 72px;
