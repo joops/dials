@@ -1,6 +1,6 @@
 // Smoke test for the playground, served over HTTP in Chromium and Firefox: it loads with no console
 // errors, and every colour, type and space preset, every theme, Randomise, the scheme switch, the
-// tabs, the format switch and both export modes work. Exits 1 on failure.
+// tabs, the format switch and both export modes work, and the leading dial moves the page. Exits 1 on failure.
 //
 //   node checks/playground.mjs [--browser=chromium|firefox]
 import { serve, launch } from './lib.mjs';
@@ -45,19 +45,35 @@ try {
       const t = D.themes[key];
       const ok = await p.evaluate(({ t, D }) => {
         const s = document.documentElement.style;
-        // a theme applies its type preset as themes/*.css do: without the type dials that are unset by default
-        const type = Object.fromEntries(Object.entries(D.type[t.type].dials).filter(([k]) => !D.typeOptional.includes(k)));
+        // a theme applies its type preset in full, its optional type dials included, and puts the optional ones the preset leaves out back to their defaults
+        const type = D.type[t.type].dials;
         const want = { ...D.colour[t.colour].dials, ...type, ...D.space[t.space].dials };
-        return D.typeOptional.every(k => !s.getPropertyValue(k)) && Object.entries(want).every(([k, v]) => /^--(brand|secondary|success|warning|danger|info|grey)$/.test(k) ? !!s.getPropertyValue(k) : s.getPropertyValue(k).trim() === String(v))
+        return D.typeOptional.every(k => k in type || !s.getPropertyValue(k)) && Object.entries(want).every(([k, v]) => /^--(brand|secondary|success|warning|danger|info|grey)$/.test(k) ? !!s.getPropertyValue(k) : s.getPropertyValue(k).trim() === String(v))
           && document.querySelector(`[data-preset="${t.colour}"]`).getAttribute('aria-pressed') === 'true';
       }, { t, D });
       const fails = await p.$eval('#summary', el => el.textContent);
       expect(name, ok, `theme ${key} did not apply all its dials`);
       expect(name, /(^|\D)0 fail/.test(fails), `theme ${key}: the playground's contrast table shows failures (${fails})`);
     }
+    // a theme whose type preset sets the leading applies it, and Default, which sets none, puts it back to its default
+    await p.selectOption('#combo', 'editorial');
+    const edLeading = await p.evaluate(() => document.documentElement.style.getPropertyValue('--leading-body'));
+    await p.selectOption('#combo', 'default');
+    const defLeft = await p.evaluate(() => document.documentElement.style.getPropertyValue('--leading-body'));
+    expect(name, edLeading === String(D.type.editorial.dials['--leading-body']) && !defLeft, `the Editorial theme sets its leading (${edLeading}) and Default after it puts it back to its default (left: ${defLeft || 'none'})`);
+    await p.selectOption('#combo', 'dials');
+    expect(name, await p.evaluate(() => document.documentElement.style.getPropertyValue('--leading-body')) === '1.6', 'the Dials theme sets leading 1.6');
     // randomise, schemes, format, export, tables
     await p.click('#shuffle');
     expect(name, await p.$eval('#combo', el => el.value) === '_shuffle', 'Randomise did not set a random combination');
+    // Randomise sets the leading too, within a range that reads well
+    const outOfRange = [];
+    for (let i = 0; i < 12; i++) {
+      if (i) await p.click('#shuffle');
+      const v = await p.evaluate(() => document.documentElement.style.getPropertyValue('--leading-body').trim());
+      if (!v || !(parseFloat(v) >= 1.35 - 1e-9 && parseFloat(v) <= 1.8 + 1e-9)) outOfRange.push(v || 'default');
+    }
+    expect(name, !outOfRange.length, `Randomise sets the leading between 1.35 and 1.8 (outside: ${[...new Set(outOfRange)].join(', ')})`);
     for (const s of ['dark', 'light', 'system']) {
       await p.click(`button[data-scheme="${s}"]`);
       const attr = await p.evaluate(() => document.documentElement.getAttribute('data-scheme'));
@@ -79,27 +95,33 @@ try {
       demoBtn: getComputedStyle(document.querySelector('.base-demo button')).backgroundColor, demoCode: getComputedStyle(document.querySelector('.base-demo code')).fontFamily }));
     expect(name, counts.tokens > 50 && counts.contrast > 40 && counts.rules > 500 && counts.ladder === 11, `tables: ${JSON.stringify(counts)}`);
     expect(name, counts.demoBtn !== 'rgba(0, 0, 0, 0)', `the base demo's button has a fill (${counts.demoBtn})`);
-    // the type dials that start unset: a preset clears the ones it doesn't set, a slider sets one, × unsets it, and the exports carry set ones only
+    // the leading slider: it shows the value in use, its default until moved; it moves the preview panes, the article, the base demo
+    // and the page's own text; a preset sets it again; the exports carry it only once set
     await p.click('[role=tab][aria-controls=tab-type]');
-    await p.click('[data-typepreset="editorial"]');
-    await p.click('[data-typepreset="hi-fi"]');
-    const left = await p.evaluate(() => ['--leading-body', '--leading-display', '--tracking-small', '--tracking-display', '--tracking-caps', '--weight-body', '--weight-heading', '--line-length'].filter(k => document.documentElement.style.getPropertyValue(k)));
-    expect(name, !left.length, `Hi-Fi after Editorial leaves no type dials behind (left: ${left.join(', ')})`);
-    const h3 = () => p.$eval('.base-demo h3', el => { const cs = getComputedStyle(el); return parseFloat(cs.lineHeight) / parseFloat(cs.fontSize); });
-    const before = await h3();
-    await p.$eval('#k__leading_display', el => { el.value = '1.4'; el.dispatchEvent(new Event('input', { bubbles: true })); });
-    const after = await h3(), dial = await p.evaluate(() => document.documentElement.style.getPropertyValue('--leading-display'));
-    expect(name, dial === '1.4' && Math.abs(before - 1.15) < 0.002 && after > 1.25, `the display leading slider sets the dial and moves the base demo's h3 (dial ${dial}, ${before.toFixed(3)} -> ${after.toFixed(3)})`);
+    await p.click('[data-typepreset="default"]');
+    const shown = () => p.$eval('#k__leading_body ~ output', el => el.textContent);
+    expect(name, await shown() === '1.5' && !(await p.evaluate(() => document.documentElement.style.getPropertyValue('--leading-body'))), `the Default type preset leaves the leading at its default, shown as ${await shown()}`);
+    const ratio = (sel) => p.$eval(sel, el => { const cs = getComputedStyle(el); return parseFloat(cs.lineHeight) / parseFloat(cs.fontSize); });
+    const SPOTS = ['#pair .pane .card p', '#pair .pane .card h4', '.article p:not(.lead)', '.base-demo p', '.base-demo h3', '.wrap > header h1'];
+    const before = await Promise.all(SPOTS.map(ratio));
+    await p.fill('#k__leading_body', '2');
+    const after = await Promise.all(SPOTS.map(ratio));
+    SPOTS.forEach((sel, i) => expect(name, after[i] > before[i] + 0.05, `leading 2 opens up ${sel} (${before[i].toFixed(3)} -> ${after[i].toFixed(3)})`));
+    expect(name, Math.abs(after[0] - 2) < 0.01 && Math.abs(before[0] - 1.5) < 0.01 && after[1] < after[0], `body text takes the leading exactly and a larger heading less (${before[0].toFixed(3)} -> ${after[0].toFixed(3)}, h4 ${after[1].toFixed(3)})`);
+    const gap = await p.$eval('.base-demo p', el => { const cs = getComputedStyle(el); return [parseFloat(cs.marginBlockEnd), parseFloat(cs.lineHeight)]; });
+    expect(name, Math.abs(gap[0] - gap[1]) < 0.1, `the base demo's paragraphs are one body line apart (${gap[0]}px after a ${gap[1]}px line)`);
     await p.click('[data-export="theme"]');
     const themeOut = await p.$eval('#css', el => el.textContent);
-    await p.click('[data-export="full"]');
-    const fullOut = await p.$eval('#css', el => el.textContent);
-    await p.click('[data-export="theme"]');
-    expect(name, /\n  --leading-display: 1\.4;/.test(themeOut) && !/--leading-body/.test(themeOut) && !/:\s*;/.test(themeOut), 'the theme export lists the set type dial, and no unset one');
-    expect(name, /\n  --leading-display: 1\.4;/.test(fullOut) && /\/\* --leading-body: 1\.6;/.test(fullOut), 'the full export declares the set type dial and leaves unset ones as comments');
-    if (dial) await p.click('#k__leading_display ~ .unset-btn');   // hidden while the dial is unset
-    expect(name, !(await p.evaluate(() => document.documentElement.style.getPropertyValue('--leading-display'))) && Math.abs(await h3() - 1.15) < 0.002, 'the unset button removes the dial, and the h3 is back to 1.15');
-    await p.keyboard.press('Escape');
+    expect(name, /\n  --leading-body: 2;/.test(themeOut), 'the theme export lists the leading once set');
+    await p.click('[data-typepreset="default"]');
+    expect(name, Math.abs((await ratio(SPOTS[0])) - before[0]) < 0.002 && !/--leading-body/.test(await p.$eval('#css', el => el.textContent)), 'the Default preset puts the leading back, and the export drops it');
+    // the page's own text follows the type scale: a bigger body size grows the notes and headings
+    const sizes = () => p.evaluate(() => ['.ctl-note', 'section > h2', '.tabs [role=tab]'].map(s => parseFloat(getComputedStyle(document.querySelector(s)).fontSize)));
+    const s0 = await sizes();
+    await p.fill('#k__size_max', '24');
+    const s1 = await sizes();
+    expect(name, s1.every((v, i) => v > s0[i] + 1), `the page's own notes, headings and tabs follow the type scale (${s0.join(', ')} -> ${s1.join(', ')})`);
+    await p.click('[data-typepreset="default"]');
     // the mono picker lists monospace families only
     await p.click('[role=tab][aria-controls=tab-type]');
     await p.click('#k__font_mono');

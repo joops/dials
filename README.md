@@ -13,8 +13,7 @@ AI-first means an agent gets a short set of rules and a small set of tokens, so 
 ## Quick start
 
 ```html
-<!-- 1. Dials, with the Hi-Fi house theme as its default, and Hi-Fi's faces -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Michroma&family=Barlow:wght@400;700&family=Share+Tech+Mono&display=swap">
+<!-- 1. Dials: plain defaults, the device's own faces, nothing else to load -->
 <link rel="stylesheet" href="dials.css">
 <link rel="stylesheet" href="dials-base.css">   <!-- optional: plain HTML styled from the tokens -->
 
@@ -45,7 +44,7 @@ No build step and no dependencies. To use a ready-made theme, load it after `dia
 <link rel="stylesheet" href="themes/editorial.css">
 ```
 
-Each theme loads its own faces: the link at the top of `themes/<name>.css` covers its heading, body and mono faces, at only the weights each face has. A face you set yourself needs its own link; `--font-mono` defaults to the system monospace stack in every theme except Hi-Fi (Share Tech Mono) and Terminal (IBM Plex Mono).
+Each theme loads its own faces: the link at the top of `themes/<name>.css` covers its heading, body and mono faces, at only the weights each face has. A face you set yourself needs its own link; `--font-mono` defaults to the system monospace stack in every theme except Dials (Share Tech Mono) and Terminal (IBM Plex Mono).
 
 ## How it works
 
@@ -55,7 +54,7 @@ Each theme loads its own faces: the link at the top of `themes/<name>.css` cover
 - **Groups**: components use the ungrouped `--solid`, `--on-solid`, `--soft`, `--on-soft` and `--line`; a class such as `.is-danger` points them at a group.
 - **Light and dark**: `dials.css` sets `:root { color-scheme: light dark; }`, so the page follows the visitor. To force one, set `:root { color-scheme: light; }` (or `dark`) in your own file. `class="is-dark"` makes any band dark; `class="is-light"` makes one light. Themes never set the scheme.
 - **Contrast**: text tokens keep 4.5:1 on every surface, button text is white or black (whichever contrasts more), each group's `-line` (borders, icons and large text) keeps 3:1, and focus rings and control borders keep 3:1, in light and dark. Coloured text and lines keep your colour and move only as far as their target needs: a teal that already gives 5:1 on white stays exactly as set, and one that doesn't is darkened (or, in dark, lightened) just past the line, keeping its hue and saturation. The contrast check verifies it for every theme and 40 sets of extreme random dials, in Chromium and Firefox, and fails a colour that moves further than it needs.
-- **Type**: leading, tracking and weight are dials too, all unset by default, so nothing changes until you set one. Set the leading at two ends, body text (`--leading-body`) and the h1 step (`--leading-display`, which the display sizes above it keep), and the tracking at the smallest size and at h1 (`--tracking-small`, `--tracking-display`, plus `--tracking-caps` for capitals). `--leading` and `--tracking` then work out the right value for whatever size they're on: bigger text gets proportionally tighter lines, display type can tighten and captions open up, with no per-step values. `--weight-body`, `--weight-heading`, `--line-length` and an optional third face, `--font-accent`, complete the set. `dials-base.css` applies them to plain HTML once set; components apply `--leading` and `--tracking` on each element that sets a size (they're lengths, so they mustn't be inherited). The [Type patterns](docs/tokens.md#type) show how, and `class="is-typeset"` opts a page into kerning, tabular figures in tables and pretty wrapping.
+- **Type**: Utopia's fluid type scale, from a body size and a ratio at each end of the screen range, plus one leading dial, `--leading-body` (1.5 by default). Every larger size keeps body text's gap between lines, so headings get proportionally tighter, and blocks of text are one body line apart (`--space-paragraph`). With `dials-base.css`, every element works out its own line height from its own size, so a component sets only `font-size`; without it, use `--leading` on each element that sets a size (it's a length, so it mustn't be inherited). Weights and letter spacing are the typeface's: the [Type patterns](docs/tokens.md#type) cover capitals labels, display headings and line length. An optional third face, `--font-accent`, is there for ledes and pull quotes, and `class="is-typeset"` opts a page into kerning, tabular figures in tables and pretty wrapping.
 - **Patterns, not tokens**: Dials has a token only where it works something out or guarantees something. Anything you can build from tokens, such as a gradient, is a pattern: [docs/tokens.md](docs/tokens.md#patterns) shows how (a wash between two soft tints carries body text; a band from a solid is decoration only).
 
 ## Scoping: re-theme part of a page
@@ -74,7 +73,7 @@ It works for any dial, from a class too (`.promo { --brand: … }` on an element
 
 | File | What it is |
 |---|---|
-| `dials.css` | Everything: colour, type and space, then the fallback for older browsers. Hi-Fi is its default |
+| `dials.css` | Everything: colour, type and space, then the fallback for older browsers. Its defaults are the plain Default theme |
 | `dials-colour.css`, `dials-scale.css` | The colour half and the type-and-space half on their own (no fallback) |
 | `dials-base.css` | Optional: plain HTML elements styled from the tokens, at zero specificity, with logical properties |
 | `themes/*.css` | Ready-made themes: dial settings only, loaded after `dials.css` |
@@ -90,7 +89,8 @@ It works for any dial, from a class too (`.promo { --brand: … }` on an element
 
 | File | Theme | Presets |
 |---|---|---|
-| `themes/hi-fi.css` | Hi-Fi (default) | Hi-Fi colours, Hi-Fi type, Machined space |
+| `themes/default.css` | Default | Default colours, Default type, Default space: what `dials.css` gives with nothing set |
+| `themes/dials.css` | Dials (the house theme) | Hi-Fi colours, Hi-Fi type, Machined space. `themes/hi-fi.css`, its old name, still works in 0.4 |
 | `themes/editorial.css` | Editorial | Nord colours, Editorial type, Roomy space |
 | `themes/midnight.css` | Midnight | Dracula colours, Compact type, Compact space |
 | `themes/soft.css` | Soft | Catppuccin colours, Friendly type, Roomy space |
@@ -103,7 +103,7 @@ It works for any dial, from a class too (`.promo { --brand: … }` on an element
 
 Every theme works in light and dark. Some palettes were designed for one side (Dracula and One Dark for dark); their other side is derived from `--grey`.
 
-Themes set no leading, tracking, weight or line-length dial, so they look as they did in 0.2. Each theme's header comment carries its type preset's values for those, as a snippet to paste into your own file if you want them; the playground's Type tab shows them.
+Each theme sets its type preset's leading, so a site gets what the playground's theme menu shows.
 
 ## Browser support
 
@@ -112,11 +112,11 @@ Dials needs `color-mix()`, `light-dark()` and relative colour: Chrome and Edge 1
 Older browsers get a fallback built into the end of `dials.css`, in two steps:
 
 - **With `color-mix()` but without relative colour or `light-dark()`** (Chrome and Edge 111–122, Safari 16.2–17, which includes iOS 16 and 17, and Firefox 113–127): a block that works every colour token out again from your dials with `color-mix()` alone, so your colours, themes, exact paper and ink, and `[data-dials]` scopes all apply. It's an approximation: the page is light (`.is-dark` bands are still dark); paper and ink come from `--grey` at fixed mixes, so the lightness dials, `--balance`, `--dark-lift`, `--tint-vividness` and `--text-contrast` have no effect; button text can't switch with the fill, so each group has a fixed choice (white on brand, secondary, danger and info, black on success and warning) and its fill is pulled a fixed amount darker or lighter to keep 4.5:1; and coloured text and lines are the dial mixed a fixed amount into ink, so they hold their contrast but over-shoot it for most colours. Every theme passes the contrast check in this mode; with extreme dials of your own, check on-solid text yourself (`node checks/contrast.mjs --fallback` shows how).
-- **Without `color-mix()` either** (Chrome and Edge before 111, Safari before 16.2, Firefox before 113: 2022 and older): flat colours, the Hi-Fi house theme in light, generated by `tools/fallback.mjs` from the built file. Colour dials have no effect there, but every token is a valid colour, so pages stay readable and buttons stay visible.
+- **Without `color-mix()` either** (Chrome and Edge before 111, Safari before 16.2, Firefox before 113: 2022 and older): flat colours, the default colours in light, generated by `tools/fallback.mjs` from the built file. Colour dials have no effect there, but every token is a valid colour, so pages stay readable and buttons stay visible.
 
 Type and space work as normal in both. Your own file, loaded after `dials.css`, still wins over the fallback, so set dials there as usual.
 
-The leading and tracking curves need `tan()`, `atan2()` and `log()` (Chrome and Edge 120+, Safari 15.4+, Firefox 118+). Without them, `dials-base.css` keeps headings at `--leading-display` (or 1.15) for every size, body text at `--leading-body`, and leaves letter spacing alone; the weight and line-length dials work everywhere.
+Leading needs only `min()` and `max()`, so it works in every browser above.
 
 Don't register the tokens with `@property`: they must work out their colour where they're used, which is what makes dark bands and scopes work.
 

@@ -43,45 +43,45 @@ Each group's line is strong on purpose: it holds 3:1, for borders that must be s
 
 ### Type
 
-Dials works out leading, tracking and the strong weight for you, from a few type dials, all unset by default. `--leading` and `--tracking` work out a value for the size of the element they're on: the leading slides from `--leading-body` at body size to `--leading-display` at the h1 step (`--size-5`), so bigger text gets proportionally tighter lines, and the tracking slides from `--tracking-small` at `--size--2` through 0 at body size to `--tracking-display` at `--size-5`. The display sizes above h1 keep the display values, so `--leading-display` and `--tracking-display` are what your main heading gets. Both are lengths, so an element that inherits them gets its parent's value, not its own: **set them on every element that sets its own font size**, and never on a wrapper or on `body`.
+Dials works out one thing about type besides the scale: leading. `--leading` is the line height for the size of the element it's on, from one dial, `--leading-body` (1.5 by default): every larger size keeps body text's gap between lines, so bigger text gets proportionally tighter lines, and smaller text keeps the body ratio. `--space-paragraph` is one body line.
+
+With `dials-base.css`, every element already gets `--leading` for its own size, so a component sets only its font size:
 
 ```css
-.card-title {
-  font: var(--weight-heading, 600) var(--size-3) / var(--leading) var(--font-heading);
-  letter-spacing: var(--tracking);
-}
+.card-title { font-size: var(--size-3); font-family: var(--font-heading); }
 ```
 
-- The weight dials are unset by default, so read them with Dials' value as the fallback: `var(--weight-heading, 600)`, `var(--weight-body, 400)`. `--weight-strong` (the body weight plus 200) needs no fallback.
-- `dials-base.css` applies all of this to plain headings, captions and small print once you set a leading or tracking dial. Until then it keeps v0.2's type: body 1.6, headings 1.15, no letter spacing.
+Without `dials-base.css`, set `line-height: var(--leading)` on every element that sets its own font size. It's a length, so an element that inherits it gets its parent's value, not its own: never set it on a wrapper or on `body` for children to inherit. To change the rhythm of a section, set the dial on it: `<section data-dials style="--leading-body: 1.3">`.
 
-**An eyebrow or label in capitals** takes the tracking for its size plus `--tracking-caps`, which together are `--tracking-caps-total`:
+Weights and letter spacing are the typeface's. `dials-base.css` sets headings, labels, buttons and table headers at 600 and leaves `strong` to the browser; where you want something else, set it on the component, as the patterns below do. A weight is a unitless number, and letter spacing is in em.
+
+**An eyebrow or label in capitals** needs a little letter spacing, about 0.05em to 0.12em:
 
 ```css
 .eyebrow {
   /* a small label in capitals above a heading */
-  font-size: var(--size--1); line-height: var(--leading); font-weight: var(--weight-strong);
-  text-transform: uppercase; letter-spacing: var(--tracking-caps-total);
+  font-size: var(--size--1); font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.06em;
   color: var(--on-soft);
 }
 ```
 
 The same goes for small caps (`font-variant-caps: all-small-caps`).
 
-**A lede**, the larger opening paragraph, is a step up the scale with its own leading:
+**Display type**, such as a hero title or a big numeral, uses the top steps, `--size-6` to `--size-8`. Many faces look loose at those sizes: tighten them a little on the component, about −0.01em to −0.03em, tuned to the face. Faces with optical sizes usually need none.
 
 ```css
-.lede { font-size: var(--size-1); line-height: var(--leading); letter-spacing: var(--tracking); color: var(--text-muted); }
+.hero-title { font-size: var(--size-7); letter-spacing: -0.02em; }
 ```
 
-**Display type**, such as a hero title or a big numeral, uses the top steps, `--size-6` to `--size-8`. They keep `--leading-display` and `--tracking-display`, the values set for h1.
+**A lede**, the larger opening paragraph, is a step up the scale: `.lede { font-size: var(--size-1); color: var(--text-muted); }`.
 
-**Line length.** `--line-length` caps running text in `dials-base.css` (paragraphs, list items, quotes, captions). A component that holds running text reads it with no cap as the fallback: `max-inline-size: var(--line-length, none)`.
+**Line length.** The measure depends on the layout, so set it on the component that holds running text: `max-inline-size: 65ch` (in `ch`, so it follows the face and size). `dials-base.css` leaves line length to the container.
 
-**A third face**, for ledes, pull quotes or buttons, is the `--font-accent` dial. It's unset by default, so read it with the body face as the fallback:
+**A third face**, for ledes, pull quotes or buttons, is the `--font-accent` dial. Its default is the body face, and `dials.css` doesn't declare it, so read it with the body face as the fallback:
 
 ```css
-.pull-quote { font-family: var(--font-accent, var(--font-body)); font-size: var(--size-3); line-height: var(--leading); letter-spacing: var(--tracking); }
+.pull-quote { font-family: var(--font-accent, var(--font-body)); font-size: var(--size-3); }
 ```
 
-**Finer typesetting.** The class `.is-typeset`, on `<html>` or any section, turns on kerning at every size, tabular figures in tables and `text-wrap: pretty` on paragraphs, list items and quotes (in browsers that have it). It's opt-in, so upgrading changes nothing. For figures that must line up outside a table, set `font-variant-numeric: tabular-nums` on the component.
+**Finer typesetting.** The class `.is-typeset`, on `<html>` or any section, turns on kerning at every size, tabular figures in tables and `text-wrap: pretty` on paragraphs, list items and quotes (in browsers that have it). It's opt-in. For figures that must line up outside a table, set `font-variant-numeric: tabular-nums` on the component.

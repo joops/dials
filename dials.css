@@ -1,8 +1,8 @@
-/*! Dials v0.3.0 | MIT | https://github.com/joops/dials */
+/*! Dials v0.4.0 | MIT | https://github.com/joops/dials */
 /* Dials: an AI-first CSS framework. This file is dials-colour.css, then
    dials-scale.css, then the fallback for older browsers; dials-base.css is optional.
-   Default theme: Hi-Fi. Load its faces with:
-   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Michroma&family=Barlow:wght@400;700&family=Share+Tech+Mono&display=swap">
+   Its defaults are the Default theme: the device's own faces, nothing to load.
+   The Dials house theme is themes/dials.css.
 */
 /* ============================================================
    Dials: colour (dials-colour.css)
@@ -19,19 +19,19 @@
    ============================================================ */
 :root, :host {
   /* ---- Colour dials: any CSS colour, preferably HSL ---- */
-  --brand:     #f39c12;  /* the main colour: links, focus, primary buttons */
-  --secondary: #2ec4b6;  /* a second colour: highlights and secondary actions (was --accent) */
-  --success:   #3fbf55;  /* status: done, saved, live */
-  --warning:   #f2c230;  /* status: check this */
-  --danger:    #e0322b;  /* status: errors and destructive actions */
-  --info:      #3b82c4;  /* status: neutral news */
-  --grey:      hsl(42 7% 50%);  /* the hue and strength of the tint in paper and ink */
+  --brand:     hsl(221 83% 53%);  /* the main colour: links, focus, primary buttons */
+  --secondary: hsl(262 52% 55%);  /* a second colour: highlights and secondary actions (was --accent) */
+  --success:   hsl(142 64% 38%);  /* status: done, saved, live */
+  --warning:   hsl(38 92% 50%);  /* status: check this */
+  --danger:    hsl(0 72% 51%);  /* status: errors and destructive actions */
+  --info:      hsl(199 89% 42%);  /* status: neutral news */
+  --grey:      hsl(220 9% 50%);  /* the hue and strength of the tint in paper and ink */
 
   /* ---- Number dials ---- */
   --balance: 0;              /* 1: every fill at --fill-lightness, so they carry equal weight. 0: exactly as set */
   --fill-lightness: 0.52;    /* the shared OKLCH lightness used when --balance is 1 */
-  --dark-lift: 0.04;         /* how much lighter the fills are in dark */
-  --tint-strength: 8%;       /* how much colour goes into a soft tint */
+  --dark-lift: 0.06;         /* how much lighter the fills are in dark */
+  --tint-strength: 10%;      /* how much colour goes into a soft tint */
   --tint-vividness: 1;       /* 1-3: how saturated soft tints are, for crisper pastels */
   --text-contrast: 0;        /* 0-30: strengthens body, muted and quiet text and strong borders, for paper and ink that sit close together */
   --white-text-until: 0.179; /* fills below this luminance get white text, above it black. 0.179 gives each fill whichever contrasts more; held between 0.175 and 0.18333, where both still give 4.5:1: black needs (L + 0.05) / 0.05 >= 4.5, so L >= 0.175; white needs 1.05 / (L + 0.05) >= 4.5, so L <= 1.05 / 4.5 - 0.05 = 0.18333 */
@@ -39,10 +39,10 @@
   /* ---- Paper and ink: near-white and near-black, tinted by --grey at these OKLCH lightnesses.
      To use exact colours instead, set --paper-light, --paper-dark, --ink-light and/or
      --ink-dark (unset by default) to any colour. ---- */
-  --paper-lightness: 0.922;       /* page background in light */
-  --paper-dark-lightness: 0.186;  /* page background in dark */
-  --ink-lightness: 0.213;         /* strongest text in light */
-  --ink-dark-lightness: 0.934;    /* strongest text in dark */
+  --paper-lightness: 0.985;       /* page background in light */
+  --paper-dark-lightness: 0.17;   /* page background in dark */
+  --ink-lightness: 0.2;           /* strongest text in light */
+  --ink-dark-lightness: 0.95;     /* strongest text in dark */
 }
 
 /* Follow the visitor's light or dark setting. To force one, set
@@ -228,9 +228,9 @@
    Dials: type and space (dials-scale.css)
    A few dials set every text size and every space size, the way
    Utopia (utopia.fyi) works them out, but the maths runs in the
-   browser: change a dial and the whole scale follows. Leading,
-   tracking and weight are worked out the same way, for whatever size
-   they're used at. This file sets no type on any element: only
+   browser: change a dial and the whole scale follows. Leading is
+   worked out the same way, for whatever size it's used at. This
+   file sets no type on any element: only
    dials-base.css does that. Dials live on
    :root (and :host); the derived scale is declared on :root,
    [data-dials] and :host, so a dial set on a [data-dials] element
@@ -247,29 +247,20 @@
   --space-min: var(--size-min);  /* --space-s at each end, in px: follows body text */
   --space-max: var(--size-max);  /* size unless you set a number */
   --space-density: 1;      /* scales every space size: 0.8 compact, 1.25 roomy */
-  --radius-base: 3;        /* corner radius of cards and fields, in px (a number, not a length) */
+  --radius-base: 10;       /* corner radius of cards and fields, in px (a number, not a length) */
 
   /* Faces: set per site, and load them yourself (each theme file names its Google Fonts link) */
-  --font-body: "Barlow", ui-sans-serif, system-ui, sans-serif;  /* body text and controls */
-  --font-heading: "Michroma", ui-sans-serif, system-ui, sans-serif;  /* headings */
-  --font-mono: "Share Tech Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;  /* code, kbd, samp, pre */
+  --font-body: ui-sans-serif, system-ui, sans-serif;  /* body text and controls */
+  --font-heading: ui-sans-serif, system-ui, sans-serif;  /* headings */
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;  /* code, kbd, samp, pre */
 
   /* Border widths: every border and outline uses one of these */
   --border-width-s: 1px;   /* hairlines: cards, fields, tables */
   --border-width-m: 2px;   /* emphasis; outline offsets */
   --border-width-l: 3px;   /* focus rings, quote bars, active tabs */
 
-  /* ---- Leading, tracking, weight and line length: unset by default ---- */
-  /* While none is set, dials-base.css keeps v0.2's type. Set them in your own file; the value
-     shown is what Dials uses for any you leave unset once you've set another. */
-  /* --leading-body: 1.6;      line height at body size (--size-0), unitless */
-  /* --leading-display: 1.15;  line height at the h1 step (--size-5) and above, unitless; sizes in between slide in a straight line */
-  /* --tracking-small: 0;      letter spacing at the smallest size (--size--2), in em without the unit: positive loosens captions */
-  /* --tracking-display: 0;    letter spacing at the h1 step (--size-5) and above, in em without the unit: negative tightens display type */
-  /* --tracking-caps: 0;       extra letter spacing for all caps and small caps, in em without the unit (0.05 to 0.12 is usual) */
-  /* --weight-body: 400;       body text weight */
-  /* --weight-heading: 600;    heading weight */
-  /* --line-length: none;      the longest line of running text, e.g. 65ch; unset, lines run the full width */
+  /* ---- Leading: one dial for the rhythm of the type ---- */
+  /* --leading-body: 1.5;      line height at body size (--size-0), unitless. Every larger size keeps the same gap between lines, so it gets proportionally tighter; the space after paragraphs is one body line */
   /* --font-accent: var(--font-body);  a third face, for ledes, pull quotes or buttons; read it as var(--font-accent, var(--font-body)) */
 }
 
@@ -314,28 +305,14 @@
   --size-7: clamp(min(var(--dl-min-7), var(--dl-max-7)) * 1rem, var(--dl-min-7) * 1rem + (var(--dl-max-7) - var(--dl-min-7)) * var(--dl-fluid), max(var(--dl-min-7), var(--dl-max-7)) * 1rem);  /* display type */
   --size-8: clamp(min(var(--dl-min-8), var(--dl-max-8)) * 1rem, var(--dl-min-8) * 1rem + (var(--dl-max-8) - var(--dl-min-8)) * var(--dl-fluid), max(var(--dl-min-8), var(--dl-max-8)) * 1rem);  /* display type: the top of the scale */
 
-  /* ---- Leading, tracking and weight: worked out for the size of the element they're used on ---- */
-  /* --leading and --tracking are lengths: apply them on each element that sets a font size, never
-     on body, where they'd inherit as one fixed length. */
-  --dl-leading-body: var(--leading-body, 1.6);
-  --dl-leading-display: var(--leading-display, 1.15);
-  --dl-tracking-small: var(--tracking-small, 0);
-  --dl-tracking-display: var(--tracking-display, 0);
-  /* body size over the h1 step, as a number: tan(atan2(a, b)) is a / b for two lengths
-     (Firefox has no typed division) */
-  --dl-type-q: tan(atan2(var(--size-0), var(--size-5)));
-  /* leading runs in a straight line in size, m * size + g, through leading-body at --size-0 and leading-display at --size-5, the h1 step */
-  --dl-leading-m: calc((var(--dl-leading-display) - var(--dl-leading-body) * var(--dl-type-q)) / max(1 - var(--dl-type-q), 0.000001));
-  --dl-leading-g: calc(var(--size-0) * (var(--dl-leading-body) - var(--dl-leading-m)));
-  /* how far up the scale this size is, from --size-0 (0) to --size-5 (1), and down it to --size--2, evenly per step */
-  --dl-type-up: clamp(0, log(tan(atan2(var(--size-0), 1em))) / min(log(var(--dl-type-q)), -0.000001), 1);
-  --dl-type-down: clamp(0, log(tan(atan2(1em, var(--size-0)))) / min(log(tan(atan2(var(--size--2), var(--size-0)))), -0.000001), 1);
-  --leading: clamp(min(var(--dl-leading-body), var(--dl-leading-display)) * 1em, var(--dl-leading-m) * 1em + var(--dl-leading-g), max(var(--dl-leading-body), var(--dl-leading-display)) * 1em);  /* line height for the size it's on, from --leading-body at body size to --leading-display at --size-5 (h1) and above */
-  --tracking: calc(1em * (var(--dl-tracking-display) * var(--dl-type-up) + var(--dl-tracking-small) * var(--dl-type-down)));  /* letter spacing for the size it's on: 0 at body size, --tracking-small at --size--2 and below, --tracking-display at --size-5 (h1) and above */
-  --tracking-caps-total: calc(var(--tracking) + 1em * var(--tracking-caps, 0));  /* letter spacing for text in capitals: --tracking plus --tracking-caps */
-  --weight-strong: min(900, var(--weight-body, 400) + 200);  /* bold within body text, buttons and labels: the body weight plus 200 */
-  /* dials-base.css reads these, so an untouched site keeps v0.2's type: each is valid only once one of its dials is set */
-  --dl-weight-strong-on: calc(var(--weight-strong) + 0 * var(--weight-body));
+  /* ---- Leading: worked out for the size of the element it's used on ---- */
+  /* --leading is a length: apply it on each element that sets a font size (dials-base.css applies it to every
+     element), never on a wrapper for its children to inherit, where it would pass on one fixed length. */
+  --dl-leading-body: var(--leading-body, 1.5);
+  /* the body's gap between lines at every larger size (1em + the body gap), so bigger text gets proportionally
+     tighter lines; smaller text keeps the body ratio; no size goes below 1.05 */
+  --leading: max(1.05em, min(var(--dl-leading-body) * 1em, 1em + (var(--dl-leading-body) - 1) * var(--size-0)));  /* line height for the size it's on: the same gap between lines as body text at every larger size */
+  --space-paragraph: calc(var(--dl-leading-body) * var(--size-0));  /* one body line: the space after paragraphs and other blocks; headings take two above and half below */
 
   /* ---- Space: multiples of the space base (Utopia's t-shirt sizes), times the density ---- */
   --dl-space-min: calc(var(--space-min) / 16 * var(--space-density));
@@ -370,16 +347,6 @@
   --radius-m: calc(var(--radius-base) * 1px);
   --radius-l: calc(var(--radius-base) * 1.6px);
   --radius-pill: 999px;
-}
-
-/* The leading and tracking gates need tan(), atan2() and log() (Chrome 120, Firefox 118, Safari 15.4).
-   Without them the gates stay undefined, so dials-base.css keeps headings at --leading-display (or 1.15)
-   and leaves letter spacing alone. */
-@supports (width: calc(1px * tan(atan2(1px, 1px)) * log(2))) {
-  :root, [data-dials], :host {
-    --dl-leading-on: calc(var(--leading) + 0px * var(--leading-body, var(--leading-display)));
-    --dl-tracking-on: calc(var(--tracking) + 0em * var(--tracking-small, var(--tracking-display)));
-  }
 }
 /* ============================================================
    Dials: the fallback (src/fallback.css, built into the end of dials.css)
@@ -538,7 +505,7 @@
   .is-info      { --solid: var(--info-solid);      --on-solid: var(--info-on-solid);      --soft: var(--info-soft);      --on-soft: var(--info-on-soft);      --line: var(--info-line); }
   .is-accent    { --solid: var(--secondary-solid); --on-solid: var(--secondary-on-solid); --soft: var(--secondary-soft); --on-soft: var(--secondary-on-soft); --line: var(--secondary-line); }
 }
-/* Generated by tools/fallback.mjs from dials.css (src/colour.css 93ca251ad22dc853): the Hi-Fi defaults in
+/* Generated by tools/fallback.mjs from dials.css (src/colour.css 8cab4e67a684f482): the defaults in
    the light scheme. Don't edit. The last resort, for browsers without color-mix() (Chrome and Edge
    before 111, Safari before 16.2, Firefox before 113, all 2022 or older): they can't work anything
    out, so every colour token is flat and they get the house colours, light only. Colour dials have no
@@ -546,68 +513,68 @@
 @supports not (color: color-mix(in srgb, red, blue)) {
   :root, [data-dials], :host, .is-light, .is-dark {
     color-scheme: light;
-    --surface: #e6e5e3;
-    --surface-raised: #efefee;
-    --surface-lowered: #dcdcda;
-    --surface-sunken: #d3d2d1;
+    --surface: #f9fafc;
+    --surface-raised: #feffff;
+    --surface-lowered: #eef0f2;
+    --surface-sunken: #e4e5e7;
     --surface-overlay: rgb(0 0 0 / 45%);
-    --text-strong: #1a1916;
-    --text: #32312e;
-    --text-muted: #4f4e4c;
-    --text-quiet: #5b5a58;
-    --text-disabled: #91908e;
-    --link: #875505;
-    --link-hover: #663900;
-    --border-quiet: #d5d5d3;
-    --border: #c8c7c5;
-    --border-strong: #807f7d;
-    --focus: #875505;
-    --selection: #ead6c0;
+    --text-strong: #151619;
+    --text: #2f3033;
+    --text-muted: #505154;
+    --text-quiet: #5d5e61;
+    --text-disabled: #999a9d;
+    --link: #2362e9;
+    --link-hover: #0743c2;
+    --border-quiet: #e7e8ea;
+    --border: #d7d8db;
+    --border-strong: #86878a;
+    --focus: #2362e9;
+    --selection: #c9dbfc;
     --shadow-color: rgb(0 0 0 / 10%);
     --shadow-s: 0 1px 3px rgb(0 0 0 / 10%);
     --shadow-m: 0 4px 14px rgb(0 0 0 / 10%);
     --shadow-l: 0 12px 32px rgb(0 0 0 / 10%);
     --mix-hover: black 12%;
     --mix-active: black 22%;
-    --brand-solid: #f39c12;
-    --brand-on-solid: #000000;
-    --brand-soft: #e7e0d8;
-    --brand-on-soft: #875505;
-    --brand-line: #ac6d09;
-    --secondary-solid: #2ec4b6;
-    --secondary-on-solid: #000000;
-    --secondary-soft: #dae3e1;
-    --secondary-on-soft: #156b63;
-    --secondary-line: #1d897f;
-    --neutral-solid: #1a1916;
-    --neutral-on-solid: #e6e5e3;
-    --neutral-soft: #dcdcda;
-    --neutral-on-soft: #32312e;
-    --neutral-line: #c8c7c5;
-    --success-solid: #3fbf55;
+    --brand-solid: #2463eb;
+    --brand-on-solid: #ffffff;
+    --brand-soft: #e9f1ff;
+    --brand-on-soft: #2362e9;
+    --brand-line: #2463eb;
+    --secondary-solid: #7c51c8;
+    --secondary-on-solid: #ffffff;
+    --secondary-soft: #f1eefc;
+    --secondary-on-soft: #7c51c8;
+    --secondary-line: #7c51c8;
+    --neutral-solid: #151619;
+    --neutral-on-solid: #f9fafc;
+    --neutral-soft: #eef0f2;
+    --neutral-on-soft: #2f3033;
+    --neutral-line: #d7d8db;
+    --success-solid: #239f50;
     --success-on-solid: #000000;
-    --success-soft: #dae2da;
-    --success-on-soft: #206e2e;
-    --success-line: #2c8c3c;
-    --warning-solid: #f2c230;
+    --success-soft: #eaf4eb;
+    --success-on-soft: #197c3d;
+    --success-line: #229c4f;
+    --warning-solid: #f59f0a;
     --warning-on-solid: #000000;
-    --warning-soft: #e6e3da;
-    --warning-on-soft: #755d12;
-    --warning-line: #95771a;
-    --danger-solid: #e0322b;
-    --danger-on-solid: #000000;
-    --danger-soft: #eadbd9;
-    --danger-on-soft: #b72721;
-    --danger-line: #e0322b;
-    --info-solid: #3b82c4;
+    --warning-soft: #faf1e7;
+    --warning-on-soft: #976003;
+    --warning-line: #bd7906;
+    --danger-solid: #dc2828;
+    --danger-on-solid: #ffffff;
+    --danger-soft: #ffece9;
+    --danger-on-soft: #d02525;
+    --danger-line: #dc2828;
+    --info-solid: #0c8eca;
     --info-on-solid: #000000;
-    --info-soft: #dae0e6;
-    --info-on-soft: #2b6396;
-    --info-line: #397ebf;
-    --accent-solid: #2ec4b6;
-    --accent-on-solid: #000000;
-    --accent-soft: #dae3e1;
-    --accent-on-soft: #156b63;
-    --accent-line: #1d897f;
+    --info-soft: #e9f2f9;
+    --info-on-soft: #0773a4;
+    --info-line: #0c8eca;
+    --accent-solid: #7c51c8;
+    --accent-on-solid: #ffffff;
+    --accent-soft: #f1eefc;
+    --accent-on-soft: #7c51c8;
+    --accent-line: #7c51c8;
   }
 }

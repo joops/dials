@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.4.0
+
+Back to what Dials was built as: Utopia's fluid type and space, plus colour, with one type dial that earns its place, leading. 0.3.0's tracking, weight and line-length dials are gone, and the defaults are now a plain starting point rather than the house look.
+
+### Upgrading from 0.3
+
+- **Copy `dials.css` again, and your theme.** `themes/hi-fi.css` is now `themes/dials.css`. The old file still works in this release, as a deprecated copy, and goes in a later one.
+- **The defaults are a plain Default theme**, not the house look: the device's own interface faces (nothing to load), a plain blue on cool neutral greys, white paper and near-black ink, leading 1.5 and 10px corners. For the house look, load `themes/dials.css`: Hi-Fi colour and type, Machined space, leading 1.6.
+- **Leading is one dial, `--leading-body`** (default 1.5), and works differently. Every larger size keeps the same gap between lines as body text, so headings get proportionally tighter (with the default type at 1280px, h3 is about 1.32 and h1 about 1.16); smaller text keeps the body ratio; no size goes below 1.05. It needs no maths functions, so it works in every browser Dials supports. `--leading-display` is gone.
+- **Removed dials:** `--leading-display`, `--tracking-small`, `--tracking-display`, `--tracking-caps`, `--weight-body`, `--weight-heading`, `--line-length`. **Removed tokens:** `--tracking`, `--tracking-caps-total`, `--weight-strong`. Letter spacing and weights are the typeface's and your own CSS's again; [docs/tokens.md](docs/tokens.md#type) has the patterns for capitals labels (about 0.06em), display headings (about −0.02em, tuned to the face) and line length (`max-inline-size` on the component).
+- **`dials-base.css`:** every element works out its own line height from its own size (one zero-specificity rule in `@layer dials-type`), so a component sets only `font-size`. Blocks of text are one body line apart (`--space-paragraph`), and headings get two body lines above and half a line below. Weights are fixed as in 0.2: headings, labels, buttons, `th`, `legend` and `summary` at 600, `strong` the browser's bolder. It sets no letter spacing. To change the rhythm of a section, set `--leading-body` on a `[data-dials]` element; a `line-height` set on a wrapper no longer reaches the text inside, so set it on the text itself.
+- **The rules block in AGENTS.md changed: copy it again.** The type rule now says line height comes from the leading token, set on every element that sets its own font size (`dials-base.css` does it for every element), and that letter spacing and weight are the typeface's unless you set them yourself.
+
+### Added
+
+- **`--space-paragraph`**: one body line, the space after paragraphs, lists, quotes, tables and other blocks. It follows `--leading-body`.
+- **Default colour and type presets**, and two themes built on them: **Default** (what `dials.css` gives with nothing set) and **Dials** (the house theme, formerly Hi-Fi). The Hi-Fi type preset now sets its leading, 1.6.
+- **Playground:** a Leading slider in the Type tab. The light and dark preview panes, the article and the page's own text follow it. The page's own CSS now uses Dials tokens for every font size, space, border, outline, shadow and corner, so it follows a theme the way a site would. The theme menu starts with Default.
+
+### Checks
+
+- `checks/type.mjs`: every element `dials-base.css` styles renders the same with `--leading-body` at its default as with nothing set, in every computed property and box, at 360px and 1280px, with no theme, each theme, a reset loaded before `dials-base.css`, and in the playground's scoped demo. Against 0.2.0's files, the Dials theme differs from 0.2.0's Hi-Fi only in line height, paragraph and heading margins, and the sizes they move. `--leading` is exact at body size and on its formula at every step, half step and past both ends, across 30 random dial sets and three widths; paragraph spacing is one body line and follows leading.
+- `checks/playground.mjs`: the Leading slider moves the preview panes, the article and the base demo, and every theme, preset and Randomise sets or clears it; the playground's own text follows the type scale.
+
 ## 0.3.0
 
 The type pass: leading, tracking, weight and line length are dials, and Dials works out the leading and tracking for every size from two ends each.
