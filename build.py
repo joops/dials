@@ -160,14 +160,8 @@ def gf_param(name, table, wanted=(400, 700)):
 
 
 def face_weights(type_dials):
-    """The weights each face is asked for: 400 and 700, plus any weight a preset's type dials set."""
-    out = {k: {400, 700} for k in ("--font-heading", "--font-body", "--font-mono", "--font-accent")}
-    if "--weight-heading" in type_dials:
-        out["--font-heading"].add(int(type_dials["--weight-heading"]))
-    if "--weight-body" in type_dials:
-        wb = int(type_dials["--weight-body"])
-        out["--font-body"] |= {wb, min(900, wb + 200)}   # --weight-strong
-    return out
+    """The weights each face is asked for: regular and bold."""
+    return {k: {400, 700} for k in ("--font-heading", "--font-body", "--font-mono", "--font-accent")}
 
 
 def fonts_link(type_dials, table):
@@ -332,15 +326,11 @@ GROUP_ROLES = {
 DEPRECATED_DIALS = {"--accent": "--secondary"}
 
 
-# The type dials dials.css documents in comments. Those comments still say an unset type dial keeps v0.2's
-# type, which is no longer so, but dials.css stays byte-identical in this release (sites have copied it),
-# so the reference states them as they work: each always applies, with the default shown.
-UNDECLARED_SECTION = "Leading"
-UNDECLARED_NOTE = ("`dials.css` doesn't declare these at `:root`, but Dials always applies them, with the default shown when you set none: "
-                   "setting a dial to its default changes nothing. In your own CSS, read one with its default as the fallback: `var(--weight-heading, 600)`.")
-# --line-length is still in that comment block but is no longer a dial: Dials worked nothing out from it, so a
-# line length is a pattern in src/patterns.md. The reference leaves it out.
-REMOVED_DIALS = {"--line-length"}
+# The dials dials.css documents in comments rather than declares (the leading dial and the accent face):
+# the reference lists them with their default and says how to read them.
+UNDECLARED_SECTION = "Leading and the accent face"
+UNDECLARED_NOTE = ("`dials.css` doesn't declare these at `:root`, but Dials applies them with the default shown when you set none, "
+                   "so setting one to its default changes nothing. In your own CSS, read one with its default as the fallback: `var(--leading-body, 1.5)`.")
 
 
 def documented(src, file):
@@ -356,8 +346,6 @@ def documented(src, file):
             continue
         u = re.match(r"/\*\s*(--[\w-]+)\s*:\s*(.+?);\s*(.*?)\s*\*/$", s)
         if u and block == "dial":   # a dial dials.css doesn't declare, documented in a comment with its default
-            if u.group(1) in REMOVED_DIALS:
-                continue
             desc = u.group(3).strip()
             rows.append({"name": u.group(1), "kind": "dial", "file": file, "section": UNDECLARED_SECTION, "declared": False,
                          "default": u.group(2).strip(), "description": desc})

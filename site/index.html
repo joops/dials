@@ -750,10 +750,7 @@ pre { margin: 0; max-height: 460px; overflow: auto; font: var(--size--2)/var(--l
   function exactDials() { return NEUTRAL_HEX.map(function (d) { return d[0]; }).filter(function (v) { return root.style.getPropertyValue(v); }); }
   function fontsLink() {
     var fams = [fontName(get('--font-heading')), fontName(get('--font-body')), fontName(get('--font-mono')), fontName(get('--font-accent'))].filter(function (x, i, a) { return x && a.indexOf(x) === i; });
-    var want = {}, wh = root.style.getPropertyValue('--weight-heading').trim(), wb = root.style.getPropertyValue('--weight-body').trim();   /* as build.py's face_weights() */
-    function add(stack, ws) { var n = fontName(get(stack)); if (n) want[n] = (want[n] || []).concat(ws); }
-    if (wh) add('--font-heading', [+wh]);
-    if (wb) add('--font-body', [+wb, Math.min(900, +wb + 200)]);
+    var want = {};   /* each face at 400 and 700, as build.py's face_weights() */
     return fams.length ? '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?' + fams.map(function (n) { return gfParam(n, want[n]); }).join('&') + '&display=swap">' : '(system fonts only)';
   }
   function themeText() {

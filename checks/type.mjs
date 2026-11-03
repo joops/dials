@@ -1,18 +1,14 @@
 // Type checks for the shipped files, in Chromium and Firefox:
-// 1. The type dials always apply, with their defaults: every element dials-base.css styles renders
-//    exactly the same with every type dial set to its default as with none set (a theme's own type
-//    dials kept), in every computed property and every box, at a phone and a desktop width. Alone, with each shipped theme, after a
-//    site reset loaded before dials-base.css, and in the playground's scoped demo under the page's
-//    own rules. Against v0.2.0's files (checks/fixtures/v0.2.0/), only the type the defaults now
-//    apply differs: line height, letter spacing and the weight of strong. And dials.css alone sets no
-//    type on any element, even with every type dial set.
-// 2. --leading, across seeded random dial sets and three
-//    widths: exact at their end points (--size--2, --size-0 and --size-5, the h1 step), monotonic between them,
-//    held at the end values beyond them, and on the formula in between. --size-7 and --size-8
+// 1. --leading-body at its default renders exactly as nothing set, for every element dials-base.css styles:
+//    every computed property and every box, at a phone and a desktop width, alone, with each shipped theme,
+//    after a site reset loaded before dials-base.css, and in the playground's scoped demo. Against v0.2.0's
+//    files (checks/fixtures/v0.2.0/), the Dials theme differs from v0.2.0's Hi-Fi only in line height, block
+//    margins and the sizes they move. And dials.css alone sets no type on any element.
+// 2. --leading, across seeded random dial sets and three widths: exact at body size, the body's gap between
+//    lines at every larger size, the body ratio below, never under 1.05, and monotonic. --size-7 and --size-8
 //    continue the scale.
-// 3. dials-base.css with dials set: each family of dials moves only its own properties, a
-//    [data-dials] scope applies its dials inside it only, .is-typeset opts in, and a browser without
-//    tan(), atan2() and log() (emulated) keeps headings at --leading-display, flat.
+// 3. dials-base.css: every element gets its own leading, paragraphs are one body line apart, letter spacing and
+//    weights are left alone, a [data-dials] scope applies its leading inside it only, and .is-typeset opts in.
 // Exits 1 on failure.
 //
 //   node checks/type.mjs [--browser=chromium|firefox] [--random=30] [--seed=1] [--verbose]
@@ -80,7 +76,8 @@ const BASE_DIALS = `<p id="p">Body text with <strong id="st">strong</strong> and
 <div data-dials id="scope" style="--leading-body: 2"><h1 id="sh1">Scoped heading</h1><p id="sp">Scoped body</p></div>
 <div class="is-typeset" id="ts"><p id="tsp">Pretty paragraph</p><table><tr><td id="tstd">12.50</td></tr></table></div>
 <style>#tok-lead { line-height: var(--leading); } #tok-trk { letter-spacing: var(--tracking); }</style>
-<h1 id="tok-lead">x</h1><h1 id="tok-trk">x</h1>`;
+<h1 id="tok-lead">x</h1><h1 id="tok-trk">x</h1>
+<div class="card"><div id="comp" style="font-size: var(--size-4)">A component that sets only its font size</div></div>`;
 
 const pages = {
   // the defaults cases: ?v=set sets every type dial to its default after the other files, ?v=none sets none,
@@ -273,6 +270,7 @@ try {
     expect(name, Math.abs(num(r.h1.lh) / r.h1.size - gapRatio(1.5, r.h1)) < 0.003 && Math.abs(num(r.h3.lh) / r.h3.size - gapRatio(1.5, r.h3)) < 0.003,
       `no dials set: h1 ${(num(r.h1.lh) / r.h1.size).toFixed(3)} and h3 ${(num(r.h3.lh) / r.h3.size).toFixed(3)} keep body's gap (want ${gapRatio(1.5, r.h1).toFixed(3)}, ${gapRatio(1.5, r.h3).toFixed(3)})`);
     expect(name, num(r.h1.ls) === 0 && num(r.sm.ls) === 0 && r.st.w === 700 && r.p.max === 'none', `no dials set: no letter spacing (${r.h1.ls}, ${r.sm.ls}), strong ${r.st.w} (the browser's bolder), no max inline size (${r.p.max})`);
+    expect(name, Math.abs(num(r.comp.lh) / r.comp.size - gapRatio(1.5, r.comp)) < 0.003, `a component that sets only its font size gets its own leading (${(num(r.comp.lh) / r.comp.size).toFixed(3)}, want ${gapRatio(1.5, r.comp).toFixed(3)})`);
     // a [data-dials] scope applies its dials inside it only
     expect(name, Math.abs(num(r.sh1.lh) / r.sh1.size - gapRatio(1.5, r.sh1)) > 0.01 , `a [data-dials] scope with a leading dial applies it inside it (h1 ${r.sh1.lh} at ${r.sh1.size}px, ${r.sh1.ls})`);
     expect(name, Math.abs(num(r.h1.lh) / r.h1.size - gapRatio(1.5, r.h1)) < 0.003 && num(r.h1.ls) === 0, `outside the scope nothing changes (h1 ${r.h1.lh}, ${r.h1.ls})`);
