@@ -224,6 +224,44 @@ def validate_fallback(fallback_src, flat_src, colour_src, scale_src):
             fail(f"{name} doesn't declare {missing}")
 
 
+# A pale colour has too little chroma for its hue to survive being read back: Chrome 157 reads it as
+# `none`, which paints at hue 0, pink (0.4.1). So no colour token may read a hue (`h`) from a polar
+# relative colour whose origin is a mix or a near-grey Dials makes: change a and b in oklab instead.
+PALE_ORIGINS = ("color-mix(", "var(--dl-paper-grey)", "var(--dl-paper", "var(--grey)", "var(--dl-ink")
+
+
+def balanced(text, i):
+    """The end of the parenthesised group (or bare word) starting at text[i]."""
+    j = i
+    while j < len(text) and text[j] not in "( ),":
+        j += 1
+    if j < len(text) and text[j] == "(":
+        depth = 0
+        while j < len(text):
+            depth += {"(": 1, ")": -1}.get(text[j], 0)
+            j += 1
+            if depth == 0:
+                break
+    return j
+
+
+def validate_hues(colour_src):
+    """Fail any colour token that reads its hue back from a mix or a near-grey origin."""
+    bad = []
+    for _, body in blocks(strip_comments(colour_src)):
+        for name, value in decls(body):
+            for m in re.finditer(r"\b(oklch|lch|hsl|hwb)\(\s*from\s+", value):
+                start = m.end()
+                end = balanced(value, start)
+                origin = value[start:end]
+                rest = value[end:balanced(value, m.start() + len(m.group(1))) - 1]
+                if origin.startswith(PALE_ORIGINS) and re.search(r"(?<![\w-])h(?![\w-])", rest):
+                    bad.append(f"{name} ({m.group(1)}(from {origin[:40]}{'...' if len(origin) > 40 else ''} ... h))")
+    if bad:
+        fail("these tokens read a hue back from a mix or a near-grey, which Chrome 157 paints pink: "
+             + "; ".join(bad) + ". Scale a and b with oklab(from ...) instead")
+
+
 def flat_stale(flat_src, colour_src):
     m = re.search(r"\(src/colour\.css ([0-9a-f]{16})\)", flat_src)
     return not m or m.group(1) != hashlib.sha256(colour_src.encode("utf-8")).hexdigest()[:16]
@@ -434,6 +472,7 @@ def build():
                 fail(f"themes.json: {key} names a missing {k} preset '{t[k]}'")
     validate_defaults(presets, colour_src, scale_src)
     validate_fallback(fallback_src, flat_src, colour_src, scale_src)
+    validate_hues(colour_src)
     table = gf_table()
     house_link = fonts_link(presets["type"][THEMES["dials"]["type"]]["dials"], table)
 

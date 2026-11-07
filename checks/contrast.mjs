@@ -9,7 +9,7 @@
 //   node checks/contrast.mjs [--fallback] [--browser=chromium|firefox] [--random=40] [--seed=1] [--verbose]
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { serve, launch, pageHelpers, emulateFallback, ROOT } from './lib.mjs';
+import { serve, launch, pageHelpers, emulateFallback, randomSets, ROOT } from './lib.mjs';
 
 const args = Object.fromEntries(process.argv.slice(2).map(a => { const [k, v] = a.replace(/^--/, '').split('='); return [k, v ?? true]; }));
 const BROWSERS = args.browser ? [args.browser] : ['chromium', 'firefox'];
@@ -60,32 +60,6 @@ const TIGHT = COLOURED.flatMap(g => [
   { token: `--${g}-line`, from: clip(g === 'secondary' ? 'var(--dl-secondary-dial)' : `var(--${g})`), min: 3, bgs: [`--${g}-soft`, ...SURFACES] },
 ]);
 const OVERSHOOT = 0.1 + 0.25;
-
-// ---- seeded random extreme dials ----
-function mulberry32(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
-function randomSets(n, seed) {
-  const r = mulberry32(seed), oneOf = a => a[Math.floor(r() * a.length)], between = (a, b) => a + (b - a) * r(), f = (x, d = 3) => +x.toFixed(d);
-  const KIND = {
-    yellow: () => `hsl(${Math.round(between(45, 75))} ${Math.round(between(80, 100))}% ${Math.round(between(45, 65))}%)`,
-    'near-white': () => `oklch(${f(between(0.93, 1))} ${f(between(0, 0.04))} ${Math.round(between(0, 360))})`,
-    'near-black': () => `oklch(${f(between(0, 0.14))} ${f(between(0, 0.05))} ${Math.round(between(0, 360))})`,
-    'low-chroma': () => `oklch(${f(between(0.3, 0.85))} ${f(between(0, 0.02))} ${Math.round(between(0, 360))})`,
-    saturated: () => `hsl(${Math.round(between(0, 360))} 100% ${Math.round(between(35, 60))}%)`,
-  };
-  const kinds = Object.keys(KIND), sets = [];
-  for (let i = 0; i < n; i++) {
-    const main = kinds[i % kinds.length], d = {};
-    for (const c of ['brand', 'secondary', 'success', 'warning', 'danger', 'info', 'grey']) d[`--${c}`] = KIND[r() < 0.6 ? main : oneOf(kinds)]();
-    d['--balance'] = r() < 0.5 ? 0 : 1;
-    d['--fill-lightness'] = f(between(0.3, 0.75), 2);
-    d['--dark-lift'] = f(between(0, 0.3), 2);
-    d['--tint-strength'] = Math.round(between(4, 20)) + '%';
-    d['--tint-vividness'] = f(between(1, 3), 1);
-    d['--white-text-until'] = f(between(0.15, 0.3));
-    sets.push({ name: `random:${i + 1}:${main}`, dials: d });
-  }
-  return sets;
-}
 
 // ---- the test page ----
 const PROBES = [...new Set([...pairs().flatMap(p => p.slice(0, 2)), ...TIGHT.flatMap(t => [t.token, t.from])])];
