@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.4.1
+
+A patch release: copy `dials.css` (or `dials-colour.css`) again. Nothing to change in your own CSS, and no dial or token changed its name or default.
+
+### Fixed
+
+- **Soft tints showed as pale pink in Chrome 157 and later; their hue now comes from the colour itself.** A soft tint is the colour mixed into paper at `--tint-strength`, so pale that Chrome 157 reads its hue back as "none", which paints at hue 0, pink. Every soft tint now keeps the colour's own direction in OKLab and scales it, without reading a hue back, so it paints as it did in 0.4.0 in every browser that already showed it right. That holds for paper you set exactly with `--paper-light` or `--paper-dark` too. The paper, ink and raised surface, which are worked out from the near-grey `--grey`, now work the same way, and so do the fills and the link hover.
+
+### Checks
+
+- `checks/sameness.mjs`: every colour token, in every group, paints within 1/255 per channel of 0.4.0's (from `checks/fixtures/v0.4.0/dials.css`), in Chromium and Firefox, in a light page, a dark page and an `.is-dark` band. It covers no theme, each theme, each theme with exact papers, four exact papers (one a dark navy `--paper-dark`) and 40 seeded extreme random dial sets, ten of them with random exact papers. Every soft tint is identical.
+- `build.py` refuses to build if any colour token reads a hue (`h`) from a polar relative colour whose origin is a `color-mix()`, the paper, the ink or `--grey`, and names the token.
+
 ## 0.4.0
 
 Back to what Dials was built as: Utopia's fluid type and space, plus colour, with one type dial that earns its place, leading. 0.3.0's tracking, weight and line-length dials are gone, and the defaults are now a plain starting point rather than the house look.
