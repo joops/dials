@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.4.2
+
+A patch release: copy `dials.css` (or `dials-colour.css`) again. Nothing to change in your own CSS, and no dial or token changed its name or default. Every colour token paints exactly as in 0.4.1; hover and pressed fills with white, black or grey text change colour, back to the fill's own hue.
+
+### Fixed
+
+- **Hover and pressed fills drifted towards pink when the text on them is white, black or grey; they now keep the fill's own hue.** `--mix-hover` and `--mix-active` move a fill away from its text colour by mixing in the text colour with its lightness flipped, and read the text colour's hue back to do it. A grey has no hue, so the mix got hue 0 (pink) instead, and `color-mix(in oklch, …)` turned the fill 12% (hover) or 22% (pressed) of the way round towards it: a blue button's hover went violet, and a green's pressed state yellow-green. That happened in every browser, not only Chrome 157. Both now flip the lightness in OKLab and keep the text colour's own a and b, so a grey brings no hue and the mix keeps the fill's. With coloured text the fills paint exactly as in 0.4.1.
+
+### Checks
+
+- `checks/sameness.mjs` now compares with 0.4.1 (`checks/fixtures/v0.4.1/dials.css` and `dials-base.css`) at 0/255 per channel, and checks hover and pressed as well as every colour token: the mixes as `dials-base.css`'s buttons use them, for every group, with the button's own text colour and with grey and coloured text, and real buttons hovered and pressed with the mouse, which must paint their mix. With coloured text a mix must paint as 0.4.1's; with near-grey text (OKLCH chroma under 0.03) it may differ only by keeping the fill's hue (within 0.5°). `--against=v0.4.0` still compares the tokens with 0.4.0 at 1/255.
+- `build.py` also refuses a colour token that reads a hue (`h`) from `currentColor`.
+
 ## 0.4.1
 
 A patch release: copy `dials.css` (or `dials-colour.css`) again. Nothing to change in your own CSS, and no dial or token changed its name or default.

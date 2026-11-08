@@ -1,4 +1,4 @@
-/*! Dials v0.4.1 | MIT | https://github.com/joops/dials */
+/*! Dials v0.4.2 | MIT | https://github.com/joops/dials */
 /* ============================================================
    Dials: colour (dials-colour.css)
    Dials: seven colours and a few numbers, the only typed values.
@@ -96,9 +96,11 @@
   --shadow-l: 0 12px 32px var(--shadow-color);  /* popovers, menus, dialogs */
 
   /* ---- Hover and pressed: the second half of a color-mix(), from Web Awesome.
-     Use as color-mix(in oklch, var(--solid), var(--mix-hover)). ---- */
-  --mix-hover:  oklch(from currentColor calc(1 - l) c h) 12%;  /* hover: away from the text colour */
-  --mix-active: oklch(from currentColor calc(1 - l) c h) 22%;  /* pressed: further still */
+     Use as color-mix(in oklch, var(--solid), var(--mix-hover)). The text colour's lightness is flipped
+     in OKLab, keeping its a and b: grey text has no hue a browser will read back (Chrome 157 reads it
+     as none, which paints pink), so this reads none. ---- */
+  --mix-hover:  oklab(from currentColor calc(1 - l) a b) 12%;  /* hover: away from the text colour */
+  --mix-active: oklab(from currentColor calc(1 - l) a b) 22%;  /* pressed: further still */
 
   /* ---- Groups: brand, secondary, neutral, success, warning, danger, info. Five roles each:
      solid      a solid fill
