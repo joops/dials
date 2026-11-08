@@ -226,8 +226,9 @@ def validate_fallback(fallback_src, flat_src, colour_src, scale_src):
 
 # A pale colour has too little chroma for its hue to survive being read back: Chrome 157 reads it as
 # `none`, which paints at hue 0, pink (0.4.1). So no colour token may read a hue (`h`) from a polar
-# relative colour whose origin is a mix or a near-grey Dials makes: change a and b in oklab instead.
-PALE_ORIGINS = ("color-mix(", "var(--dl-paper-grey)", "var(--dl-paper", "var(--grey)", "var(--dl-ink")
+# relative colour whose origin is a mix, a near-grey Dials makes, or currentColor (text is often grey,
+# 0.4.2): change a and b in oklab instead.
+PALE_ORIGINS = ("color-mix(", "var(--dl-paper-grey)", "var(--dl-paper", "var(--grey)", "var(--dl-ink", "currentColor", "currentcolor")
 
 
 def balanced(text, i):
