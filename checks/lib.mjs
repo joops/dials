@@ -64,7 +64,7 @@ export function pageHelpers() {
 // relies on it is invalid exactly as it would be there. 'color-mix' also breaks color-mix(), for the
 // last resort. Returns the patched text and how many of each it patched, so a caller can see it applied.
 export const FALLBACK_SUPPORTS = {
-  'color-mix': '@supports not ((color: oklch(from red l c h)) and (color: light-dark(red, red)))',
+  'color-mix': '@supports not ((color: oklch(from red l c h)) and (color: light-dark(red, red)) and (color: oklab(from light-dark(red, red) l a b)))',
   flat: '@supports not (color: color-mix(in srgb, red, blue))',
   'v0.1.0': '@supports not (color: oklch(from red l c h))',
 };
