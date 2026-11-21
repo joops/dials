@@ -359,7 +359,8 @@
    Edge 111-130, Safari 16.2-17, Firefox 113-132. (Chrome 125-130 and
    Firefox 128-132 have the first two but throw away a relative colour
    from light-dark(), which the chain reads through var()s everywhere,
-   so before 0.4.3 they took the chain and lost most colour tokens.)
+   so before 0.4.3 they took the chain and lost most colour tokens.
+   Measured: Firefox 128-133 and Chrome 125, 128, 130 and 132.)
    They can't work out the derived chain above, so this
    block works every public colour token out again from the same
    dials, with color-mix() alone. It comes after the chain and uses

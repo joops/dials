@@ -1,7 +1,7 @@
 // Old-browser check: in a real older browser, every colour token is a valid colour (or the page
 // takes the fallback, where it is one too). Playwright can only drive its own current builds, so this
 // runs stock binaries you give it with their own headless --screenshot, on a page with one square per
-// colour token in a light page, a dark page and an .is-dark band, over a magenta page: a square still
+// colour token in a light page, a dark page and an .is-dark band, each square over magenta: a square still
 // magenta is a token the browser threw away at computed time (a transparent background). Which tokens
 // are colours is taken from the current Chromium, where every one must paint. A browser that crashes
 // the page (no screenshot, or no marker square) fails too.
@@ -30,14 +30,15 @@ for (const [, p] of browsers) if (!existsSync(p)) { console.error(`old-browsers.
 
 const reference = JSON.parse(readFileSync(join(ROOT, 'docs/tokens.json'), 'utf8'));
 const TOKENS = reference.tokens.filter(t => t.kind === 'token' && t.file === 'dials-colour.css').map(t => t.name);
-const COLS = [['light', 'light', ''], ['dark', 'dark', ''], ['band', 'light', 'is-dark']];
+// [id, color-scheme set on the column (none for the band: .is-dark sets its own), class]
+const COLS = [['light', 'light', ''], ['dark', 'dark', ''], ['band', null, 'is-dark']];
 const SQ = 12, PER_ROW = 10, BLOCK = (PER_ROW + 2) * SQ, W = 480, H = 300;   // a small grid: old Chrome caps its viewport
 const page = () => `<!doctype html><html><head><link rel="stylesheet" href="${CSS}"><style>
 html, body { margin: 0; padding: 0; background: #ff00fe !important; }
-.col { position: absolute; top: 0; width: ${PER_ROW * SQ}px; display: flex; flex-wrap: wrap; }
+.col { position: absolute; top: 0; width: ${PER_ROW * SQ}px; display: flex; flex-wrap: wrap; background: #ff00fe !important; }
 .s { width: ${SQ}px; height: ${SQ}px; }
 .mark { background: #00ff00 !important; }
-${COLS.map(([id, scheme], i) => `#${id} { left: ${i * BLOCK}px; color-scheme: ${scheme}; }`).join('\n')}
+${COLS.map(([id, scheme], i) => `#${id} { left: ${i * BLOCK}px;${scheme ? ` color-scheme: ${scheme};` : ''} }`).join('\n')}
 </style></head><body>${COLS.map(([id, , cls]) => `<div class="col ${cls}" id="${id}"><div class="s mark"></div>${TOKENS.map(t => `<div class="s" style="background: var(${t})"></div>`).join('')}<div class="s mark"></div></div>`).join('')}</body></html>`;
 
 const run = (bin, args) => new Promise(res => execFile(bin, args, { timeout: 120000 }, (err, so, se) => res({ err, out: String(so) + String(se) })));
@@ -69,7 +70,7 @@ const now = await readShot(join(tmp, 'current.png'));
 const colour = TOKENS.filter((t, i) => now.every(col => !isMagenta(col.sq[i])));
 const notColour = TOKENS.filter(t => !colour.includes(t));
 console.log(`old-browsers.mjs: ${CSS}, ${colour.length} colour tokens (not colours, skipped: ${notColour.join(' ') || 'none'})`);
-if (colour.length < 30) { console.error('old-browsers.mjs: too few colour tokens painted in the current Chromium'); process.exit(1); }
+if (colour.length < 30) { console.error('old-browsers.mjs: too few colour tokens painted in the current Chromium'); await reader.close(); await server.close(); process.exit(1); }
 
 let failed = 0;
 for (const [kind, bin] of browsers) {
