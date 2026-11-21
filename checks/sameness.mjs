@@ -13,10 +13,11 @@
 //     grey and coloured text, paint as the fixture's;
 //   - with no dials, each theme alone and each exact paper, a real <button> per group and text colour,
 //     hovered and pressed with the mouse, paints its background as the fixture's.
-// Against v0.4.1 (the default) the tolerance is 0/255 per channel; against v0.4.0 (no base fixture,
-// so tokens only) it is 1/255.
+// Against v0.4.2 (the default) and v0.4.1 the tolerance is 0/255 per channel (against v0.4.1, near-grey
+// text may move a mix onto the fill's hue, 0.4.2's fix); against v0.4.0 (no base fixture, so tokens
+// only) it is 1/255. 0.4.3 changed only which browsers take the fallback, so it paints as 0.4.2.
 //
-//   node checks/sameness.mjs [--browser=chromium|firefox] [--against=v0.4.1|v0.4.0] [--random=40] [--seed=1] [--verbose]
+//   node checks/sameness.mjs [--browser=chromium|firefox] [--against=v0.4.2|v0.4.1|v0.4.0] [--random=40] [--seed=1] [--verbose]
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { serve, launch, pageHelpers, randomSets, mulberry32, ROOT } from './lib.mjs';
@@ -24,7 +25,7 @@ import { serve, launch, pageHelpers, randomSets, mulberry32, ROOT } from './lib.
 const args = Object.fromEntries(process.argv.slice(2).map(a => { const [k, v] = a.replace(/^--/, '').split('='); return [k, v ?? true]; }));
 const BROWSERS = args.browser ? [args.browser] : ['chromium', 'firefox'];
 const RANDOM = +(args.random ?? 40), SEED = +(args.seed ?? 1);
-const AGAINST = args.against ?? 'v0.4.1';
+const AGAINST = args.against ?? 'v0.4.2';
 const FIXTURE = `/checks/fixtures/${AGAINST}`;
 if (!existsSync(join(ROOT, FIXTURE, 'dials.css'))) { console.error(`sameness.mjs: no fixture ${FIXTURE}/dials.css`); process.exit(1); }
 const STATES = existsSync(join(ROOT, FIXTURE, 'dials-base.css'));   // hover and pressed need dials-base.css

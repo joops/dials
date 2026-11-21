@@ -1,4 +1,4 @@
-/*! Dials v0.4.2 | MIT | https://github.com/joops/dials */
+/*! Dials v0.4.3 | MIT | https://github.com/joops/dials */
 /* Dials: an AI-first CSS framework. This file is dials-colour.css, then
    dials-scale.css, then the fallback for older browsers; dials-base.css is optional.
    Its defaults are the Default theme: the device's own faces, nothing to load.
@@ -354,9 +354,14 @@
 }
 /* ============================================================
    Dials: the fallback (src/fallback.css, built into the end of dials.css)
-   For browsers with color-mix() but without relative colour or
-   light-dark(): Chrome and Edge 111-122, Safari 16.2-17, Firefox
-   113-127. They can't work out the derived chain above, so this
+   For browsers with color-mix() but without relative colour,
+   light-dark(), or a relative colour from light-dark(): Chrome and
+   Edge 111-130, Safari 16.2-17, Firefox 113-132. (Chrome 125-130 and
+   Firefox 128-132 have the first two but throw away a relative colour
+   from light-dark(), which the chain reads through var()s everywhere,
+   so before 0.4.3 they took the chain and lost most colour tokens.
+   Measured: Firefox 128-133 and Chrome 125, 128, 130 and 132.)
+   They can't work out the derived chain above, so this
    block works every public colour token out again from the same
    dials, with color-mix() alone. It comes after the chain and uses
    the same selectors, so it wins there; a site's own file, loaded
@@ -382,7 +387,7 @@
    - No calc() and no percentages computed inside color-mix(): only
      literal percentages and dials that are one (--tint-strength).
    ============================================================ */
-@supports not ((color: oklch(from red l c h)) and (color: light-dark(red, red))) {
+@supports not ((color: oklch(from red l c h)) and (color: light-dark(red, red)) and (color: oklab(from light-dark(red, red) l a b))) {
   /* ---- Internal: the scheme switches, literal percentages a band can flip ---- */
   :root, :host, .is-light {
     color-scheme: light;

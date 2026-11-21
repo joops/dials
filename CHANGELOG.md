@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.4.3
+
+A patch release: copy `dials.css` (or `dials-colour.css`) again, and if your own CSS copies the fallback's test (`@supports (color: oklch(from red l c h)) and (color: light-dark(red, red))`, or its `not` form) to keep a component on the same path as Dials, add `and (color: oklab(from light-dark(red, red) l a b))` to it as well. No dial or token changed its name or default, and in browsers that take the full chain every colour token paints exactly as in 0.4.2.
+
+### Fixed
+
+- **Firefox 128–132 (128 is an ESR) and Chrome and Edge 125–130 painted transparent backgrounds and lost most colours; they now take the fallback.** They have relative colour and `light-dark()`, so they passed the fallback's test, but they throw away a relative colour whose origin is `light-dark()`, and the chain reads one through a `var()` almost everywhere: 36 colour tokens (`--surface-raised`, `--link`, `--link-hover`, `--focus` and every group's on-solid, soft, on-soft and line; in Chrome also `--mix-hover` and `--mix-active`) were invalid at computed time, light, dark and in `.is-dark` bands. The test now also asks for a relative colour from `light-dark()`, which those browsers refuse when they read it, so they get the `color-mix()` fallback: a light page, every token a colour. Measured in real builds: Firefox 128, 129, 130, 131 and 132 and Chrome 125, 128 and 130 take the fallback; Firefox 133, 136, 140 and 145 and Chrome 132 take the chain, as before (Chrome 126, 127 and 129 not run).
+- The README said Dials needs Chrome and Edge 123+ and Firefox 128+. The full chain needs Chrome and Edge 132+ and Firefox 133+. Safari 18+ is unchanged but measured only as WebKit 26.5, which takes the chain; Safari 18.x itself wasn't available to test. Chrome and Edge 123, 124 and 131 crash the page on Dials' colours, in 0.4.2 and 0.4.3 alike: a bug of their own that the test can't see (123 and 124 crash on reading a relative colour from `light-dark()`, 131 on working out the on- and soft colours).
+
+### Checks
+
+- `checks/old-browsers.mjs` (new) runs stock older browsers you give it (`--firefox=<binary>`, `--chrome=<binary>`) with their own headless screenshot, and fails any colour token that isn't a colour there, light, dark and in an `.is-dark` band, or a page that doesn't render. It isn't in `npm run check`, since it needs old builds Playwright can't install. On 0.4.2's `dials.css` it fails Firefox 128–132 and Chrome 125 and 130; on 0.4.3's they pass. Its `.is-dark` band column is checked over magenta too, so a token lost there fails.
+- `checks/sameness.mjs` now compares with 0.4.2 (`checks/fixtures/v0.4.2/`) by default, at 0/255.
+
 ## 0.4.2
 
 A patch release: copy `dials.css` (or `dials-colour.css`) again. Nothing to change in your own CSS, and no dial or token changed its name or default. Every colour token paints exactly as in 0.4.1; hover and pressed fills with white, black or grey text change colour, back to the fill's own hue.
