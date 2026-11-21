@@ -12,7 +12,7 @@
 //
 //   node checks/old-browsers.mjs --firefox=/path/to/firefox-128/firefox [--chrome=/path/to/chrome] [--css=/dials.css] [--verbose]
 //   (or DIALS_OLD_BROWSERS="firefox:/path:chrome:/path"); with no browser given it says so and fails.
-import { mkdtempSync, readFileSync, existsSync } from 'node:fs';
+import { mkdtempSync, readFileSync, existsSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { execFile } from 'node:child_process';
@@ -67,10 +67,12 @@ await rp.setViewportSize({ width: W, height: H });
 const cur = await reader.newPage({ viewport: { width: W, height: H } });
 await cur.goto(url); await cur.screenshot({ path: join(tmp, 'current.png') });
 const now = await readShot(join(tmp, 'current.png'));
+const done = async (code) => { await reader.close(); await server.close(); rmSync(tmp, { recursive: true, force: true }); process.exit(code); };
+if (!now) { console.error('old-browsers.mjs: the current Chromium gave no screenshot'); await done(1); }
 const colour = TOKENS.filter((t, i) => now.every(col => !isMagenta(col.sq[i])));
 const notColour = TOKENS.filter(t => !colour.includes(t));
 console.log(`old-browsers.mjs: ${CSS}, ${colour.length} colour tokens (not colours, skipped: ${notColour.join(' ') || 'none'})`);
-if (colour.length < 30) { console.error('old-browsers.mjs: too few colour tokens painted in the current Chromium'); await reader.close(); await server.close(); process.exit(1); }
+if (colour.length < 30) { console.error('old-browsers.mjs: too few colour tokens painted in the current Chromium'); await done(1); }
 
 let failed = 0;
 for (const [kind, bin] of browsers) {
@@ -91,6 +93,5 @@ for (const [kind, bin] of browsers) {
   if (bad.length) { failed++; console.log(`  FAIL ${ver}: ${bad.length} colour tokens invalid: ${(VERBOSE ? bad : bad.slice(0, 12)).join(' ')}${bad.length > 12 && !VERBOSE ? ' …' : ''}`); }
   else console.log(`  ok   ${ver}: every colour token is a colour, light, dark and .is-dark band`);
 }
-await reader.close(); await server.close();
 console.log(failed ? `old-browsers.mjs: ${failed} of ${browsers.length} browsers FAILED` : `old-browsers.mjs: ${browsers.length} browsers passed`);
-process.exit(failed ? 1 : 0);
+await done(failed ? 1 : 0);
